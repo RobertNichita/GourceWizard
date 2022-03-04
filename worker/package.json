@@ -1,0 +1,8 @@
+{
+  "devDependencies": {
+    "typescript": "^4.6.2"
+  },
+  "dependencies": {
+    "winston": "^3.6.0"
+  }
+}
