@@ -1,44 +1,44 @@
-import { config } from 'dotenv';
+import {config} from 'dotenv';
 import logger from '../logger';
 
 interface AWSConfig {
-    accessKey: string;
-    secretAccessKey: string;
-    region: string;
-    
-    /**
-     * Bucket to upload rendered video files
-     */
-    s3Bucket: string;
+  accessKey: string;
+  secretAccessKey: string;
+  region: string;
+
+  /**
+   * Bucket to upload rendered video files
+   */
+  s3Bucket: string;
 }
 
 interface QueueConfig {
-    AMQPUrl: string;
-    queueName: string;
+  AMQPUrl: string;
+  queueName: string;
 }
 
 interface WorkerConfig {
-    awsConfig: AWSConfig;
-    queueConfig: QueueConfig;
+  awsConfig: AWSConfig;
+  queueConfig: QueueConfig;
 }
 
-let env = config();
+const env = config();
 if (env.error) {
-    logger.error('Failed to read .env file');
-    throw env.error;
+  logger.error('Failed to read .env file');
+  throw env.error;
 }
 
-let workerConfig: WorkerConfig = {
-    awsConfig: {
-        accessKey: process.env.AWS_ACCESS_KEY_ID!,
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
-        region: process.env.AWS_REGION!,
-        s3Bucket: process.env.AWS_S3_BUCKET!,
-    },
-    queueConfig: {
-        AMQPUrl: process.env.QUEUE_AMQP_URL!,
-        queueName: process.env.QUEUE_NAME!,
-    }
-}
+const workerConfig: WorkerConfig = {
+  awsConfig: {
+    accessKey: process.env.AWS_ACCESS_KEY_ID!,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+    region: process.env.AWS_REGION!,
+    s3Bucket: process.env.AWS_S3_BUCKET!,
+  },
+  queueConfig: {
+    AMQPUrl: process.env.QUEUE_AMQP_URL!,
+    queueName: process.env.QUEUE_NAME!,
+  },
+};
 
-export default workerConfig
+export default workerConfig;

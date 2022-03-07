@@ -1,24 +1,15 @@
 interface VideoRenderer {
-    render(): Promise<RenderResult>
+  render(): Promise<RenderResult>;
 }
 
+interface RenderResult {}
 
-interface RenderResult {
-
-}
-
-
-interface VideoRequest {
-    
-}
+interface VideoRequest {}
 
 class GourceVideoRequest implements VideoRequest {
-    
-    x: string;
+  x: string;
 
-    constructor(x: string) {
-        this.x = x;
-    }
-
+  constructor(x: string) {
+    this.x = x;
+  }
 }
-
