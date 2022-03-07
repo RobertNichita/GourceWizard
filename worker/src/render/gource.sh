@@ -47,6 +47,7 @@ fi
 cd $TEMP_DIRECTORY
 
 # Only clone git history
+echo "Cloning repo $REPO_URL"
 git clone $REPO_URL --bare .git
 if [ $? -ne 0 ]; then
     echo "Failed to clone git repo $REPO_URL"
@@ -54,6 +55,7 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
+echo "Visualizing repo $REPO_URL"
 timeout -k $KILL $TIMEOUT gource $GOURCE_ARGS | ffmpeg $FFMPEG_ARGS
 EXIT_VAL=$?
 if [ $EXIT_VAL -ne 0 ]; then
@@ -62,11 +64,12 @@ if [ $EXIT_VAL -ne 0 ]; then
     exit $EXIT_VAL
 fi
 
-# aws s3 cp $FILE_NAME.mp4 $S3_BUCKET
-# if [ $? -ne 0 ]; then
-#     echo "Failed to upload $FILE_NAME to $S3_BUCKET"
-#     exit 1
-# fi
+echo "Uploading file $FILE_NAME to S3 bucket $S3_BUCKET"
+aws s3 cp $FILE_NAME.mp4 $S3_BUCKET
+if [ $? -ne 0 ]; then
+    echo "Failed to upload $FILE_NAME to $S3_BUCKET"
+    exit 1
+fi
 
 # Cleanup by removing temporary directory
 cleanup

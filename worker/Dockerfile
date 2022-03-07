@@ -2,25 +2,26 @@
 FROM utensils/opengl:stable
 
 # Setup dependencies
-RUN apk add --no-cache git gource ffmpeg aws-cli
+RUN apk add --no-cache git gource ffmpeg aws-cli npm
 
 # AWS Credentials
 ENV AWS_ACCESS_KEY_ID 'secret'
 ENV AWS_SECRET_ACCESS_KEY 'secret'
 ENV AWS_REGION 'us-east-1'
 
-ADD src/render/gource.sh /src/render/gource.sh
+# Queue Config
 
-# docker build -t worker .
-# docker run -it --rm -v $(pwd):/host worker /bin/sh
+# Compile and run code
+WORKDIR /worker/
+ADD package*.json /worker/
+ADD tsconfig*.json /worker/
+RUN npm install && npm install typescript -g
+COPY .env /worker
+COPY . /worker
+RUN npm run compile
 
+# TODO: Remove this out from Dockerfile.prod
+RUN npm install -g nodemon ts-node
 
-
-
-
-# apk add mesa-dri # seems to segfault instead of 
-# gource: SDL initialization failed - GLX is not supported
-
-# TODO: piping ffmpeg output to s3 seems complex.
-
-# https://stackoverflow.com/questions/54736246/stream-ffmpeg-transcoding-result-to-s3
+# CMD [ "node", "/worker/build/src/index.js" ]
+CMD [ "npx", "nodemon", "/worker/src/index.ts" ]

@@ -2,7 +2,7 @@
 import amqp = require('amqplib');
 import logger from "./logger";
 import config from "./config"
-import { randomUUID } from 'crypto';
+import {v4 as uuid} from "uuid";
 import { execFile } from "child_process";
 
 async function consume(): Promise<void> {
@@ -36,15 +36,23 @@ async function consume(): Promise<void> {
         // TODO: turn message into arguments for gource.sh
 
         // Arguments for gource.sh
-        const repoURL = 'https://github.com/scikit-learn/scikit-learn.git';
-        const videoId = randomUUID();
+        const repoURL = 'https://github.com/Raieen/Raieen.git';
+        const videoId = uuid();
         const gourceArguments = `-r 25 -c 4 -s 0.1 --key -o -`;
         const ffmpegArguments = `-y -r 60 -f image2pipe -vcodec ppm -i - -vcodec libx264 -preset ultrafast -pix_fmt yuv420p -crf 1 -threads 0 -bf 0 ${videoId}.mp4`;
         const timeout = (10 * 60).toString(); // 10 minutes
 
         const args = [repoURL, videoId, gourceArguments, ffmpegArguments, s3Bucket, timeout];
-        let childProcess = execFile("/src/render/gource.sh", args);
+        let childProcess = execFile("/worker/src/render/gource.sh", args);
         logger.info(`Running gource.sh with arguments ${args}`)
+
+        childProcess.stdout?.on("data", function (data) {
+            logger.info(data);
+        })
+        
+        childProcess.stderr?.on("data", function (data) {
+            logger.warn(data);
+        })
 
         childProcess.on("close", function (code, signal) {
             logger.info(`Exit Code ${code}`);

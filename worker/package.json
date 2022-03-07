@@ -1,13 +1,17 @@
 {
   "devDependencies": {
     "@types/amqplib": "^0.8.2",
-    "@types/node": "^14.11.2",
+    "@types/uuid": "^8.3.4",
     "gts": "^3.1.0",
     "typescript": "^4.6.2"
   },
   "dependencies": {
+    "@types/node": "^17.0.21",
     "amqplib": "^0.8.0",
     "dotenv": "^16.0.0",
+    "nodemon": "^2.0.15",
+    "ts-node": "^10.7.0",
+    "uuid": "^8.3.2",
     "winston": "^3.6.0"
   },
   "scripts": {
