@@ -1,10 +1,13 @@
-import amqp = require('amqplib');
+import * as amqp from 'amqplib';
 import logger from './logger';
 import config from './config';
 import {v4 as uuid} from 'uuid';
-import {execFile} from 'child_process';
+import {GourceVideoRenderer, RenderStatus, VideoRenderer} from './render';
+import {APIClient, MockAPIClient} from './client';
 
 async function consume(): Promise<void> {
+  const apiClient: APIClient = new MockAPIClient();
+
   const url = config.queueConfig.AMQPUrl;
   const queue = config.queueConfig.queueName;
   const s3Bucket = config.awsConfig.s3Bucket;
@@ -33,52 +36,54 @@ async function consume(): Promise<void> {
 
       logger.info(`Received message: ${msg.content.toString()}`);
 
-      // TODO: validate message (json-schema)
+      // TODO: validate message (json-schema) https://ajv.js.org/guide/typescript.html
       // TODO: turn message into arguments for gource.sh
+      const mockMessage = {
+          type: 'gource',
+          repoURL: 'https://github.com/Raieen/Raieen.git',
+          videoId: uuid(),
+          gource: {
+              specific_args: 'here',
+              1: 'here',
+              2: 'here',
+              3: 'here',
+              for_gource_and_ffmpeg: 'here',
+              timeout: 600
+          }
+      }
+      const type = 'gource';
+      let videoRenderer: VideoRenderer;
 
-      // Arguments for gource.sh
+      // Hard-coded arguments for gource.sh
       const repoURL = 'https://github.com/Raieen/Raieen.git';
       const videoId = uuid();
-      const gourceArguments = '-r 25 -c 4 -s 0.1 --key -o -';
-      const ffmpegArguments = `-y -r 60 -f image2pipe -vcodec ppm -i - -vcodec libx264 -preset ultrafast -pix_fmt yuv420p -crf 1 -threads 0 -bf 0 ${videoId}.mp4`;
+      const gourceArgs = '-r 25 -c 4 -s 0.1 --key -o -';
+      const ffmpegArgs = `-y -r 60 -f image2pipe -vcodec ppm -i - -vcodec libx264 -preset ultrafast -pix_fmt yuv420p -crf 1 -threads 0 -bf 0 ${videoId}.mp4`;
       const timeout = (10 * 60).toString(); // 10 minutes
 
-      const args = [
-        repoURL,
-        videoId,
-        gourceArguments,
-        ffmpegArguments,
-        s3Bucket,
-        timeout,
-      ];
-      const childProcess = execFile('/worker/src/render/gource.sh', args);
-      logger.info(`Running gource.sh with arguments ${args}`);
+      if (type === 'gource') {
+        videoRenderer = new GourceVideoRenderer(
+          repoURL,
+          videoId,
+          gourceArgs,
+          ffmpegArgs,
+          s3Bucket,
+          timeout
+        );
+      }
 
-      childProcess.stdout?.on('data', data => {
-        logger.info(data);
-      });
-
-      childProcess.stderr?.on('data', data => {
-        logger.warn(data);
-      });
-
-      childProcess.on('close', (code, signal) => {
-        logger.info(`Exit Code ${code}`);
-        logger.info(`Signal ${signal}`);
-
-        // Success
-        if (code === 0) {
+      videoRenderer!.render((status, uploadedURL) => {
+        if (status === RenderStatus.success) {
+          if (!uploadedURL) {
+            throw 'uploadedURL is null.';
+          }
           logger.info(`Successfully rendered video ${repoURL}`);
           channel.ack(msg);
-          // TODO: add something to db?
-          // Should expect URL to be s3-bucket/videoId.mp4
+          apiClient.setStatus(videoId, status, uploadedURL);
         } else {
-          // TODO: How many times to retry? What is the retry strategy?
-          // TODO: Do we do something special with timeout vs a generic error?
-          logger.info(
-            `Failed to rendered video ${repoURL} with exit code ${code}`
-          );
+          logger.info(`Failed to rendered video ${repoURL}.`);
           channel.nack(msg);
+          apiClient.setStatus(videoId, status);
         }
       });
     },
