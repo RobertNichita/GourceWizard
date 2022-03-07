@@ -1,0 +1,10 @@
+version: "3"
+services:
+  # Credentials: guest;guest
+  rabbitmq:
+    container_name: rabbitmq
+    hostname: rabbit # Needed, see docs: https://hub.docker.com/_/rabbitmq
+    image: rabbitmq:3-management-alpine
+    ports:
+        - 5672:5672 # AMQP
+        - 15672:15672 # Management UI
