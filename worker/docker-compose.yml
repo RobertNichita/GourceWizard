@@ -14,7 +14,11 @@ services:
       dockerfile: Dockerfile
     environment:
       - QUEUE_AMQP_URL=amqp://rabbitmq:5672
+      - AWS_ACCESS_KEY_ID=secret
+      - AWS_SECRET_ACCESS_KEY=secret
+      - AWS_REGION=us-east-1
     volumes:
       - ./:/worker
     depends_on:
       - rabbitmq
+    restart: always

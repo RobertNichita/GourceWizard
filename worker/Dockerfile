@@ -4,13 +4,6 @@ FROM utensils/opengl:stable
 # Setup dependencies
 RUN apk add --no-cache git gource ffmpeg aws-cli npm
 
-# AWS Credentials
-ENV AWS_ACCESS_KEY_ID 'secret'
-ENV AWS_SECRET_ACCESS_KEY 'secret'
-ENV AWS_REGION 'us-east-1'
-
-# Queue Config
-
 # Compile and run code
 WORKDIR /worker/
 ADD package*.json /worker/
