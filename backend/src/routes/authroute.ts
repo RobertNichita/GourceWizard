@@ -1,7 +1,7 @@
 import { body } from 'express-validator';
 import express, { Router } from 'express';
 
-let router: Router = express.Router();
+const router: Router = express.Router();
 
 const isAuthenticated = () => {};
 
