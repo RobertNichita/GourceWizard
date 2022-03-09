@@ -21,6 +21,9 @@ import path from 'path';
 import * as authroute from './routes/authroute';
 import helmet from 'helmet';
 import https from 'https';
+import {authRoute} from './routes/authroute';
+import {userRoute} from './routes/userroute';
+import {GHEventsRoute} from './routes/GHEventsroute';
 
 const PORT = 3000;
 const app = express();
@@ -50,6 +53,9 @@ app.use((req: express.Request, res, next) => {
   console.log('HTTP request', req.method, req.url, req.body);
   next();
 });
+
+app.use('/github_events', GHEventsRoute);
+
 const dirname = path.resolve();
 
 app

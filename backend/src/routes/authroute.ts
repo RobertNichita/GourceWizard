@@ -1,4 +1,5 @@
 import express, {Response, Request, Router, NextFunction} from 'express';
+import https from 'https';
 
 const router: Router = express.Router();
 
@@ -20,4 +21,4 @@ router.get(
   (req: Request, res: Response, next: NextFunction) => {}
 );
 
-export {router, isAuthenticated};
+export {router as authRoute, isAuthenticated};
