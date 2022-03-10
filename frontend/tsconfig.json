@@ -18,11 +18,11 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react-jsx",
-    "extends": "./node_modules/gts/tsconfig-google.json",
+    "jsx": "react",
     "rootDir": ".",
     "outDir": "build"
   },
+  "extends": "./node_modules/gts/tsconfig-google.json",
   "include": [
     "src/**/*.ts",
     "test/**/*.ts"
