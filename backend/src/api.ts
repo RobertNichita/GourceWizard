@@ -1,29 +1,19 @@
-/*  ******* Data types *******
-        image objects must have at least the following attributes:
-            - (String) _id
-            - (String) title
-            - (String) author
-            - (Date) date
-
-        comment objects must have the following attributes
-            - (String) _id
-            - (String) imageId
-            - (String) author
-            - (String) content
-            - (Date) date
-
-    ****************************** */
 import express from 'express';
 import {body, query, param} from 'express-validator';
 import session from 'express-session';
 import bcrypt from 'bcrypt';
 import path from 'path';
-import * as authroute from './routes/authroute';
+import {authRouter} from './routes/authroute';
 import helmet from 'helmet';
-import https from 'https';
-
-const PORT = 3000;
+import backEndConfig from './config';
+import mongoose from 'mongoose';
+import {log} from './logger';
+import MongoStore from 'connect-mongo';
+import {userRouter} from './routes/userroute';
+log('Gource Wizard server starting...');
+const PORT = 5000;
 const app = express();
+const dirname = path.resolve();
 
 // const isAuthenticated = (req: express.Request, res: express.Response, next: express.NextFunction) => {
 // 	if (!req.username) return res.status(401).end('access denied');
@@ -32,13 +22,42 @@ const app = express();
 app.use(helmet());
 app.use(express.urlencoded({extended: false}));
 app.use(express.json());
-app.use(
-  session({
-    secret: 'Dr1IWDJj92FNQAMEtUz7fC3MZFwdl',
-    resave: false,
-    saveUninitialized: true,
-  })
-);
+
+const {user, password, host, dev_name, prod_name, options} =
+  backEndConfig.dbConfig;
+const dbname = process.env.NODE_ENV === 'production' ? prod_name : dev_name;
+const uri = `mongodb+srv://${user}:${password}@${host}/${dbname}`;
+
+mongoose.connection.on('connect', () => {
+  app.use(
+    session({
+      secret: backEndConfig.session_secret,
+      resave: false,
+      saveUninitialized: false,
+      cookie: {maxAge: 8 * 60 * 60 * 1000},
+      store: MongoStore.create({
+        client: mongoose.connection.getClient(),
+        dbName: dbname,
+        collectionName: 'sessions',
+        stringify: false, //change to true if using datatypes unsupported by mongodb in the session
+        autoRemove: 'native',
+        crypto: {
+          secret: backEndConfig.session_secret,
+        },
+        touchAfter: 60 * 60, //only update the session every hour if nothing in the session changes (for expiry)
+      }),
+    })
+  );
+});
+
+async function handleConnect(value: typeof mongoose) {
+  log(`successfully connected to DB ${dbname}`);
+}
+async function handleConnectErr(err: any) {
+  log(`failed to connect to Db ${dbname}`, err);
+}
+
+mongoose.connect(uri, options).then(handleConnect).catch(handleConnectErr);
 
 // app.use((req, res, next) => {
 // 	req.username = req.session.username ? req.session.username : null;
@@ -50,13 +69,15 @@ app.use((req: express.Request, res, next) => {
   console.log('HTTP request', req.method, req.url, req.body);
   next();
 });
-const dirname = path.resolve();
+
+app.use('/auth/', authRouter);
+app.use('/user/', userRouter);
 
 app
   .listen(PORT, () => {
-    console.log(`server is listening on ${PORT}`);
-    console.log(`server running from ${dirname}`);
+    log(`server is listening on ${PORT}`);
+    log(`server running from ${dirname}`);
   })
   .on('error', () => {
-    console.log('server startup failed');
+    log('server startup failed', 'server startup failed');
   });
