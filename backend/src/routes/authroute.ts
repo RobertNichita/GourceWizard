@@ -4,14 +4,12 @@ const passport = require('passport');
 import backEndConfig from '../config';
 import authModel from '../models/auth';
 import userModel from '../models/user';
+import {log} from '../logger';
 const router: Router = express.Router();
 
-const isAuthenticated = () => {};
-
-router.post(
-  '/signup/',
-  (req: Request, res: Response, next: NextFunction) => {}
-);
+router.post('/signup/', (req: Request, res: Response, next: NextFunction) => {
+  return res.status(200).end('kek');
+});
 
 router.post(
   '/signin/',
@@ -20,7 +18,6 @@ router.post(
 
 router.get(
   '/signout/',
-  isAuthenticated,
   (req: Request, res: Response, next: NextFunction) => {}
 );
 
@@ -30,11 +27,13 @@ router.get(
 );
 
 router.get(
-  '/github/callback',
-  passport.authenticate('github', {failureRedirect: '/login'}),
+  '/github/callback/',
+  passport.authenticate('github', {
+    failureRedirect: `${backEndConfig.url}/api/`,
+  }),
   (req, res) => {
     // Successful authentication, redirect home.
-    res.redirect('/');
+    res.redirect(`${backEndConfig.url}/api/`);
   }
 );
 
@@ -47,6 +46,7 @@ passport.serializeUser(
 passport.deserializeUser(
   (id: string, done: (err: Error | undefined, userid: string) => void) => {
     userModel.findOne({github_id: id}, (err: Error | undefined, user: any) => {
+      console.log('asdfasfda');
       done(err, user);
     });
   }
@@ -57,7 +57,7 @@ passport.use(
     {
       clientID: backEndConfig.ghClientConfig.clientID,
       clientSecret: backEndConfig.ghClientConfig.clientSecret,
-      callbackURL: `${backEndConfig.url}/auth/callback/`,
+      callbackURL: `${backEndConfig.url}/api/auth/github/callback/`,
     },
     async (
       accessToken: string,
@@ -70,10 +70,11 @@ passport.use(
         .findOneAndUpdate(
           {github_id: profile.id},
           {github_id: profile.id},
-          {upsert: true}
+          {upsert: true, new: true}
         )
         .then((user: any) => {
           User = user;
+          console.log(`access: ${accessToken}`);
           authModel.findOneAndUpdate(
             {user_id: user._id},
             {
@@ -81,7 +82,7 @@ passport.use(
               access_token: accessToken,
               refresh_token: refreshToken,
             },
-            {upsert: true}
+            {upsert: true, new: true}
           );
         })
         .then((auth: any) => {
