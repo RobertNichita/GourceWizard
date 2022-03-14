@@ -41,7 +41,7 @@ KILL='1'
 
 # Only clone git history
 echo "Cloning repo $REPO_URL"
-git clone $REPO_URL --bare .git
+git clone $REPO_URL --bare --single-branch .git
 if [ $? -ne 0 ]; then
     echo "Failed to clone git repo $REPO_URL"
     cleanup
