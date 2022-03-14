@@ -20,6 +20,16 @@ interface QueueConfig {
 interface WorkerConfig {
   awsConfig: AWSConfig;
   queueConfig: QueueConfig;
+  cdnConfig: CDNConfig;
+}
+
+interface CDNConfig {
+  /**
+   * Root of CDN upload URL.
+   * 
+   * E.g. https://nonsense.cloudfront.net/
+   */
+  cdnRoot: string;
 }
 
 const env = config();
@@ -39,6 +49,9 @@ const workerConfig: WorkerConfig = {
     AMQPUrl: process.env.QUEUE_AMQP_URL!,
     queueName: process.env.QUEUE_NAME!,
   },
+  cdnConfig: {
+    cdnRoot: process.env.CDN_ROOT!
+  }
 };
 
 export default workerConfig;

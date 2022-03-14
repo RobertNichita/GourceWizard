@@ -68,7 +68,8 @@ async function consume(): Promise<void> {
           gourceArgs,
           ffmpegArgs,
           s3Bucket,
-          timeout
+          timeout,
+          config.cdnConfig.cdnRoot
         );
       }
 

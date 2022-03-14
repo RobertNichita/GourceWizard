@@ -17,6 +17,7 @@ export class GourceVideoRenderer implements VideoRenderer {
   ffmpegArgs: string;
   s3Bucket: string;
   timeout: string;
+  cdnRoot: string;
 
   constructor(
     repoURL: string,
@@ -24,7 +25,8 @@ export class GourceVideoRenderer implements VideoRenderer {
     gourceArgs: string,
     ffmpegArgs: string,
     s3Bucket: string,
-    timeout: string
+    timeout: string,
+    cdnRoot: string
   ) {
     this.repoURL = repoURL;
     this.videoId = videoId;
@@ -32,6 +34,7 @@ export class GourceVideoRenderer implements VideoRenderer {
     this.ffmpegArgs = ffmpegArgs;
     this.s3Bucket = s3Bucket;
     this.timeout = timeout;
+    this.cdnRoot = cdnRoot;
   }
 
   render(callback: VideoRendererCallback): void {
@@ -59,7 +62,7 @@ export class GourceVideoRenderer implements VideoRenderer {
       logger.info(`Signal ${signal}`);
 
       if (code === 0) {
-        callback(RenderStatus.success, `s3-bucket/${this.videoId}`);
+        callback(RenderStatus.success, `${this.cdnRoot}${this.videoId}`);
       } else {
         callback(RenderStatus.failure);
       }
