@@ -21,7 +21,7 @@ class WorkerService implements IWorkerService {
     queue: string;
 
     // AMQP Connection
-    private connectuon: amqp.Connection | undefined;
+    private connection: amqp.Connection | undefined;
 
     // AMQP Channel Object
     private channel: amqp.Channel | undefined;
@@ -37,8 +37,8 @@ class WorkerService implements IWorkerService {
     }
 
     async initialize() {
-        this.connectuon = await amqp.connect(this.url);
-        this.channel = await this.connectuon.createChannel();
+        this.connection = await amqp.connect(this.url);
+        this.channel = await this.connection.createChannel();
         this.channel.assertQueue(this.queue, { durable: true });
     }
 
@@ -51,7 +51,7 @@ class WorkerService implements IWorkerService {
      * @param videoId Video ID
      */
     enqueue(renderType: string, repoURL: string, videoId: string) {
-        if (!this.channel && !this.connectuon) {
+        if (!this.channel && !this.connection) {
             throw Error("Worker Service is not initalized.");
         }
 
@@ -62,6 +62,7 @@ class WorkerService implements IWorkerService {
         };
 
         this.channel?.sendToQueue(this.queue, Buffer.from(JSON.stringify(message)), { persistent: true });
+        // TODO: set videoId in database to status ENQUEUED
     }
 }
 
