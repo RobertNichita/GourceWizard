@@ -57,6 +57,7 @@ app
     console.log(`server is listening on ${PORT}`);
     console.log(`server running from ${dirname}`);
   })
-  .on('error', () => {
+  .on('error', (e) => {
     console.log('server startup failed');
+    console.warn(e);
   });
