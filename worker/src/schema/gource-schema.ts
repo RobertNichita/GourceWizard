@@ -5,32 +5,32 @@
  * the render engine specific properties.
  */
 
-import Ajv, { JSONSchemaType } from "ajv";
+import Ajv, {JSONSchemaType} from 'ajv';
 const ajv = new Ajv();
 
 export interface RenderRequest {
-    renderType: string;
-    repoURL: string;
-    videoId: string;
+  renderType: string;
+  repoURL: string;
+  videoId: string;
 }
 
 const gourceSchema: JSONSchemaType<RenderRequest> = {
-    type: "object",
-    properties: {
-        renderType: { type: "string" },
-        repoURL: { type: "string" },
-        videoId: {type: "string"}
-        // gource: {
-        //     type: "object",
-        //     properties: {
-        //         resolution: {type: "string"},
-        //         "x": {type: "string"} // TODO: finish this
-        //     }
-        // }
-    },
-    required: ["renderType", "repoURL", "videoId"],
-    additionalProperties: false,
-}
+  type: 'object',
+  properties: {
+    renderType: {type: 'string'},
+    repoURL: {type: 'string'},
+    videoId: {type: 'string'},
+    // gource: {
+    //     type: "object",
+    //     properties: {
+    //         resolution: {type: "string"},
+    //         "x": {type: "string"} // TODO: finish this
+    //     }
+    // }
+  },
+  required: ['renderType', 'repoURL', 'videoId'],
+  additionalProperties: false,
+};
 
 export const validateGourceSchema = ajv.compile(gourceSchema);
 

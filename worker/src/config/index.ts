@@ -26,7 +26,7 @@ interface WorkerConfig {
 interface CDNConfig {
   /**
    * Root of CDN upload URL.
-   * 
+   *
    * E.g. https://nonsense.cloudfront.net/
    */
   cdnRoot: string;
@@ -50,8 +50,8 @@ const workerConfig: WorkerConfig = {
     queueName: process.env.QUEUE_NAME!,
   },
   cdnConfig: {
-    cdnRoot: process.env.CDN_ROOT!
-  }
+    cdnRoot: process.env.CDN_ROOT!,
+  },
 };
 
 export default workerConfig;

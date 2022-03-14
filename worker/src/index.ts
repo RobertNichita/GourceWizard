@@ -3,7 +3,7 @@ import logger from './logger';
 import config from './config';
 import {GourceVideoRenderer, RenderStatus, VideoRenderer} from './render';
 import {APIClient, MockAPIClient} from './client';
-import { validateGourceSchema } from './schema/gource-schema';
+import {validateGourceSchema} from './schema/gource-schema';
 
 async function consume(): Promise<void> {
   const apiClient: APIClient = new MockAPIClient();
@@ -37,27 +37,27 @@ async function consume(): Promise<void> {
       let jsonMessage: any;
       try {
         jsonMessage = JSON.parse(msg.content.toString());
-        logger.info(`Incoming message`, jsonMessage);
+        logger.info('Incoming message', jsonMessage);
 
         if (!validateGourceSchema(jsonMessage)) {
           throw validateGourceSchema.errors;
         }
       } catch (e) {
         // TODO: Malformed message, we should reject it. Need to look up how to reject.
-        logger.error(`Rejecting malformed message`, e);
+        logger.error('Rejecting malformed message', e);
         channel.reject(msg, false);
         return;
       }
-      
+
       let videoRenderer: VideoRenderer;
       // TODO: sanitize inputs?
       const renderType = jsonMessage.renderType;
       const repoURL = jsonMessage.repoURL;
       const videoId = jsonMessage.videoId;
-      
+
       // TODO: generate the string from the arguments.
       const gourceArgs = '-r 25 -c 4 -s 0.1 --key -o -';
-      
+
       // This will remain hard coded since FFmpeg arguments will remain the same for all videos.
       const ffmpegArgs = `-y -r 60 -f image2pipe -vcodec ppm -i - -vcodec libx264 -preset ultrafast -pix_fmt yuv420p -crf 1 -threads 0 -bf 0 ${videoId}.mp4`;
       const timeout = (10 * 60).toString(); // 10 minutes
@@ -73,7 +73,10 @@ async function consume(): Promise<void> {
           config.cdnConfig.cdnRoot
         );
       } else {
-        logger.error(`Unsupported video render type for message, rejecting it.`, jsonMessage);
+        logger.error(
+          'Unsupported video render type for message, rejecting it.',
+          jsonMessage
+        );
         channel.reject(msg, false);
         return;
       }

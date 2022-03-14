@@ -1,10 +1,10 @@
 // TODO: This is temporary! Eventually this will be done by the API server.
 
 import amqp = require('amqplib');
-import { v4 as uuid } from 'uuid';
+import {v4 as uuid} from 'uuid';
 
 async function produce(msg: String): Promise<void> {
-  console.log(`Producer sending message ${msg} to consumer.`)
+  console.log(`Producer sending message ${msg} to consumer.`);
   const url = 'amqp://localhost:5672'; // TODO: ENV VAR
 
   const queue = 'render';
@@ -23,9 +23,9 @@ async function produce(msg: String): Promise<void> {
 
 // Send valid request
 const payload = {
-  "renderType": "gource",
-  "repoURL": "https://github.com/Raieen/Raieen.git",
-  "videoId": uuid(),
+  renderType: 'gource',
+  repoURL: 'https://github.com/Raieen/Raieen.git',
+  videoId: uuid(),
 };
 
 produce(JSON.stringify(payload));
