@@ -3,6 +3,8 @@ import logger from '../logger';
 
 interface Config {
   mongoURL: string;
+  port: number;
+  graphiql: boolean;
   queueConfig: QueueConfig;
 }
 
@@ -30,6 +32,8 @@ if (env.error) {
 
 const appConfig: Config = {
   mongoURL: process.env.MONGO_URL!,
+  port: parseInt(process.env.PORT!),
+  graphiql: process.env.GRAPHIQL! === 'true',
   queueConfig: {
     url: process.env.QUEUE_URL!,
     queue: process.env.QUEUE_NAME!,

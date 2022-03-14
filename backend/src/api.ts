@@ -1,36 +1,15 @@
-/*  ******* Data types *******
-        image objects must have at least the following attributes:
-            - (String) _id
-            - (String) title
-            - (String) author
-            - (Date) date
-
-        comment objects must have the following attributes
-            - (String) _id
-            - (String) imageId
-            - (String) author
-            - (String) content
-            - (Date) date
-
-    ****************************** */
 import express from 'express';
-import {body, query, param} from 'express-validator';
 import session from 'express-session';
-import bcrypt from 'bcrypt';
-import path from 'path';
-import * as authroute from './routes/authroute';
-import helmet from 'helmet';
-import https from 'https';
+import config from './config';
+import { graphqlHTTP } from 'express-graphql';
+import { schema } from './schema/schema';
+import { IWorkerService, WorkerService } from './service/worker-service';
 
-const PORT = 3000;
+const PORT = config.port;
 const app = express();
 
-// const isAuthenticated = (req: express.Request, res: express.Response, next: express.NextFunction) => {
-// 	if (!req.username) return res.status(401).end('access denied');
-// 	next();
-// };
-app.use(helmet());
-app.use(express.urlencoded({extended: false}));
+// app.use(helmet()); // TODO: disabling this for graphiql, but should probably ask Robert
+app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(
   session({
@@ -40,24 +19,30 @@ app.use(
   })
 );
 
-// app.use((req, res, next) => {
-// 	req.username = req.session.username ? req.session.username : null;
-// 	console.log('HTTP request', req.username, req.method, req.url, req.body);
-// 	next();
-// });
+// TODO: move this into a better place
+let workerService: IWorkerService =  new WorkerService(config.queueConfig.url, config.queueConfig.queue);
 
-app.use((req: express.Request, res, next) => {
-  console.log('HTTP request', req.method, req.url, req.body);
-  next();
-});
-const dirname = path.resolve();
+// The root provides a resolver function for each API endpoint
+var root = {
+  hello: () => {
+    return 'Hello world!';
+  },
+  renderVideo: ({ renderType, repoURL, videoId }: { renderType: string, repoURL: string, videoId: string }) => {
+    workerService.enqueue(renderType.toLowerCase(), repoURL, videoId);
+    return [renderType, repoURL, videoId];
+  }
+};
 
-app
-  .listen(PORT, () => {
-    console.log(`server is listening on ${PORT}`);
-    console.log(`server running from ${dirname}`);
-  })
-  .on('error', (e) => {
-    console.log('server startup failed');
-    console.warn(e);
-  });
+app.use('/graphql', graphqlHTTP({
+  schema: schema,
+  rootValue: root,
+  graphiql: config.graphiql,
+}));
+
+(async () => {
+  // TODO: initialize database connection
+  await (workerService as WorkerService).initialize();
+
+  app.listen(PORT);
+  console.log(`🧙 Started Gource Wizard API server at http://localhost:${PORT}/graphql`);
+})()

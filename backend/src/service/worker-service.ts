@@ -1,7 +1,7 @@
 import * as amqp from 'amqplib';
 import logger from '../logger';
 
-interface IWorkerService {
+export interface IWorkerService {
     enqueue(renderType: string, repoURL: string, videoId: string): any; // TODO: Define the return value
 }
 
@@ -16,7 +16,7 @@ interface IWorkerService {
  * 
  * See /worker/src/schema/gource-schema.ts for detailed payload schema.
  */
-class WorkerService implements IWorkerService {
+export class WorkerService implements IWorkerService {
     url: string;
     queue: string;
 
@@ -61,6 +61,7 @@ class WorkerService implements IWorkerService {
             "videoId": videoId,
         };
 
+        logger.info(`Queued render job`, message);
         this.channel?.sendToQueue(this.queue, Buffer.from(JSON.stringify(message)), { persistent: true });
         // TODO: set videoId in database to status ENQUEUED
     }
@@ -71,7 +72,7 @@ class WorkerService implements IWorkerService {
  * 
  * Does not queue anything, just logs the parameters.
  */
-class MockWorkerService implements IWorkerService {
+export class MockWorkerService implements IWorkerService {
     enqueue(renderType: string, repoURL: string, videoId: string) {
         logger.info("Job has been sent to mock worker service.", {renderType, repoURL, videoId});
     }    
