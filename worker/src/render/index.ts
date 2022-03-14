@@ -62,7 +62,7 @@ export class GourceVideoRenderer implements VideoRenderer {
       logger.info(`Signal ${signal}`);
 
       if (code === 0) {
-        callback(RenderStatus.success, `${this.cdnRoot}${this.videoId}`);
+        callback(RenderStatus.success, `${this.cdnRoot}${this.videoId}.mp4`);
       } else {
         callback(RenderStatus.failure);
       }
