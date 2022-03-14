@@ -11,6 +11,7 @@ ADD tsconfig*.json /worker/
 RUN npm install && npm install typescript -g
 COPY .env /worker
 COPY . /worker
+RUN chmod +x /worker/src/render/gource.sh
 RUN npm run compile
 
 # TODO: Remove this out from Dockerfile.prod

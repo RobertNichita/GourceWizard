@@ -32,4 +32,4 @@ router.get(
   (req: Request, res: Response, next: NextFunction) => {}
 );
 
-export {router, isAuthenticated};
+export {router as eventsRouter, isAuthenticated};

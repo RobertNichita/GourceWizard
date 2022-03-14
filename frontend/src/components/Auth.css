@@ -1,0 +1,14 @@
+.vert {
+	display: flex;
+	flex-direction: column;
+	width: fit-content;
+	height: fit-content;
+}
+
+.horiz {
+	display: flex;
+	flex-direction: row;
+	width: fit-content;
+	height: fit-content;
+	margin: auto;
+}

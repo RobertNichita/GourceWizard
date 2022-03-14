@@ -12,6 +12,7 @@ services:
     container_name: worker
     build:
       dockerfile: Dockerfile
+      context: .
     environment:
       - QUEUE_AMQP_URL=amqp://rabbitmq:5672
       - AWS_ACCESS_KEY_ID=secret
