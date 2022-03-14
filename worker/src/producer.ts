@@ -24,7 +24,7 @@ async function produce(msg: String): Promise<void> {
 // Send valid request
 const payload = {
   "renderType": "gource",
-  "repoURL": "https://github.com/scikit-learn/scikit-learn.git",
+  "repoURL": "https://github.com/Raieen/Raieen.git",
   "videoId": uuid(),
 };
 
