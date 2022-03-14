@@ -39,18 +39,18 @@ async function consume(): Promise<void> {
       // TODO: validate message (json-schema) https://ajv.js.org/guide/typescript.html
       // TODO: turn message into arguments for gource.sh
       const mockMessage = {
-          type: 'gource',
-          repoURL: 'https://github.com/Raieen/Raieen.git',
-          videoId: uuid(),
-          gource: {
-              specific_args: 'here',
-              1: 'here',
-              2: 'here',
-              3: 'here',
-              for_gource_and_ffmpeg: 'here',
-              timeout: 600
-          }
-      }
+        type: 'gource',
+        repoURL: 'https://github.com/Raieen/Raieen.git',
+        videoId: uuid(),
+        gource: {
+          specific_args: 'here',
+          1: 'here',
+          2: 'here',
+          3: 'here',
+          for_gource_and_ffmpeg: 'here',
+          timeout: 600,
+        },
+      };
       const type = 'gource';
       let videoRenderer: VideoRenderer;
 

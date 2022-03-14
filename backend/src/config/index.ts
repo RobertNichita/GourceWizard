@@ -5,6 +5,7 @@ import {ConnectOptions} from 'mongoose';
 interface GHClientConfig {
   clientID: string;
   clientSecret: string;
+  callbackUrl: string;
 }
 
 interface DBConfig {
@@ -34,6 +35,7 @@ const backEndConfig: BackEndConfig = {
   ghClientConfig: {
     clientID: process.env.GH_CLIENT_ID!,
     clientSecret: process.env.GH_CLIENT_SECRET!,
+    callbackUrl: process.env.GH_CALLBACK_URL!,
   },
   dbConfig: {
     user: process.env.DB_USER!,

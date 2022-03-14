@@ -11,6 +11,7 @@ import {log} from './logger';
 import MongoStore from 'connect-mongo';
 import {userRouter} from './routes/userroute';
 import cors from 'cors';
+import passport from 'passport';
 import csurf from 'csurf';
 
 log('Gource Wizard server starting...');
@@ -26,6 +27,11 @@ const origins = [
   `${backEndConfig.url}`,
   'http://localhost:3000',
   'https://github.com',
+  'http://localhost',
+  'http://localhost:5000',
+  'http://nginx',
+  'http://frontend:3000',
+  'http://backend:5000',
 ];
 const corsOptions = {
   origin: origins,
@@ -36,37 +42,44 @@ app.use(express.urlencoded({extended: false}));
 app.use(express.json());
 app.use(cors(corsOptions));
 app.set('view engine', 'html');
+app.use(passport.initialize());
 
 const {user, password, host, dev_name, prod_name, options} =
   backEndConfig.dbConfig;
 const dbname = process.env.NODE_ENV === 'production' ? prod_name : dev_name;
 const uri = `mongodb+srv://${user}:${password}@${host}/${dbname}`;
 
-mongoose.connection.on('connect', () => {
+declare module 'express-session' {
+  export interface SessionData {
+    user: {[key: string]: any};
+  }
+}
+
+async function handleConnect(value: typeof mongoose) {
+  console.log('connected a');
   app.use(
     session({
       secret: backEndConfig.session_secret,
       resave: false,
-      saveUninitialized: false,
-      cookie: {maxAge: 8 * 60 * 60 * 1000},
-      store: MongoStore.create({
-        client: mongoose.connection.getClient(),
-        dbName: dbname,
-        collectionName: 'sessions',
-        stringify: false, //change to true if using datatypes unsupported by mongodb in the session
-        autoRemove: 'native',
-        crypto: {
-          secret: backEndConfig.session_secret,
-        },
-        touchAfter: 60 * 60, //only update the session every hour if nothing in the session changes (for expiry)
-      }),
+      saveUninitialized: true,
+      // cookie: {maxAge: 8 * 60 * 60 * 1000},
+      // store: MongoStore.create({
+      //   client: mongoose.connection.getClient(),
+      //   dbName: dbname,
+      //   collectionName: 'sessions',
+      //   stringify: false, //change to true if using datatypes unsupported by mongodb in the session
+      //   autoRemove: 'native',
+      //   crypto: {
+      //     secret: backEndConfig.session_secret,
+      //   },
+      //   touchAfter: 60 * 60, //only update the session every hour if nothing in the session changes (for expiry)
+      // }),
     })
   );
-});
-
-async function handleConnect(value: typeof mongoose) {
+  app.use(passport.session());
   log(`successfully connected to DB ${dbname}`);
 }
+
 async function handleConnectErr(err: any) {
   log(`failed to connect to Db ${dbname}`, err);
 }
@@ -86,7 +99,7 @@ app.use((req: Request, res, next) => {
 
 const router = express.Router();
 
-router.get('/', (req, res) => {
+app.get('/', (req, res) => {
   res.sendFile(dirname + '/src/link.html');
 });
 

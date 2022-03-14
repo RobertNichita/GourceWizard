@@ -5,6 +5,7 @@ import backEndConfig from '../config';
 import authModel from '../models/auth';
 import userModel from '../models/user';
 import {log} from '../logger';
+import {session} from 'passport';
 const router: Router = express.Router();
 
 router.post('/signup/', (req: Request, res: Response, next: NextFunction) => {
@@ -29,24 +30,24 @@ router.get(
 router.get(
   '/github/callback/',
   passport.authenticate('github', {
-    failureRedirect: `${backEndConfig.url}/api/`,
+    failureRedirect: `${backEndConfig.url}`,
   }),
   (req, res) => {
+    req.session.user!.a = 'asdf';
     // Successful authentication, redirect home.
-    res.redirect(`${backEndConfig.url}/api/`);
+    res.redirect(`${backEndConfig.url}/app`);
   }
 );
 
 passport.serializeUser(
-  (user: any, done: (err: Error | undefined, userid: string) => void) => {
-    done(undefined, user.id);
+  (user: any, done: (err: Error | undefined, session: any) => void) => {
+    done(undefined, session);
   }
 );
 
 passport.deserializeUser(
   (id: string, done: (err: Error | undefined, userid: string) => void) => {
     userModel.findOne({github_id: id}, (err: Error | undefined, user: any) => {
-      console.log('asdfasfda');
       done(err, user);
     });
   }
@@ -57,7 +58,7 @@ passport.use(
     {
       clientID: backEndConfig.ghClientConfig.clientID,
       clientSecret: backEndConfig.ghClientConfig.clientSecret,
-      callbackURL: `${backEndConfig.url}/api/auth/github/callback/`,
+      callbackURL: `${backEndConfig.ghClientConfig.callbackUrl}/api/auth/github/callback`,
     },
     async (
       accessToken: string,
@@ -75,8 +76,10 @@ passport.use(
         .then((user: any) => {
           User = user;
           console.log(`access: ${accessToken}`);
-          authModel.findOneAndUpdate(
-            {user_id: user._id},
+          return authModel.findOneAndUpdate(
+            {
+              user_id: user._id,
+            },
             {
               user_id: user._id,
               access_token: accessToken,
@@ -86,7 +89,7 @@ passport.use(
           );
         })
         .then((auth: any) => {
-          done(null, User);
+          done(null, {user: User, auth: auth});
         });
     }
   )
