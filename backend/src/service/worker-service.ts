@@ -43,7 +43,8 @@ class WorkerService implements IWorkerService {
     }
 
     /**
-     * Queue a render job in the specified queue.
+     * Queue a render job in the specified queue and sets the video with the
+     * specified videoId as status ENQUEUED
      * 
      * @param renderType Render Type
      * @param repoURL Repository URL, including https:// or git://
