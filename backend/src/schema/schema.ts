@@ -1,6 +1,6 @@
-import { buildSchema } from "graphql";
+import { gql } from "apollo-server";
 
-export const schema = buildSchema(`
+export const schema = gql`
   type Query {
     hello: String
   }
@@ -12,7 +12,7 @@ export const schema = buildSchema(`
   enum RenderType {
     GOURCE
   }
-`);
+`;
 
 
 /**

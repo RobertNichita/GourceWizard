@@ -1,7 +1,6 @@
 import express, { Request } from 'express';
 import session from 'express-session';
 import config from './config';
-import { graphqlHTTP } from 'express-graphql';
 import { schema } from './schema/schema';
 import { IWorkerService, WorkerService } from './service/worker-service';
 import { body, query, param } from 'express-validator';
@@ -17,6 +16,9 @@ import { userRouter } from './routes/userroute';
 import cors from 'cors';
 import passport from 'passport';
 import csurf from 'csurf';
+
+import { ApolloServer } from 'apollo-server-express';
+import { ApolloServerPluginDrainHttpServer } from 'apollo-server-core';
 
 const PORT = config.port;
 const app = express();
@@ -42,9 +44,14 @@ const corsOptions = {
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
-app.use(cors(corsOptions));
+// app.use(cors(corsOptions)); // TODO: disabling this for apollo, but should probably ask Robert
 app.set('view engine', 'html');
 app.use(passport.initialize());
+
+app.use((req, res, next) => {
+  req.body.nonsense = 'nonsense';
+  next();
+})
 
 const { user, password, host, dev_name, prod_name, options } =
   backEndConfig.dbConfig;
@@ -92,27 +99,32 @@ mongoose.connect(uri, options).then(handleConnect).catch(handleConnectErr);
 let workerService: IWorkerService = new WorkerService(config.queueConfig.url, config.queueConfig.queue);
 
 // The root provides a resolver function for each API endpoint
-var root = {
-  hello: () => {
-    return 'Hello world!';
+const resolvers = {
+  Query: {
+    hello: () => 'Hello World',
   },
-  renderVideo: ({ renderType, repoURL, videoId }: { renderType: string, repoURL: string, videoId: string }) => {
-    workerService.enqueue(renderType.toLowerCase(), repoURL, videoId);
-    return [renderType, repoURL, videoId];
+  Mutation: {
+    renderVideo: (parent: any, { renderType, repoURL, videoId }: { renderType: string, repoURL: string, videoId: string }) => {
+      console.log(parent);
+      workerService.enqueue(renderType.toLowerCase(), repoURL, videoId);
+      return [renderType, repoURL, videoId];
+    }
   }
 };
-
-app.use('/graphql', graphqlHTTP({
-  schema: schema,
-  rootValue: root,
-  graphiql: config.graphiql,
-}));
 
 (async () => {
   // TODO: initialize database connection
   await (workerService as WorkerService).initialize();
 
-  app.listen(PORT);
+  const server = await app.listen(PORT);
+  const apolloServer = new ApolloServer({
+    typeDefs: schema,
+    resolvers,
+    plugins: [ApolloServerPluginDrainHttpServer({ httpServer: server })]
+  });
+  await apolloServer.start();
+  await apolloServer.applyMiddleware({ app });
+
   console.log(`🧙 Started Gource Wizard API server at http://localhost:${PORT}/graphql`);
 })()
 app.use((req: Request, res, next) => {
