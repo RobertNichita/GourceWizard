@@ -129,12 +129,3 @@ app.get('/', (req, res) => {
 router.use('/user/', userRouter);
 router.use('/auth/', authRouter);
 app.use('/api/', router);
-
-app
-  .listen(PORT, () => {
-    log(`server is listening on ${PORT}`);
-    log(`server running from ${dirname}`);
-  })
-  .on('error', () => {
-    log('server startup failed', 'server startup failed');
-  });
