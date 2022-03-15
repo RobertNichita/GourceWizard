@@ -1,25 +1,17 @@
 import React from 'react';
-import './App.css';
-import {Bar} from './components/Bar';
-import {Header} from './components/Header';
+import {Button} from './components/Button';
 
 function App() {
   return (
     <div>
-      <head>
-        <meta charSet="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link href="../dist/output.css" rel="stylesheet" />
-      </head>
-      <body>
-        <h1 className="text-3xl font-bold underline text-blue-900">
-          Graphic Design is my passion
-        </h1>
-        <h1>Graphic Design is not my passion</h1>
-      </body>
-      <p className="text-center text-3xl text-green-300">Hi iliY</p>
-      <Header></Header>
-      <Bar></Bar>
+      <h1 className="margin">🧙 Gource Wizard ✨</h1>
+
+      <div className="flex h-screen items-center justify-center flex-col pb-20">
+        <p className="margin text-center text-5xl">
+          Welcome. Everything is fine.
+        </p>
+        <Button className="m-5" title="Github Magic ✨"></Button>
+      </div>
     </div>
   );
 }

@@ -5,16 +5,27 @@
 @layer base {
     h1 {
       @apply text-2xl;
-      @apply text-purple-800;
+      @apply text-gource-blue1;
+      @apply font-mono
     }
     h2 {
       @apply text-xl;
+      @apply text-gource-blue2;
+      @apply font-mono
+    }
+    p {
+      @apply text-gource-blue1;
+      @apply font-mono
     }
   }
   
   @layer components {
     .btn-blue {
-      @apply bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded;
+      @apply bg-gource-blue1 hover:bg-gource-blue2 hover:text-gource-blue4 text-white font-bold py-2 px-4 rounded;
+      @apply font-mono
+    }
+    .margin {
+      @apply m-2
     }
   }
   
