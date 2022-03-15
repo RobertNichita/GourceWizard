@@ -3,7 +3,7 @@ export function Button(props) {
   const newClassName = `${className} btn-blue margin`;
   console.log(newClassName);
   return (
-    <button className={newClassName} type="button">
+    <button onClick={props.onClick} className={newClassName} type="button">
       {title}
     </button>
   );

@@ -1,8 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {BrowserRouter} from 'react-router-dom';
+import {BrowserRouter, Routes, Route} from 'react-router-dom';
 import './index.css';
 import App from './App';
+import Library from './routes/library';
 import reportWebVitals from './reportWebVitals';
 
 console.log('🧙 Started Gource Wizard API server at http://localhost:3000/');
@@ -10,7 +11,10 @@ console.log('🧙 Started Gource Wizard API server at http://localhost:3000/');
 ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>
-      <App />
+      <Routes>
+        <Route path="/" element={<App />} />
+        <Route path="library" element={<Library />} />
+      </Routes>
     </BrowserRouter>
   </React.StrictMode>,
   document.getElementById('root')
