@@ -1,4 +1,5 @@
 import {Button} from '../components/Button';
+import {Videos} from '../components/video/Videos';
 import {useNavigate} from 'react-router-dom';
 
 export default function library() {
@@ -16,6 +17,16 @@ export default function library() {
             navigate('/');
           }}
         ></Button>
+        <Videos
+          className="text-center"
+          items={[
+            {content: 'Mulan'},
+            {content: 'Alladin'},
+            {content: 'Encanto'},
+            {content: 'Atlantis'},
+            {content: 'Beauty and the Beast'},
+          ]}
+        ></Videos>
       </div>
     </div>
   );
