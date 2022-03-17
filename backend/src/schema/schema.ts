@@ -1,12 +1,16 @@
-import { gql } from "apollo-server";
+import {gql} from 'apollo-server';
 
 export const schema = gql`
   type Query {
     hello: String
   }
-  
+
   type Mutation {
-    renderVideo(renderType: RenderType!, repoURL: String!, videoId: ID!): [String]
+    renderVideo(
+      renderType: RenderType!
+      repoURL: String!
+      videoId: ID!
+    ): [String]
   }
 
   enum RenderType {
@@ -14,10 +18,9 @@ export const schema = gql`
   }
 `;
 
-
 /**
  * GraphQL Schema
- * 
+ *
  * type Video
  *  owner: User
  *  createdAt: Timestamp
@@ -29,19 +32,23 @@ export const schema = gql`
  *  visibility: VideoVisibility
  *  gitRepoURL: String (Only visible to owner)
  *  renderOptions: String(JSON representation of [1]), Only visible to owner)
- * 
+ *
  * enum VideoVisibility: PUBLIC, PRIVATE
- * 
+ *
  * type User
  *  name: String
  *  username: String
  *  avatarURL: String
- * 
+ *
  * type Library
  *  owner: User
  *  videos: [Video]
- * 
+ *
  * type WebhookVideoSubscription -- what do we call this?
+ *  repository: {
+ *    full_name : string,
+ *    ??private : boolean
+ * }
  *  whatever-we-need-for-webhook-stuff
  */
 

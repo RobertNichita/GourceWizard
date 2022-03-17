@@ -21,6 +21,7 @@ interface QueueConfig {
 interface GHClientConfig {
   clientID: string;
   clientSecret: string;
+  hookSecret: string;
   callbackUrl: string;
 }
 
@@ -28,8 +29,7 @@ interface DBConfig {
   user: string;
   password: string;
   host: string;
-  dev_name: string;
-  prod_name: string;
+  db_name: string;
   options: ConnectOptions;
 }
 
@@ -54,14 +54,14 @@ const backEndConfig: BackEndConfig = {
   ghClientConfig: {
     clientID: process.env.GH_CLIENT_ID!,
     clientSecret: process.env.GH_CLIENT_SECRET!,
+    hookSecret: process.env.GH_WEBHOOK_SECRET!,
     callbackUrl: process.env.GH_CALLBACK_URL!,
   },
   dbConfig: {
     user: process.env.DB_USER!,
     password: process.env.DB_PASS!,
     host: process.env.DB_HOST!,
-    dev_name: process.env.DEV_DB_NAME!,
-    prod_name: process.env.PROD_DB_NAME!,
+    db_name: process.env.DB_NAME!,
     options: JSON.parse(process.env.DB_OPTIONS!),
   },
   url: process.env.URL!,
@@ -72,7 +72,7 @@ const backEndConfig: BackEndConfig = {
   queueConfig: {
     url: process.env.QUEUE_URL!,
     queue: process.env.QUEUE_NAME!,
-  }
+  },
 };
 
 export default backEndConfig;

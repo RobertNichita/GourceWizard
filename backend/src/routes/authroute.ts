@@ -2,24 +2,26 @@ import express, {Response, Request, Router, NextFunction} from 'express';
 const GitHubStrategy = require('passport-github2').Strategy;
 const passport = require('passport');
 import backEndConfig from '../config';
-import authModel from '../models/auth';
-import userModel from '../models/user';
+import authModel, {createAuth, getAuth} from '../models/auth';
+import userModel, {createUser, getUser} from '../models/user';
 import {log} from '../logger';
-import {session} from 'passport';
+import {isAuthenticated} from '../middleware/authentication';
+
 const router: Router = express.Router();
 
 router.post('/signup/', (req: Request, res: Response, next: NextFunction) => {
   return res.status(200).end('kek');
 });
 
-router.post(
-  '/signin/',
-  (req: Request, res: Response, next: NextFunction) => {}
-);
-
 router.get(
   '/signout/',
-  (req: Request, res: Response, next: NextFunction) => {}
+  isAuthenticated,
+  (req: Request, res: Response, next: NextFunction) => {
+    console.log(req.session);
+    return res
+      .status(200)
+      .end(`${req.session ? JSON.stringify(req.session) : 'undefined'}`);
+  }
 );
 
 router.get(
@@ -31,25 +33,29 @@ router.get(
   '/github/callback/',
   passport.authenticate('github', {
     failureRedirect: `${backEndConfig.url}`,
+    successRedirect: `${backEndConfig.url}/app`,
   }),
   (req, res) => {
-    req.session.user!.a = 'asdf';
     // Successful authentication, redirect home.
-    res.redirect(`${backEndConfig.url}/app`);
+    // res.redirect();
   }
 );
 
 passport.serializeUser(
-  (user: any, done: (err: Error | undefined, session: any) => void) => {
-    done(undefined, session);
+  (data: any, done: (err: Error | undefined, session: any) => void) => {
+    console.log(`ser data${JSON.stringify(data)}`);
+    done(undefined, data);
   }
 );
 
 passport.deserializeUser(
-  (id: string, done: (err: Error | undefined, userid: string) => void) => {
-    userModel.findOne({github_id: id}, (err: Error | undefined, user: any) => {
-      done(err, user);
-    });
+  (session: any, done: (err: Error | undefined, data: any) => void) => {
+    console.log(`1 deser data ${JSON.stringify(session)}`);
+    const User = getUser(session.user._id);
+    const Auth = getAuth(session.user._id);
+    const out = {user: User, auth: Auth};
+    console.log(`2 deser data ${JSON.stringify(out)}`);
+    done(undefined, out);
   }
 );
 
@@ -67,26 +73,11 @@ passport.use(
       done: (err: any, user: any) => void
     ) => {
       let User: any;
-      userModel
-        .findOneAndUpdate(
-          {github_id: profile.id},
-          {github_id: profile.id},
-          {upsert: true, new: true}
-        )
-        .then((user: any) => {
+      console.log(`profile ${JSON.stringify(profile)}`);
+      createUser(profile)
+        .then(user => {
           User = user;
-          console.log(`access: ${accessToken}`);
-          return authModel.findOneAndUpdate(
-            {
-              user_id: user._id,
-            },
-            {
-              user_id: user._id,
-              access_token: accessToken,
-              refresh_token: refreshToken,
-            },
-            {upsert: true, new: true}
-          );
+          return createAuth(user, accessToken, refreshToken);
         })
         .then((auth: any) => {
           done(null, {user: User, auth: auth});
