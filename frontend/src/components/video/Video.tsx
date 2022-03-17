@@ -17,9 +17,9 @@ export function Video(props) {
             <p className="text-gray-500 text-sm">CreatedAt Date</p>
           </div>
           <p className="text-base mb-4">Put Github Repo Desc. here?</p>
-          {/* <button type="button" className="btn-blue">
-            Button
-          </button> */}
+          <button type="button" className="btn-blue">
+            Remove
+          </button>
         </div>
       </div>
     </div>

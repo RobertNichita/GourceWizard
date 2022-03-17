@@ -10,15 +10,15 @@ export default function library() {
       <div className="relative">
         <Button
           className="fixed bottom-5 right-5 p-5 text-xl"
-          title="Potion Brewing 🧪"
+          title="Finish Brewing 🧪"
           onClick={() => {
-            navigate('/create');
+            console.log('brewbrewbew');
           }}
         ></Button>
       </div>
 
       <div className="flex h-screen items-center justify-center flex-col mx-10">
-        <p className="margin text-center text-5xl">The Hidden Library.</p>
+        <p className="margin text-center text-5xl">Potion Room.</p>
 
         <Button
           title="Wizards Tower 🧙"
@@ -26,16 +26,6 @@ export default function library() {
             navigate('/');
           }}
         ></Button>
-        <Videos
-          className="text-center"
-          items={[
-            {content: 'Mulan'},
-            {content: 'Alladin'},
-            {content: 'Encanto'},
-            {content: 'Atlantis'},
-            {content: 'Beauty and the Beast'},
-          ]}
-        ></Videos>
       </div>
     </div>
   );

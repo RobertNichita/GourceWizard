@@ -14,7 +14,7 @@
       @apply font-mono
     }
     p {
-      @apply text-gource-blue1;
+      @apply text-black;
       @apply font-mono
     }
   }
