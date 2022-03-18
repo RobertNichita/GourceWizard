@@ -68,6 +68,7 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: gource-wizard
     volumes:
       - mongo_data:/data/db
     restart: always
