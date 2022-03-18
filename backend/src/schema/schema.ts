@@ -1,20 +1,193 @@
 import {gql} from 'apollo-server';
 
+// TODO: Look into modularizing this soon.
 export const schema = gql`
-  type Query {
-    hello: String
+  type User {
+    """
+    Unique user id
+    """
+    id: ID!
+
+    """
+    Username
+    """
+    username: String!
+
+    """
+    List of videos created by the user
+    """
+    videos: [Video!]
+
+    """
+    List of webhooks configured by the user
+    """
+    webhooks: [Webhook!]
   }
 
-  type Mutation {
-    renderVideo(
-      renderType: RenderType!
-      repoURL: String!
-      videoId: ID!
-    ): [String]
+  type Video {
+    """
+    Unique video id
+    """
+    id: ID!
+
+    """
+    User who generated this video
+    """
+    owner: User!
+    
+    """
+    Video Title
+    """
+    title: String!
+
+    """
+    Video Description
+    """
+    description: String
+
+    """
+    Video Thumbnail TODO: Are we doing this?
+    """
+    thumbnail: String @deprecated
+
+    """
+    Video Playback URL
+    """
+    url: String!
+
+    """
+    Video Visibility
+    """
+    visibility: VideoVisibility!
+
+    """
+    Repository used to create video
+    This is only visible to the owner
+    """
+    repositoryURL: String!
+
+    """
+    JSON representation of render options used.
+    This is only visible to the owner
+    TODO: think about this more?
+    """
+    renderOptions: String
+
+    """
+    Status of video
+    """
+    status: VideoStatus!
+
+    """
+    TODO: How do we want to do dates. unix time style or string timestamps?
+    """
+    createdAt: Int!
+
+    """
+    TODO: How do we want to do dates. unix time style or string timestamps?
+    """
+    lastModified: Int!
+  }
+  
+  enum VideoStatus {
+    ENQUEUED, FAILED, UPLOADED
+  }
+
+  enum VideoVisibility {
+    """
+    Video is public and accessible to anyone with a link.
+    It may also appear in the 'Recently Uploaded' section of the website.
+    """
+    PUBLIC,
+    
+    """
+    Video is private, only accessible to the video owner.
+    """
+    PRIVATE
+  }
+
+  type Webhook {
+    id: ID!
+    
+    owner: User!
+
+    repositoryURL: String!
+
+    """
+    Webhook URL
+    """
+    webhookURL: String!
+
+    """
+    Videos generated due to this webhook.
+    """
+    videos: [Video]
   }
 
   enum RenderType {
     GOURCE
+  }
+
+  """
+  Query
+  """
+  type Query {
+    hello: String
+    helloAuth: String
+
+    """
+    Return the current user
+    """
+    me: User
+
+    """
+    Return user with the specified id
+    """
+    user(id: ID!): User
+
+    """
+    Return videos created by the current user
+    """
+    videos: [Video]
+
+    """
+    Return video with the specified id
+    """
+    video(id: ID!): Video
+
+    """
+    Return webhooks created by the current user
+    """
+    webhooks: [Webhook]
+  }
+
+  """
+  Mutation
+  """
+  type Mutation {
+    """
+    Create and enqueue a render job for the given repository
+    and visualization type.
+    TODO: What is renderOptions going to look like?
+    """
+    renderVideo(
+      renderType: RenderType!
+      repoURL: String!
+      renderOptions: String!
+    ): Video
+
+    createWebhook(repoURL: String!): Webhook
+    
+    """
+    Update video title. Must be video owner.
+    TODO: what are the naming conventions in graphql land?
+    """
+    updateVideoTitle(id: ID!, title: String!): Video!
+
+    """
+    Update video description. Must be video owner.
+    """
+    updateVideoDescription(id: ID!, title: String!): Video!
   }
 `;
 
