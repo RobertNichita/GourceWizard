@@ -21,6 +21,7 @@ import csurf from 'csurf';
 import {ApolloServer} from 'apollo-server-express';
 import {ApolloServerPluginDrainHttpServer} from 'apollo-server-core';
 import {Server} from 'http';
+import {Octokit} from '@octokit/rest';
 
 const PORT = config.port;
 const app = express();
@@ -50,7 +51,7 @@ app.use(helmet());
 app.use(express.urlencoded({extended: false}));
 app.use(express.json());
 app.use(cors(corsOptions)); // TODO: disabling this for apollo, but should probably ask Robert
-app.set('view engine', 'html');
+app.use(express.static(dirname + '/src/static'));
 app.use(passport.initialize());
 
 app.use((req, res, next) => {
@@ -71,8 +72,7 @@ declare module 'express-session' {
 
 declare module 'express-serve-static-core' {
   interface Request {
-    _passport?: any;
-    sessionStore?: any;
+    kit: Octokit;
   }
 }
 //ADD ROUTES AND MIDDLEWARE WHICH REQUIRES DB OR SESSION HERE
@@ -112,10 +112,9 @@ async function afterConnect() {
   //ROUTES
   const router = express.Router();
 
-  app.get('/', (req, res) => {
-    res.sendFile(dirname + '/src/link.html');
-  });
-
+  // app.get('/', (req, res) => {
+  //   res.render(dirname + '/src/static/link.html');
+  // });
   router.use('/auth/', authRouter);
   app.use('/api/', router);
 }
