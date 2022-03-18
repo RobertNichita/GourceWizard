@@ -3,12 +3,9 @@ import session from 'express-session';
 import config from './config';
 import {schema} from './schema/schema';
 import {IWorkerService, WorkerService} from './service/worker-service';
-import {body, query, param} from 'express-validator';
-import bcrypt from 'bcrypt';
 import path from 'path';
 import {authRouter} from './routes/authroute';
 import helmet from 'helmet';
-import backEndConfig from './config';
 import mongoose from 'mongoose';
 import {log} from './logger';
 import MongoStore from 'connect-mongo';
@@ -16,22 +13,23 @@ import MongoStore from 'connect-mongo';
 import cors from 'cors';
 import passport from 'passport';
 import cookieParser from 'cookie-parser';
-import csurf from 'csurf';
 
-import {ApolloServer} from 'apollo-server-express';
-import {ApolloServerPluginDrainHttpServer} from 'apollo-server-core';
 import {Server} from 'http';
 import {Octokit} from '@octokit/rest';
+import {ApolloServer, ExpressContext} from 'apollo-server-express';
+import {ApolloServerPluginDrainHttpServer} from 'apollo-server-core';
+
+import resolvers from './resolvers';
 
 const PORT = config.port;
 const app = express();
 const dirname = path.resolve();
 
-// app.use(helmet()); // TODO: disabling this for graphiql, but should probably ask Robert
+// app.use(helmet()); // TODO: disabling this for apollo, but should probably ask Robert
 app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
 const origins = [
-  `${backEndConfig.url}`,
+  `${config.url}`,
   'http://localhost:3000',
   'https://github.com',
   'http://localhost',
@@ -40,6 +38,11 @@ const origins = [
   'http://frontend:3000',
   'http://backend:5000',
 ];
+
+if (config.apolloCORS) {
+  origins.push('https://studio.apollographql.com');
+}
+
 const corsOptions = {
   origin: origins,
   optionsSuccessStatus: 200,
@@ -47,7 +50,6 @@ const corsOptions = {
 };
 
 app.use(cookieParser());
-app.use(helmet());
 app.use(express.urlencoded({extended: false}));
 app.use(express.json());
 app.use(cors(corsOptions)); // TODO: disabling this for apollo, but should probably ask Robert
@@ -55,13 +57,13 @@ app.use(express.static(dirname + '/src/static'));
 app.use(passport.initialize());
 
 app.use((req, res, next) => {
-  req.body.nonsense = 'nonsense';
+  req.nonsense = 'nonsense';
   next();
 });
 
-const {user, password, host, db_name, options} = backEndConfig.dbConfig;
+const {user, password, host, db_name, options} = config.dbConfig;
 const dbname = db_name + '_' + process.env.NODE_ENV;
-const uri = `mongodb+srv://${user}:${password}@${host}/${dbname}`;
+const uri = `mongodb://${user}:${password}@${host}/`;
 
 declare module 'express-session' {
   export interface SessionData {
@@ -73,8 +75,10 @@ declare module 'express-session' {
 declare module 'express-serve-static-core' {
   interface Request {
     kit: Octokit;
+    nonsense?: string;
   }
 }
+
 //ADD ROUTES AND MIDDLEWARE WHICH REQUIRES DB OR SESSION HERE
 async function afterConnect() {
   app.use(passport.initialize());
@@ -82,12 +86,12 @@ async function afterConnect() {
   app.use((req: Request, res: Response, next: NextFunction) => {
     //TODO: create a type declaration to add user.id
     // req.user = {id: req.session.id ? req.session.id : null};
-    console.log('HTTP request', req.method, req.url, req.body);
+    // console.log('HTTP request', req.method, req.url, req.body);
     next();
   });
 
   // TODO: initialize database connection
-  if (backEndConfig.environment === 'production') {
+  if (config.environment === 'production') {
     await (workerService as WorkerService).initialize();
   }
 
@@ -95,11 +99,13 @@ async function afterConnect() {
 
   const apolloServer = new ApolloServer({
     typeDefs: schema,
-    resolvers,
+    resolvers: resolvers,
+    mocks: config.returnMocks,
     plugins: [ApolloServerPluginDrainHttpServer({httpServer: server})],
     dataSources: () => {
       return {db: mongoose.models};
     },
+    context: (context: ExpressContext) => context,
   });
 
   await apolloServer.start();
@@ -122,7 +128,7 @@ async function afterConnect() {
 async function handleConnect(value: typeof mongoose) {
   app.use(
     session({
-      secret: backEndConfig.session_secret,
+      secret: config.session_secret,
       resave: false,
       saveUninitialized: false,
       cookie: {sameSite: 'lax', maxAge: 8 * 60 * 60 * 1000},
@@ -132,7 +138,7 @@ async function handleConnect(value: typeof mongoose) {
         stringify: false, //change to true if using datatypes unsupported by mongodb in the session
         autoRemove: 'native',
         crypto: {
-          secret: backEndConfig.session_secret,
+          secret: config.session_secret,
         },
         touchAfter: 60 * 60, //only update the session every hour if nothing in the session changes (for expiry)
       }),
@@ -154,42 +160,3 @@ const workerService: IWorkerService = new WorkerService(
   config.queueConfig.url,
   config.queueConfig.queue
 );
-
-// The root provides a resolver function for each API endpoint
-const resolvers = {
-  Query: {
-    hello: () => 'Hello World',
-  },
-  Mutation: {
-    renderVideo: (
-      parent: any,
-      {
-        renderType,
-        repoURL,
-        videoId,
-      }: {renderType: string; repoURL: string; videoId: string}
-    ) => {
-      console.log(parent);
-      workerService.enqueue(renderType.toLowerCase(), repoURL, videoId);
-      return [renderType, repoURL, videoId];
-    },
-  },
-};
-
-// (async () => {
-//   // TODO: initialize database connection
-//   await (workerService as WorkerService).initialize();
-
-//   const server = await app.listen(PORT);
-//   const apolloServer = new ApolloServer({
-//     typeDefs: schema,
-//     resolvers,
-//     plugins: [ApolloServerPluginDrainHttpServer({httpServer: server})],
-//   });
-//   await apolloServer.start();
-//   await apolloServer.applyMiddleware({app});
-
-//   log(
-//     `🧙 Started Gource Wizard API server at http://localhost:${PORT}/graphql`
-//   );
-// })();

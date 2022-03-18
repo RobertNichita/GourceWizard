@@ -42,6 +42,19 @@ interface BackEndConfig {
   port: number;
   graphiql: boolean;
   queueConfig: QueueConfig;
+
+  /**
+   * Add 'https://studio.apollographql.com' to CORS policy.
+   * 
+   * This allows querying of the GraphQL server from Apollo Studio.
+   * This should not be enabled in production.
+   */
+  apolloCORS: boolean;
+
+  /**
+   * Use the backend in mock mode, where all GraphQL responses are mocks.
+   */
+  returnMocks: boolean;
 }
 
 const env = config();
@@ -73,6 +86,8 @@ const backEndConfig: BackEndConfig = {
     url: process.env.QUEUE_URL!,
     queue: process.env.QUEUE_NAME!,
   },
+  apolloCORS: process.env.APOLLO_CORS! === 'true',
+  returnMocks: process.env.RETURN_MOCKS! === 'true'
 };
 
 export default backEndConfig;
