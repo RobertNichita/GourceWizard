@@ -7,7 +7,6 @@ import {
 } from '@octokit/webhooks';
 import backEndConfig from '../config';
 import logger, {log} from '../logger';
-import {IncomingMessage, ServerResponse} from 'http';
 
 function eventTransformer(event: EmitterWebhookEvent) {
   //... change the event if needed...

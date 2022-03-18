@@ -32,10 +32,10 @@ function createAuth(user: any, accessToken: string, refreshToken: string) {
   return authModel
     .findOneAndUpdate(
       {
-        user_id: user._id,
+        user_id: user.github_id,
       },
       {
-        user_id: user._id,
+        user_id: user.github_id,
         access_token: accessToken,
         refresh_token: refreshToken,
       },
@@ -48,4 +48,4 @@ function createAuth(user: any, accessToken: string, refreshToken: string) {
 
 const authModel = mongoose.model('authorization', AuthSchema);
 export default authModel;
-export {getAuth, createAuth};
+export {getAuth, createAuth, Auth};

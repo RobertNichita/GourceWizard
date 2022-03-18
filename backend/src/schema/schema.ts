@@ -34,7 +34,7 @@ export const schema = gql`
     User who generated this video
     """
     owner: User!
-    
+
     """
     Video Title
     """
@@ -88,9 +88,11 @@ export const schema = gql`
     """
     lastModified: Int!
   }
-  
+
   enum VideoStatus {
-    ENQUEUED, FAILED, UPLOADED
+    ENQUEUED
+    FAILED
+    UPLOADED
   }
 
   enum VideoVisibility {
@@ -98,8 +100,8 @@ export const schema = gql`
     Video is public and accessible to anyone with a link.
     It may also appear in the 'Recently Uploaded' section of the website.
     """
-    PUBLIC,
-    
+    PUBLIC
+
     """
     Video is private, only accessible to the video owner.
     """
@@ -108,7 +110,7 @@ export const schema = gql`
 
   type Webhook {
     id: ID!
-    
+
     owner: User!
 
     repositoryURL: String!
@@ -177,7 +179,7 @@ export const schema = gql`
     ): Video
 
     createWebhook(repoURL: String!): Webhook
-    
+
     """
     Update video title. Must be video owner.
     TODO: what are the naming conventions in graphql land?

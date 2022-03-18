@@ -20,6 +20,7 @@ import {ApolloServer, ExpressContext} from 'apollo-server-express';
 import {ApolloServerPluginDrainHttpServer} from 'apollo-server-core';
 
 import resolvers from './resolvers';
+import ghEventsMiddleware from './middleware/GHEvents';
 
 const PORT = config.port;
 const app = express();
@@ -53,7 +54,6 @@ app.use(cookieParser());
 app.use(express.urlencoded({extended: false}));
 app.use(express.json());
 app.use(cors(corsOptions)); // TODO: disabling this for apollo, but should probably ask Robert
-app.use(express.static(dirname + '/src/static'));
 app.use(passport.initialize());
 
 app.use((req, res, next) => {
@@ -76,6 +76,7 @@ declare module 'express-serve-static-core' {
   interface Request {
     kit: Octokit;
     nonsense?: string;
+    passport?: {[key: string]: any};
   }
 }
 
@@ -83,6 +84,8 @@ declare module 'express-serve-static-core' {
 async function afterConnect() {
   app.use(passport.initialize());
   app.use(passport.session());
+  // memecachexd
+  app.use(ghEventsMiddleware);
   app.use((req: Request, res: Response, next: NextFunction) => {
     //TODO: create a type declaration to add user.id
     // req.user = {id: req.session.id ? req.session.id : null};
@@ -91,9 +94,8 @@ async function afterConnect() {
   });
 
   // TODO: initialize database connection
-  if (config.environment === 'production') {
-    await (workerService as WorkerService).initialize();
-  }
+
+  await (workerService as WorkerService).initialize();
 
   const server = await app.listen(PORT);
 
@@ -118,11 +120,9 @@ async function afterConnect() {
   //ROUTES
   const router = express.Router();
 
-  // app.get('/', (req, res) => {
-  //   res.render(dirname + '/src/static/link.html');
-  // });
   router.use('/auth/', authRouter);
   app.use('/api/', router);
+  app.use(express.static(dirname + '/src/static'));
 }
 
 async function handleConnect(value: typeof mongoose) {

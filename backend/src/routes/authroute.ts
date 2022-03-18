@@ -43,18 +43,18 @@ router.get(
 
 passport.serializeUser(
   (data: any, done: (err: Error | undefined, session: any) => void) => {
-    console.log(`ser data${JSON.stringify(data)}`);
+    // console.log(`ser data${JSON.stringify(data)}`);
     done(undefined, data);
   }
 );
 
 passport.deserializeUser(
   (session: any, done: (err: Error | undefined, data: any) => void) => {
-    console.log(`1 deser data ${JSON.stringify(session)}`);
-    const User = getUser(session.user._id);
-    const Auth = getAuth(session.user._id);
+    // console.log(`1 deser data ${JSON.stringify(session)}`);
+    const User = getUser(session.user.github_id);
+    const Auth = getAuth(session.user.github_id);
     const out = {user: User, auth: Auth};
-    console.log(`2 deser data ${JSON.stringify(out)}`);
+    // console.log(`2 deser data ${JSON.stringify(out)}`);
     done(undefined, out);
   }
 );
@@ -73,13 +73,25 @@ passport.use(
       done: (err: any, user: any) => void
     ) => {
       let User: any;
-      console.log(`profile ${JSON.stringify(profile)}`);
+      // console.log(`profile ${JSON.stringify(profile)}`);
+      log(`attempting to authenticate user ${profile.id}`);
       createUser(profile)
+        .catch((err: any) => {
+          log('failed to create user on login', err);
+        })
         .then(user => {
           User = user;
           return createAuth(user, accessToken, refreshToken);
         })
+        .catch((err: any) => {
+          log('failed to create auth on login', err);
+        })
         .then((auth: any) => {
+          log(
+            `successfully authenticated user ${profile.id}`,
+            '',
+            'Strategy._verify'
+          );
           done(null, {user: User, auth: auth});
         });
     }

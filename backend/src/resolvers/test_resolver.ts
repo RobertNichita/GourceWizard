@@ -1,6 +1,6 @@
 export const resolvers = {
-    Query: {
-        hello: () => "potato",
-        helloAuth: () => "authenticated potato",
-    }
-}
+  Query: {
+    hello: () => 'potato',
+    helloAuth: () => 'authenticated potato',
+  },
+};

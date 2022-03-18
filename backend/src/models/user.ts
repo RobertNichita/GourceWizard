@@ -3,7 +3,6 @@ import {Schema} from 'mongoose';
 import {log} from '../logger';
 
 interface User {
-  _id: string;
   github_id: Number;
   login: string;
   avatar_url: string;
@@ -17,13 +16,13 @@ const user_fields = {
   name: {type: String, unique: true, required: true},
 };
 
-const UserSchema = new Schema(user_fields, {timestamps: true});
+const UserSchema = new Schema(user_fields, {timestamps: true, _id: false});
 
 const userModel = mongoose.model('user', UserSchema);
 
 function getUser(id: string): User | undefined {
   userModel
-    .findOne({_id: id})
+    .findOne({github_id: id})
     .then((user: User) => {
       return user;
     })
@@ -52,4 +51,4 @@ function createUser(profile: any) {
 }
 
 export default userModel;
-export {getUser, createUser};
+export {getUser, createUser, User};
