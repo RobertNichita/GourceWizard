@@ -97,7 +97,7 @@ async function afterConnect() {
   const apolloServer = new ApolloServer({
     typeDefs: schema,
     resolvers,
-    mocks: true,
+    mocks: config.returnMocks,
     plugins: [ApolloServerPluginDrainHttpServer({ httpServer: server })],
     dataSources: () => {
       return { db: mongoose.models };
@@ -165,6 +165,9 @@ const resolvers = {
     hello: (parent: any, args: any, context: ExpressContext, info: any) => {
       return "potato"
     },
+    helloAuth: (parent: any, args: any, context: ExpressContext, info: any) => {
+      return "authenticated potato"
+    }
   },
   Mutation: {
     renderVideo: (

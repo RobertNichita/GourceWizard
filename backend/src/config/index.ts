@@ -50,6 +50,11 @@ interface BackEndConfig {
    * This should not be enabled in production.
    */
   apolloCORS: boolean;
+
+  /**
+   * Use the backend in mock mode, where all GraphQL responses are mocks.
+   */
+  returnMocks: boolean;
 }
 
 const env = config();
@@ -81,7 +86,8 @@ const backEndConfig: BackEndConfig = {
     url: process.env.QUEUE_URL!,
     queue: process.env.QUEUE_NAME!,
   },
-  apolloCORS: process.env.APOLLO_CORS! === 'true'
+  apolloCORS: process.env.APOLLO_CORS! === 'true',
+  returnMocks: process.env.RETURN_MOCKS! === 'true'
 };
 
 export default backEndConfig;
