@@ -17,6 +17,8 @@ import cookieParser from 'cookie-parser';
 import { ApolloServer, ExpressContext } from 'apollo-server-express';
 import { ApolloServerPluginDrainHttpServer } from 'apollo-server-core';
 
+import resolvers from './resolvers';
+
 const PORT = config.port;
 const app = express();
 const dirname = path.resolve();
@@ -59,7 +61,7 @@ app.use((req, res, next) => {
 
 const { user, password, host, db_name, options } = config.dbConfig;
 const dbname = db_name + '_' + process.env.NODE_ENV;
-const uri = `mongodb+srv://${user}:${password}@${host}/${dbname}`;
+const uri = `mongodb://${user}:${password}@${host}/`;
 
 declare module 'express-session' {
   export interface SessionData {
@@ -96,7 +98,7 @@ async function afterConnect() {
 
   const apolloServer = new ApolloServer({
     typeDefs: schema,
-    resolvers,
+    resolvers: resolvers,
     mocks: config.returnMocks,
     plugins: [ApolloServerPluginDrainHttpServer({ httpServer: server })],
     dataSources: () => {
@@ -158,29 +160,3 @@ const workerService: IWorkerService = new WorkerService(
   config.queueConfig.url,
   config.queueConfig.queue
 );
-
-// The root provides a resolver function for each API endpoint
-const resolvers = {
-  Query: {
-    hello: (parent: any, args: any, context: ExpressContext, info: any) => {
-      return "potato"
-    },
-    helloAuth: (parent: any, args: any, context: ExpressContext, info: any) => {
-      return "authenticated potato"
-    }
-  },
-  Mutation: {
-    renderVideo: (
-      parent: any,
-      {
-        renderType,
-        repoURL,
-        videoId,
-      }: { renderType: string; repoURL: string; videoId: string }
-    ) => {
-      console.log(parent);
-      workerService.enqueue(renderType.toLowerCase(), repoURL, videoId);
-      return [renderType, repoURL, videoId];
-    },
-  },
-};
