@@ -58,7 +58,8 @@ log(JSON.stringify(getCSP(content_providers, backEndConfig.environment)));
 app.use(
   helmet({
     contentSecurityPolicy: {
-      useDefaults: false,
+      useDefaults:
+        backEndConfig.environment === ENVIRONMENT.PROD ? true : false,
       directives: {
         defaultSrc: getCSP(content_providers, backEndConfig.environment),
       },
