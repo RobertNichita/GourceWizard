@@ -11,4 +11,9 @@ enum CONTENT_TYPE {
   FORM = 'application/x-www-form-urlencoded',
 }
 
-export {INSECURE_SSL, CONTENT_TYPE};
+enum ENVIRONMENT {
+  PROD = 'production',
+  DEV = 'development',
+}
+
+export {INSECURE_SSL, CONTENT_TYPE, ENVIRONMENT};

@@ -21,12 +21,14 @@ import {ApolloServerPluginDrainHttpServer} from 'apollo-server-core';
 
 import resolvers from './resolvers';
 import ghEventsMiddleware from './middleware/GHEvents';
+import backEndConfig from './config';
+import {getCSP} from './common/util';
+import {ENVIRONMENT} from './common/enum';
 
 const PORT = config.port;
 const app = express();
 const dirname = path.resolve();
 
-// app.use(helmet()); // TODO: disabling this for apollo, but should probably ask Robert
 app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
 const origins = [
@@ -41,8 +43,36 @@ const origins = [
 ];
 
 if (config.apolloCORS) {
+  log('added apollo sandbox to CORS', '', 'api.ts');
   origins.push('https://studio.apollographql.com');
 }
+
+const content_providers: string[] = [
+  'apollo-server-landing-page.cdn.apollographql.com',
+  'studio.apollographql.com',
+  'localhost:3000',
+  'fonts.googleapis.com',
+  'fonts.gstatic.com',
+];
+log(JSON.stringify(getCSP(content_providers, backEndConfig.environment)));
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      useDefaults: false,
+      directives: {
+        defaultSrc: getCSP(content_providers, backEndConfig.environment),
+      },
+    },
+    crossOriginResourcePolicy: {
+      policy:
+        backEndConfig.environment === ENVIRONMENT.PROD
+          ? 'same-origin'
+          : 'cross-origin',
+    },
+    crossOriginEmbedderPolicy:
+      backEndConfig.environment === ENVIRONMENT.PROD ? true : false,
+  })
+);
 
 const corsOptions = {
   origin: origins,

@@ -5,6 +5,7 @@ FROM node:17-alpine AS base
 
 FROM base as branch-run-development
 WORKDIR /usr/src/backend
+ENV NODE_ENV "development"
 COPY . .
 COPY package.json ./
 RUN npm install
@@ -19,6 +20,7 @@ RUN npm install
 RUN npm run build
 
 FROM branchproduction AS branch-run-production
+ENV NODE_ENV "production"
 WORKDIR /usr/src/backend
 COPY package.json ./
 RUN npm install --only=production
