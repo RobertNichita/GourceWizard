@@ -4,7 +4,7 @@ import {useLayoutEffect} from 'react';
 export function Video(props) {
   const navigate = useNavigate();
   const {data} = props;
-  const {title, description, createdAt} = data;
+  const {title, description, createdAt, thumbnail} = data;
   useLayoutEffect(() => {
     window.scrollTo(0, 0);
   });
@@ -17,16 +17,11 @@ export function Video(props) {
           navigate('/video', {state: data});
         }}
       >
-        <a data-mdb-ripple="true" data-mdb-ripple-color="light">
-          <img
-            className="rounded-t-lg"
-            src="https://cdna.artstation.com/p/assets/images/images/031/514/156/large/alena-aenami-budapest.jpg?1603836263"
-            alt=""
-            // onClick={() => {
-            //   navigate('/video', {state: data});
-            // }}
-          />
-        </a>
+        <div className="overflow-hidden max-h-96">
+          <a data-mdb-ripple="true" data-mdb-ripple-color="light">
+            <img className="rounded-t-lg" src={thumbnail} />
+          </a>
+        </div>
         <div className="p-6">
           <div className="flex justify-start items-end mb-2">
             <h1 className="text-black text-xl font-medium mr-2">{title}</h1>

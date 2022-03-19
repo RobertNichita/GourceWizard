@@ -1,5 +1,4 @@
-import {Button} from '../components/Button';
-import {useNavigate, useLocation} from 'react-router-dom';
+import {useLocation} from 'react-router-dom';
 import {AppBanner} from '../components/navigation/AppBanner';
 import {Back} from '../components/navigation/Back';
 
@@ -7,12 +6,13 @@ interface VideoState {
   title: string;
   description: string;
   createdAt: string;
+  thumbnail: string;
 }
 
 export default function library() {
-  const navigate = useNavigate();
   const location = useLocation();
-  const {title, description, createdAt} = location.state as VideoState;
+  const {title, description, createdAt, thumbnail} =
+    location.state as VideoState;
 
   return (
     <div>
@@ -20,7 +20,7 @@ export default function library() {
         <AppBanner></AppBanner>
         <Back></Back>
       </div>
-      <div className="flex h-screen items-center justify-center flex-col mx-10">
+      <div className="flex h-screen items-center justify-center flex-col mx-10 mt-10">
         <div className="relative">
           <div className="flex items-start justify-center flex-col m-10 p-10 rounded-lg shadow-lg">
             <div className="mb-4 flex justify-start items-end">
@@ -30,7 +30,7 @@ export default function library() {
             <a data-mdb-ripple="true" data-mdb-ripple-color="light">
               <img
                 className="rounded-t-lg max-w-4xl"
-                src="https://cdna.artstation.com/p/assets/images/images/031/514/156/large/alena-aenami-budapest.jpg?1603836263"
+                src={thumbnail}
                 alt=""
                 onClick={() => {}}
               />
