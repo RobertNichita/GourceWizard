@@ -1,6 +1,7 @@
 import {Button} from '../components/Button';
 import {useNavigate} from 'react-router-dom';
 import {AppBanner} from '../components/navigation/AppBanner';
+import {Back} from '../components/navigation/Back';
 
 export default function library() {
   const navigate = useNavigate();
@@ -8,6 +9,7 @@ export default function library() {
     <div>
       <div className="relative">
         <AppBanner></AppBanner>
+        <Back></Back>
       </div>
       <div className="flex h-screen items-center justify-center flex-col mx-10">
         <div className="flex items-start justify-center flex-col m-10 p-10 rounded-lg shadow-lg">

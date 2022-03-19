@@ -1,6 +1,7 @@
 import {Button} from '../components/Button';
 import {useNavigate, useLocation} from 'react-router-dom';
 import {AppBanner} from '../components/navigation/AppBanner';
+import {Back} from '../components/navigation/Back';
 
 interface VideoState {
   title: string;
@@ -17,18 +18,12 @@ export default function library() {
     <div>
       <div className="relative">
         <AppBanner></AppBanner>
-        <Button
-          className="absolute left-3 top-10 mt-7"
-          title="Back 📖"
-          onClick={() => {
-            navigate('/library');
-          }}
-        ></Button>
+        <Back></Back>
       </div>
       <div className="flex h-screen items-center justify-center flex-col mx-10">
         <div className="relative">
           <div className="flex items-start justify-center flex-col m-10 p-10 rounded-lg shadow-lg">
-            <div className="mb-4 ml-11 flex justify-start items-end">
+            <div className="mb-4 flex justify-start items-end">
               <p className="mr-2 text-5xl">{title}</p>
               <p className="mx-2 text-gray-500 text-2xl">{createdAt}</p>
             </div>
