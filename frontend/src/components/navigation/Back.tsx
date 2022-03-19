@@ -11,7 +11,6 @@ export function Back(props) {
           navigate('/library');
         }}
       ></Button>
-      ;
     </div>
   );
 }
