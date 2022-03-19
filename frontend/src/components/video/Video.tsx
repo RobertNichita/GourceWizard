@@ -1,4 +1,6 @@
+import {useNavigate} from 'react-router-dom';
 export function Video(props) {
+  const navigate = useNavigate();
   const {data} = props;
   const {content} = data;
   return (
@@ -9,6 +11,9 @@ export function Video(props) {
             className="rounded-t-lg"
             src="https://cdna.artstation.com/p/assets/images/images/031/514/156/large/alena-aenami-budapest.jpg?1603836263"
             alt=""
+            onClick={() => {
+              navigate('/video', {state: {title: content}});
+            }}
           />
         </a>
         <div className="p-6">

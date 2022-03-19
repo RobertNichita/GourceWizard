@@ -6,6 +6,7 @@ import App from './App';
 import Customize from './routes/customize';
 import Library from './routes/library';
 import Create from './routes/create';
+import Video from './routes/video';
 import reportWebVitals from './reportWebVitals';
 
 console.log('🧙 Started Gource Wizard API server at http://localhost:3000/');
@@ -18,6 +19,7 @@ ReactDOM.render(
         <Route path="library" element={<Library />} />
         <Route path="create" element={<Create />} />
         <Route path="customize" element={<Customize />} />
+        <Route path="video" element={<Video />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>,
