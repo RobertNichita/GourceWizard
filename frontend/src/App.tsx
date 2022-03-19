@@ -1,13 +1,14 @@
 import React from 'react';
 import {Button} from './components/Button';
 import {useNavigate} from 'react-router-dom';
+import {AppBanner} from './components/navigation/AppBanner';
 
 function App() {
   const navigate = useNavigate();
 
   return (
     <div>
-      <h1 className="margin">🧙 Gource Wizard ✨</h1>
+      <AppBanner></AppBanner>
 
       <div className="flex h-screen items-center justify-center flex-col">
         <p className="margin text-center text-5xl">

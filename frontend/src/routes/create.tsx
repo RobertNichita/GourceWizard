@@ -1,27 +1,25 @@
 import {Button} from '../components/Button';
 import {useNavigate} from 'react-router-dom';
+import {AppBanner} from '../components/navigation/AppBanner';
 
 export default function library() {
   const navigate = useNavigate();
   return (
     <div>
-      <h1 className="margin">🧙 Gource Wizard ✨</h1>
+      <AppBanner></AppBanner>
       <div className="flex h-screen items-center justify-center flex-col mx-10">
         <div className="flex items-start justify-center flex-col m-10 p-10 rounded-lg shadow-lg">
-          <p className="margin text-5xl">Potion Room.</p>
+          <p className="my-2 text-5xl">Potion Room.</p>
 
           {/* Form Design from: https://v1.tailwindcss.com/components/forms# */}
           <form className="w-full max-w-lg">
             <div className="flex flex-wrap -mx-3">
               <div className="w-full px-3">
-                <label
-                  className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                  htmlFor="grid-url"
-                >
+                <label className="form-label" htmlFor="grid-url">
                   Repository URL
                 </label>
                 <input
-                  className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                  className="form-input"
                   id="grid-url"
                   type="text"
                   placeholder="https://github.com/acaudwell/Gource"
@@ -30,31 +28,22 @@ export default function library() {
             </div>
             <div className="flex flex-wrap -mx-3 mb-2">
               <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-                <label
-                  className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                  htmlFor="grid-title"
-                >
+                <label className="form-label" htmlFor="grid-title">
                   Title
                 </label>
                 <input
-                  className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                  className="form-input"
                   id="grid-city"
                   type="title"
                   placeholder="Video Title"
                 ></input>
               </div>
               <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-                <label
-                  className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                  htmlFor="grid-state"
-                >
+                <label className="form-label" htmlFor="grid-state">
                   Visibility
                 </label>
                 <div className="relative">
-                  <select
-                    className="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                    id="grid-state"
-                  >
+                  <select className="form-input" id="grid-state">
                     <option>Public</option>
                     <option>Private</option>
                   </select>
@@ -73,14 +62,11 @@ export default function library() {
 
             <div className="flex flex-wrap -mx-3">
               <div className="w-full px-3">
-                <label
-                  className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                  htmlFor="grid-url"
-                >
+                <label className="form-label" htmlFor="grid-url">
                   Description
                 </label>
                 <textarea
-                  className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                  className="form-input"
                   id="grid-url"
                   placeholder="Describe the repository a little."
                 ></textarea>
@@ -90,21 +76,14 @@ export default function library() {
             <div className="flex items-end justify-end">
               <Button
                 className="-mx-0"
-                title="Next Step 🧪"
+                title="Next Step ➡️"
                 onClick={() => {
-                  console.log('brewbrewbew');
+                  navigate('/customize');
                 }}
               ></Button>
             </div>
           </form>
         </div>
-
-        <Button
-          title="Wizards Tower 🧙"
-          onClick={() => {
-            navigate('/');
-          }}
-        ></Button>
       </div>
     </div>
   );

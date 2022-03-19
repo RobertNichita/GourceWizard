@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import {BrowserRouter, Routes, Route} from 'react-router-dom';
 import './index.css';
 import App from './App';
+import Customize from './routes/customize';
 import Library from './routes/library';
 import Create from './routes/create';
 import reportWebVitals from './reportWebVitals';
@@ -16,6 +17,7 @@ ReactDOM.render(
         <Route path="/" element={<App />} />
         <Route path="library" element={<Library />} />
         <Route path="create" element={<Create />} />
+        <Route path="customize" element={<Customize />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>,
