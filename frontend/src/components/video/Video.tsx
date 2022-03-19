@@ -1,30 +1,42 @@
+import {Button} from '../Button';
 import {useNavigate} from 'react-router-dom';
+import {useLayoutEffect} from 'react';
 export function Video(props) {
   const navigate = useNavigate();
   const {data} = props;
-  const {content} = data;
+  const {title, description, createdAt} = data;
+  useLayoutEffect(() => {
+    window.scrollTo(0, 0);
+  });
+
   return (
     <div className="flex justify-center m-2 hover:opacity-75">
-      <div className="rounded-lg shadow-lg bg-white max-w-lg max-h-min">
+      <div className="rounded-lg shadow-lg bg-white max-w-md max-h-min">
         <a data-mdb-ripple="true" data-mdb-ripple-color="light">
           <img
             className="rounded-t-lg"
             src="https://cdna.artstation.com/p/assets/images/images/031/514/156/large/alena-aenami-budapest.jpg?1603836263"
             alt=""
             onClick={() => {
-              navigate('/video', {state: {title: content}});
+              navigate('/video', {state: data});
             }}
           />
         </a>
         <div className="p-6">
           <div className="flex justify-start items-end mb-2">
-            <h1 className="text-black text-xl font-medium mr-2">{content}</h1>
-            <p className="text-gray-500 text-sm">CreatedAt Date</p>
+            <h1 className="text-black text-xl font-medium mr-2">{title}</h1>
+            <p className="text-gray-500 text-sm pb-0.5">{createdAt}</p>
           </div>
-          <p className="text-base mb-4">Put Github Repo Desc. here?</p>
-          <button type="button" className="btn-blue">
-            Remove
-          </button>
+          <p className="text-base mb-4`">{description}</p>
+          <div>
+            <Button
+              className="ml-0 mt-5"
+              title="Remove"
+              onClick={() => {
+                console.log('TODO');
+              }}
+            ></Button>
+          </div>
         </div>
       </div>
     </div>

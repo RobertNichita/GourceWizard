@@ -28,6 +28,20 @@ export default function library() {
               </div>
             </div>
 
+            <div className="flex flex-wrap -mx-3">
+              <div className="w-full px-3">
+                <label className="form-label" htmlFor="grid-url">
+                  Webhook URL
+                </label>
+                <input
+                  className="form-input"
+                  id="grid-url"
+                  type="text"
+                  placeholder="https://github.com/acaudwell/Gource"
+                ></input>
+              </div>
+            </div>
+
             <div className="flex items-end justify-end">
               <Button
                 className="-mx-0"

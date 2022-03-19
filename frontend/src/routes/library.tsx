@@ -18,17 +18,42 @@ export default function library() {
         ></Button>
       </div>
 
-      <div className="flex h-screen items-center justify-center flex-col mx-10">
+      <div className="flex h-screen items-center justify-center flex-col mx-10 mt-20">
         <p className="margin text-center text-5xl">The Hidden Library.</p>
 
         <Videos
           className="text-center bg-g"
           items={[
-            {content: 'Mulan'},
-            {content: 'Alladin'},
-            {content: 'Encanto'},
-            {content: 'Atlantis'},
-            {content: 'Beauty and the Beast'},
+            {
+              title: 'Mulan',
+              description:
+                'Mulan is a responsible young woman, seen as a fearless warrior, leader, and beloved role model among her people, both men, and women.',
+              createdAt: 'March 9, 2020',
+            },
+            {
+              title: 'Alladin',
+              description:
+                'Aladdin is a 2019 American musical fantasy film produced by Walt Disney Pictures.',
+              createdAt: 'May 4, 1992',
+            },
+            {
+              title: 'Encanto',
+              description:
+                'Encanto tells the tale of an extraordinary family, the Madrigals, who live hidden in the mountains of Colombia.',
+              createdAt: 'November 24, 2021',
+            },
+            {
+              title: 'Atlantis',
+              description:
+                'A young linguist named Milo Thatch joins an intrepid group of explorers to find the mysterious lost continent of Atlantis.',
+              createdAt: 'June 3, 2001',
+            },
+            {
+              title: 'Beauty and the Beast',
+              description:
+                'Beauty and the Beast is a 2017 American musical romantic fantasy film directed by Bill Condon from a screenplay by Stephen Chbosky and Evan Spiliotopoulos.',
+              createdAt: 'September 29, 1991',
+            },
           ]}
         ></Videos>
 
