@@ -6,7 +6,9 @@ export default function library() {
   const navigate = useNavigate();
   return (
     <div>
-      <AppBanner></AppBanner>
+      <div className="relative">
+        <AppBanner></AppBanner>
+      </div>
       <div className="flex h-screen items-center justify-center flex-col mx-10">
         <div className="flex items-start justify-center flex-col m-10 p-10 rounded-lg shadow-lg">
           <p className="my-2 text-5xl">Customize.</p>

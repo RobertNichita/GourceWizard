@@ -4,7 +4,7 @@ export function AppBanner(props) {
   const navigate = useNavigate();
   return (
     <button
-      className="margin text-2xl text-gource-blue1 font-mono"
+      className="margin text-2xl text-black font-mono fixed top-0 left-0 m-5"
       onClick={() => navigate('/')}
     >
       🧙 Gource Wizard ✨
