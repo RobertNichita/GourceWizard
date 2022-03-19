@@ -18,7 +18,7 @@ export default function library() {
         ></Button>
       </div>
 
-      <div className="flex h-screen items-center justify-center flex-col mx-10 mt-20">
+      <div className="flex h-screen items-center justify-center flex-col mx-10">
         <p className="margin text-center text-5xl">The Hidden Library.</p>
 
         <Videos
