@@ -10,7 +10,6 @@ router.use(
   addAuthKit,
   async (req: Request, res: Response) => {
     await createPushHook(
-      req.session.passport!.user.auth.access_token,
       req.kit,
       req.session.passport!.user.user.login,
       req.query.repoURL as unknown as string
