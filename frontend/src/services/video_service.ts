@@ -9,7 +9,19 @@ export interface IVideoService {
     title: string,
     description: string
   ): Promise<Video>;
-  // ownerId: string, gitRepoURL: string, status: string, title: string, description: string): Promise<String> {
+}
+
+export class VideoService implements IVideoService {
+  getVideos(page: number): Promise<Video[]> {
+    throw new Error("Method not implemented.");
+  }
+  getVideo(videoId: string): Promise<Video> {
+    throw new Error("Method not implemented.");
+  }
+  createVideo(renderType: string, repoURL: string, title: string, description: string): Promise<Video> {
+    throw new Error("Method not implemented.");
+  }
+  
 }
 
 export class MockVideoService implements IVideoService {
