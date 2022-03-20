@@ -22,7 +22,6 @@ interface GHClientConfig {
   clientID: string;
   clientSecret: string;
   hookSecret: string;
-  callbackUrl: string;
 }
 
 interface DBConfig {
@@ -68,7 +67,6 @@ const backEndConfig: BackEndConfig = {
     clientID: process.env.GH_CLIENT_ID!,
     clientSecret: process.env.GH_CLIENT_SECRET!,
     hookSecret: process.env.GH_WEBHOOK_SECRET!,
-    callbackUrl: process.env.GH_CALLBACK_URL!,
   },
   dbConfig: {
     user: process.env.DB_USER!,

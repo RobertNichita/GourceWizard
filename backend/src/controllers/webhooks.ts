@@ -1,15 +1,23 @@
 import {Octokit} from '@octokit/rest';
 import {CONTENT_TYPE, INSECURE_SSL} from '../common/enum';
 import {HookEventName, HookParams, ACCEPT} from '../common/hook';
+import backEndConfig from '../config';
 import {log} from '../logger';
-import {User} from '../models/user';
 
-async function createPushHook(kit: Octokit, user: User, repo: string) {
+async function createPushHook(kit: Octokit, login: string, repo: string) {
   const params = {
     accept: ACCEPT,
-    owner: user.login,
+    owner: login,
     repo: repo,
+    name: 'web',
+    config: {
+      url: `${backEndConfig.url}/events/github`,
+      content_type: CONTENT_TYPE.JSON,
+      secret: backEndConfig.ghClientConfig.hookSecret,
+      insecure_ssl: INSECURE_SSL.INSECURE,
+    },
     events: [HookEventName.PUSH],
+    active: true,
   };
 
   return createHook(kit, params);
@@ -18,7 +26,7 @@ async function createPushHook(kit: Octokit, user: User, repo: string) {
 //prereq: kit is authenticated as params.owner
 async function createHook(kit: Octokit, params: HookParams) {
   return kit.rest.repos.createWebhook(params).catch((err: any) => {
-    log(`could not create hook ${params}`, err);
+    log('failed to create webhook', err);
   });
 }
 

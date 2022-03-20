@@ -1,5 +1,7 @@
+import {Octokit} from '@octokit/rest';
 import {NextFunction, Request, Response} from 'express';
 import {authKit} from '../controllers/octokit';
+import {log} from '../logger';
 
 function isAuthenticated(req: Request, res: Response, next: NextFunction) {
   if (req.isAuthenticated()) {
@@ -13,8 +15,13 @@ function isAuthenticated(req: Request, res: Response, next: NextFunction) {
  * postreq, req.kit is an Octokit Instance authenticated as the logged in user
  **/
 function addAuthKit(req: Request, res: Response, next: NextFunction) {
-  req.kit = authKit(req.session.passport!.auth.accessToken);
+  try {
+    req.kit = authKit(req.session.passport!.user.auth.access_token);
+  } catch (err) {
+    log('failed to add kit middleware', err);
+    res.status(500).end('autkit failed');
+  }
   return next();
 }
 
-export {isAuthenticated};
+export {isAuthenticated, addAuthKit};

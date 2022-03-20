@@ -24,6 +24,7 @@ import ghEventsMiddleware from './middleware/GHEvents';
 import backEndConfig from './config';
 import {getCSP} from './common/util';
 import {ENVIRONMENT} from './common/enum';
+import {testRouter} from './routes/testroute';
 
 const PORT = config.port;
 const app = express();
@@ -43,7 +44,6 @@ const origins = [
 ];
 
 if (config.apolloCORS) {
-  log('added apollo sandbox to CORS', '', 'api.ts');
   origins.push('https://studio.apollographql.com');
 }
 
@@ -54,7 +54,7 @@ const content_providers: string[] = [
   'fonts.googleapis.com',
   'fonts.gstatic.com',
 ];
-log(JSON.stringify(getCSP(content_providers, backEndConfig.environment)));
+
 app.use(
   helmet({
     contentSecurityPolicy: {
@@ -105,7 +105,7 @@ declare module 'express-session' {
 
 declare module 'express-serve-static-core' {
   interface Request {
-    kit: Octokit;
+    kit: any;
     nonsense?: string;
     passport?: {[key: string]: any};
   }
@@ -152,8 +152,12 @@ async function afterConnect() {
   const router = express.Router();
 
   router.use('/auth/', authRouter);
+  // if (backEndConfig.environment !== ENVIRONMENT.PROD) {
+  router.use('/test/', testRouter);
+  // }
   app.use('/api/', router);
-  app.use(express.static(dirname + '/src/static'));
+
+  app.use('/', express.static(dirname + '/src/static'));
 }
 
 async function handleConnect(value: typeof mongoose) {

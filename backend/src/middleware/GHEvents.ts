@@ -20,6 +20,7 @@ const hooks: Webhooks = new Webhooks({
 
 //method called before any individual event handler
 hooks.onAny((event: EmitterWebhookEvent) => {
+  log('recieved event');
   hooks
     .sign(event.payload)
     .then((signature: string) => {
@@ -38,7 +39,9 @@ hooks.onAny((event: EmitterWebhookEvent) => {
  * if it is a new commit, generate a video and append it
  *
  **/
-hooks.on('push', (event: EmitterWebhookEvent) => {});
+hooks.on('push', (event: EmitterWebhookEvent) => {
+  console.log('push');
+});
 
 // /**
 //  * Verifies the signature of a webhook against the webhook token

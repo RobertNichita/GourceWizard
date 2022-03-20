@@ -20,7 +20,9 @@ export const addAuthKit =
   () =>
   (next: (arg0: any, arg1: any, arg2: any, arg3: any) => any) =>
   (root: any, args: any, context: ExpressContext, info: any) => {
-    context.req.kit = authKit(context.req.session.passport!.auth.accessToken);
+    context.req.kit = authKit(
+      context.req.session.passport!.user.auth.access_token
+    );
     return next(root, args, context, info);
   };
 

@@ -14,9 +14,10 @@ type HookConfig = {
 };
 
 type HookParams = {
-  accept: string;
+  accept?: string;
   owner: string;
   repo: string;
+  name: string;
   hook_id?: number;
   config?: HookConfig;
   events?: HookEventName[]; //list of events which will trigger the hook

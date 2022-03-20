@@ -20,19 +20,20 @@ export class VideoResolver {
         info: any
       ) => {
         logger.info('args', args);
-        const ownerId = 123; // TODO: hard code until Robert merge, should get from context.
+        const ownerId = context.req.passport!.user.user.login;
         const videoId = uuid();
         // TODO: Create a database entry
 
         this.workerService.enqueue(args.renderType, args.repoURL, videoId);
-        // if(uploaded){
-        // if(hasWebhook){
-        createPushHook(
-          context.req.kit,
-          context.req.passport!.user.user,
-          args.repoURL
-        );
-        //}
+        // if(videoFinishedUploading){
+        const isWebhook = false; // TODO: replace with param from frontend
+        if (isWebhook) {
+          createPushHook(
+            context.req.kit,
+            context.req.passport!.user.user,
+            args.repoURL
+          );
+        }
         //}
       },
     },

@@ -1,7 +1,7 @@
 import {retry} from '@octokit/plugin-retry';
 import {throttling} from '@octokit/plugin-throttling';
 import {Octokit} from '@octokit/rest';
-import {log} from '../logger';
+import logger, {log} from '../logger';
 
 const RetryThrottleKit = Octokit.plugin(retry).plugin(throttling);
 
@@ -23,10 +23,17 @@ function onAbuseLimit(retryAfter: Number, options: any) {
 }
 
 function authKit(accessToken: string) {
-  return new RetryThrottleKit({
-    auth: accessToken,
-    throttle: {onRateLimit: onRateLimit, onAbuseLimit: onAbuseLimit},
-  });
+  let kit;
+  try {
+    kit = new RetryThrottleKit({
+      auth: `token ${accessToken}`,
+      throttle: {onRateLimit: onRateLimit, onAbuseLimit: onAbuseLimit},
+      log: logger,
+    });
+  } catch (err) {
+    log('failed to create authorized octokit', err);
+  }
+  return kit;
 }
 
 export {authKit, RetryThrottleKit};

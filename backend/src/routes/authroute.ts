@@ -26,7 +26,9 @@ router.get(
 
 router.get(
   '/github/',
-  passport.authenticate('github', {scope: ['user:email']})
+  passport.authenticate('github', {
+    scope: ['read:user', 'repo'],
+  })
 );
 
 router.get(
@@ -64,7 +66,7 @@ passport.use(
     {
       clientID: backEndConfig.ghClientConfig.clientID,
       clientSecret: backEndConfig.ghClientConfig.clientSecret,
-      callbackURL: `${backEndConfig.ghClientConfig.callbackUrl}/api/auth/github/callback`,
+      callbackURL: `${backEndConfig.url}/api/auth/github/callback`,
     },
     async (
       accessToken: string,
