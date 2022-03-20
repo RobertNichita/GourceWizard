@@ -29,6 +29,8 @@ services:
     build:
       dockerfile: Dockerfile
       context: ./backend/
+      args:
+        environment: development
     volumes:
       - ./backend/:/usr/src/backend
     environment:
@@ -43,8 +45,6 @@ services:
     build:
       dockerfile: Dockerfile
       context: ./worker/
-      args:
-        environment: development
     environment:
       - QUEUE_AMQP_URL=amqp://rabbitmq:5672
       - AWS_ACCESS_KEY_ID=AKIA3SK6BFZU2XCMKO6A
