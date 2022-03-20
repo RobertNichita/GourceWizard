@@ -53,7 +53,7 @@ export const schema = gql`
     """
     Video Playback URL
     """
-    url: String!
+    url: String
 
     """
     Video Visibility
@@ -180,6 +180,13 @@ export const schema = gql`
 
     createWebhook(repoURL: String!): Webhook
 
+    """
+    Update the video status.
+
+    TODO: This mutation should only be called by the render workers,
+    so we need a way to restrict this. For now it is left open.
+    This is an internal mutation.
+    """
     updateStatus(id: ID!, status: VideoStatus!): Video!
 
     """

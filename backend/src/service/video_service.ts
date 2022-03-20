@@ -15,12 +15,28 @@ const videoSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    title: {
+        type: String
+    },
+    description: {
+        type: String
+    },
+    thumbnail: {
+        type: String
+    },
     url: {
         type: String
+    },
+    visibility: {
+        type: String,
+        required: true
     },
     repositoryURL: {
         type: String,
         required: true
+    },
+    renderOptions: {
+        type: String
     },
     status: {
         type: String // TODO: How to do enums?
@@ -48,7 +64,11 @@ export class VideoService implements IVideoService {
     async createVideo(ownerId: string, gitRepoURL: string, status: string): Promise<String> {
         let video = await Video.create({
             ownerId: ownerId,
+            visibility: 'PUBLIC',
+            title: 'An unnamed video',
+            description: 'Lorem Ipsum',
             repositoryURL: gitRepoURL,
+            renderOptions: 'todo',
             status: status
         });
         let videoId = video._id.toString();
