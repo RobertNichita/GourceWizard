@@ -8,20 +8,25 @@ import Library from './routes/library';
 import Create from './routes/create';
 import Video from './routes/video';
 import reportWebVitals from './reportWebVitals';
+import gqlClient from '../src/services';
+import {ApolloProvider} from '@apollo/client';
+import frontEndConfig from './config';
 
-console.log('🧙 Started Gource Wizard API server at http://localhost:3000/');
+console.log(`🧙 Started Gource Wizard Client server at ${frontEndConfig.url}`);
 
 ReactDOM.render(
   <React.StrictMode>
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<App />} />
-        <Route path="library" element={<Library />} />
-        <Route path="create" element={<Create />} />
-        <Route path="customize" element={<Customize />} />
-        <Route path="video" element={<Video />} />
-      </Routes>
-    </BrowserRouter>
+    <ApolloProvider client={gqlClient}>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<App />} />
+          <Route path="library" element={<Library />} />
+          <Route path="create" element={<Create />} />
+          <Route path="customize" element={<Customize />} />
+          <Route path="video" element={<Video />} />
+        </Routes>
+      </BrowserRouter>
+    </ApolloProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );

@@ -14,15 +14,13 @@ import cors from 'cors';
 import passport from 'passport';
 import cookieParser from 'cookie-parser';
 
-import {Server} from 'http';
-import {Octokit} from '@octokit/rest';
 import {ApolloServer, ExpressContext} from 'apollo-server-express';
 import {ApolloServerPluginDrainHttpServer} from 'apollo-server-core';
 
 import resolvers from './resolvers';
 import ghEventsMiddleware from './middleware/GHEvents';
 import backEndConfig from './config';
-import {getCSP} from './common/util';
+import {getCSP, removeHttp} from './common/util';
 import {ENVIRONMENT} from './common/enum';
 import {testRouter} from './routes/testroute';
 
@@ -152,9 +150,9 @@ async function afterConnect() {
   const router = express.Router();
 
   router.use('/auth/', authRouter);
-  // if (backEndConfig.environment !== ENVIRONMENT.PROD) {
-  router.use('/test/', testRouter);
-  // }
+  if (backEndConfig.environment !== ENVIRONMENT.PROD) {
+    router.use('/test/', testRouter);
+  }
   app.use('/api/', router);
 
   app.use('/', express.static(dirname + '/src/static'));
@@ -166,7 +164,11 @@ async function handleConnect(value: typeof mongoose) {
       secret: config.session_secret,
       resave: false,
       saveUninitialized: false,
-      cookie: {sameSite: 'lax', maxAge: 8 * 60 * 60 * 1000},
+      cookie: {
+        sameSite: 'lax',
+        secure: backEndConfig.environment === 'production',
+        maxAge: 8 * 60 * 60 * 1000,
+      },
       store: MongoStore.create({
         client: mongoose.connection.getClient(),
         collectionName: 'sessions',

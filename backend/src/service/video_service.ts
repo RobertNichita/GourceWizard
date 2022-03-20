@@ -1,62 +1,71 @@
-import mongoose from "mongoose";
-import logger from "../logger";
+import mongoose from 'mongoose';
+import logger from '../logger';
 
 export interface IVideoService {
+  createVideo(
+    ownerId: string,
+    gitRepoURL: string,
+    status: string
+  ): Promise<any>;
 
-    createVideo(ownerId: string, gitRepoURL: string, status: string): Promise<any>
+  setStatus(videoId: string, status: string): Promise<any>;
 
-    setStatus(videoId: string, status: string): Promise<any>
-
-    getVideo(videoId: string): Promise<any>
+  getVideo(videoId: string): Promise<any>;
 }
 
-const videoSchema = new mongoose.Schema({
+const videoSchema = new mongoose.Schema(
+  {
     ownerId: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
     url: {
-        type: String
+      type: String,
     },
     repositoryURL: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
     status: {
-        type: String // TODO: How to do enums?
-    }
-}, {timestamps: true})
+      type: String, // TODO: How to do enums?
+    },
+  },
+  {timestamps: true}
+);
 
-export const Video = mongoose.model("Video", videoSchema);
+export const Video = mongoose.model('Video', videoSchema);
 
 export class VideoService implements IVideoService {
-    async getVideo(videoId: string): Promise<any> {
-        let video = await Video.findById(videoId);
-        logger.info(`Returning video`, video);
-        return video
-    }
+  async getVideo(videoId: string): Promise<any> {
+    const video = await Video.findById(videoId);
+    logger.info('Returning video', video);
+    return video;
+  }
 
-    async setStatus(videoId: string, status: string): Promise<any> {
-        let video = await Video.findById(videoId).update({status: status});
-        logger.info(`Update video ${videoId} to status ${status}`, video);
-        return this.getVideo(videoId);
-    }
+  async setStatus(videoId: string, status: string): Promise<any> {
+    const video = await Video.findById(videoId).update({status: status});
+    logger.info(`Update video ${videoId} to status ${status}`, video);
+    return this.getVideo(videoId);
+  }
 
-    // TODO: @Robert how to mongoose and get the types working properly?
-    // This returns the id of the new video right now, without error checking.
-    // We probably want to return the inserted result.
-    async createVideo(ownerId: string, gitRepoURL: string, status: string): Promise<String> {
-        let video = await Video.create({
-            ownerId: ownerId,
-            repositoryURL: gitRepoURL,
-            status: status
-        });
-        let videoId = video._id.toString();
-        logger.info(`Created video ${videoId}`, video);
-        return videoId;
-    }
+  // TODO: @Robert how to mongoose and get the types working properly?
+  // This returns the id of the new video right now, without error checking.
+  // We probably want to return the inserted result.
+  async createVideo(
+    ownerId: string,
+    gitRepoURL: string,
+    status: string
+  ): Promise<String> {
+    const video = await Video.create({
+      ownerId: ownerId,
+      repositoryURL: gitRepoURL,
+      status: status,
+    });
+    const videoId = video._id.toString();
+    logger.info(`Created video ${videoId}`, video);
+    return videoId;
+  }
 }
-
 
 // resolvers = {
 //   Mutation: {
@@ -66,7 +75,7 @@ export class VideoService implements IVideoService {
 //           const videoId = uuid();
 //           // TODO: Create a database entry
 //           /**
-//            * 
+//            *
 //            * Video
 //            * {
 //            *  owner: ownerId,
@@ -81,8 +90,8 @@ export class VideoService implements IVideoService {
 //            *  renderOptions: hard code to something for now.
 //            *  renderType: $repoType
 //            * }
-//            * 
-//            * 
+//            *
+//            *
 //       *  owner: User
 //       *  createdAt: Timestamp
 //       *  updatedAt: Timestamp
@@ -93,14 +102,14 @@ export class VideoService implements IVideoService {
 //       *  visibility: VideoVisibility
 //       *  gitRepoURL: String (Only visible to owner)
 //       *  renderOptions: String(JSON representation of [1]), Only visible to owner)
-//            * 
+//            *
 //            * }
-//            * 
-//            * 
-//            * 
-//            * 
-//            * 
-//            * 
+//            *
+//            *
+//            *
+//            *
+//            *
+//            *
 //            */
 
 //           this.workerService.enqueue(args.renderType, args.repoURL, videoId);

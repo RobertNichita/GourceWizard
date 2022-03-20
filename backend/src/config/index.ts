@@ -36,6 +36,7 @@ interface BackEndConfig {
   ghClientConfig: GHClientConfig;
   dbConfig: DBConfig;
   url: string;
+  frontend_url: string;
   session_secret: string;
   environment: string;
   port: number;
@@ -76,6 +77,7 @@ const backEndConfig: BackEndConfig = {
     options: JSON.parse(process.env.DB_OPTIONS!),
   },
   url: process.env.URL!,
+  frontend_url: process.env.FRONTEND_URL!,
   session_secret: process.env.SESSION_SECRET!,
   environment: process.env.NODE_ENV!,
   port: parseInt(process.env.PORT!),
