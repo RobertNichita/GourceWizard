@@ -1,10 +1,16 @@
-import {Button} from '../components/Button';
-import {useNavigate} from 'react-router-dom';
-import {AppBanner} from '../components/navigation/AppBanner';
-import {Back} from '../components/navigation/Back';
+import { Button } from '../components/Button';
+import { useNavigate } from 'react-router-dom';
+import { AppBanner } from '../components/navigation/AppBanner';
+import { Back } from '../components/navigation/Back';
+import { useState } from 'react';
 
 export default function library() {
   const navigate = useNavigate();
+
+  const [repoURL, setRepoURL] = useState("");
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+
   return (
     <div>
       <div className="relative">
@@ -13,7 +19,7 @@ export default function library() {
       </div>
       <div className="flex h-screen items-center justify-center flex-col mx-10">
         <div className="flex items-start justify-center flex-col m-10 p-10 rounded-lg shadow-lg">
-          <p className="my-2 text-5xl">Potion Room.</p>
+          <p className="my-2 text-5xl">Potion Roomx</p>
 
           {/* Form Design from: https://v1.tailwindcss.com/components/forms# */}
           <form className="w-full max-w-lg">
@@ -27,6 +33,10 @@ export default function library() {
                   id="grid-url"
                   type="text"
                   placeholder="https://github.com/acaudwell/Gource"
+                  onChange={(e) => {
+                    e.preventDefault();
+                    setRepoURL(e.target.value);
+                  }}
                 ></input>
               </div>
             </div>
@@ -40,6 +50,10 @@ export default function library() {
                   id="grid-city"
                   type="title"
                   placeholder="Video Title"
+                  onChange={(e) => {
+                    e.preventDefault();
+                    setTitle(e.target.value);
+                  }}
                 ></input>
               </div>
               <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
@@ -73,6 +87,10 @@ export default function library() {
                   className="form-input"
                   id="grid-url"
                   placeholder="Describe the repository a little."
+                  onChange={(e) => {
+                    e.preventDefault();
+                    setDescription(e.target.value);
+                  }}
                 ></textarea>
               </div>
             </div>
@@ -82,7 +100,16 @@ export default function library() {
                 className="-mx-0"
                 title="Next Step ➡️"
                 onClick={() => {
-                  navigate('/customize');
+                  if (repoURL && title && description) {
+                    navigate('/customize', {
+                      state: {
+                        repoURL: repoURL,
+                        visibility: 'PUBLIC', // TODO: do not hardcode
+                        title: title,
+                        description: description
+                      }
+                    });
+                  }
                 }}
               ></Button>
             </div>

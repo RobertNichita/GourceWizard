@@ -1,10 +1,26 @@
 import {Button} from '../components/Button';
-import {useNavigate} from 'react-router-dom';
+import {useLocation, useNavigate} from 'react-router-dom';
 import {AppBanner} from '../components/navigation/AppBanner';
 import {Back} from '../components/navigation/Back';
+import { useState } from 'react';
+import {IVideoService, MockVideoService} from '../services/video_service';
+
+export interface CreateVideoState {
+  repoURL: string
+  visibility: string
+  title: string
+  description: string
+}
 
 export default function library() {
   const navigate = useNavigate();
+
+  const location = useLocation()
+
+  const videoService: IVideoService = new MockVideoService();
+
+  
+
   return (
     <div>
       <div className="relative">
@@ -22,8 +38,9 @@ export default function library() {
                 <label className="form-label" htmlFor="grid-url">
                   Parameters
                 </label>
+                <p>Video customization is post-beta feature.</p>
                 <textarea
-                  className="form-input w-96 h-36"
+                  className="form-input w-96 h-36 invisible"
                   id="grid-url"
                   placeholder="Enter a JSON object."
                 ></textarea>
@@ -49,7 +66,18 @@ export default function library() {
                 className="-mx-0"
                 title="Render 🧪"
                 onClick={() => {
-                  navigate('/library');
+                  const payload = location.state as CreateVideoState; // TODO: This is just stuff passed from create but in the future we should be a bit better than this.
+                  console.log(payload);
+                  videoService.createVideo('GOURCE', payload.repoURL, payload.title, payload.description).then((video) => {
+                    // Assume enqueued successfully
+                    navigate('/loading', {
+                      state: {
+                        videoId: video._id
+                      }
+                    });
+                  }).catch((e) => {
+                    console.warn(`Failed to enqueue render job`,e);
+                  });
                 }}
               ></Button>
             </div>
