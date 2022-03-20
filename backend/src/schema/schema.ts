@@ -176,6 +176,8 @@ export const schema = gql`
       renderType: RenderType!
       repoURL: String!
       renderOptions: String!
+      title: String!
+      description: String!
     ): Video
 
     createWebhook(repoURL: String!): Webhook

@@ -36,14 +36,14 @@ export class VideoResolver {
     Mutation: {
       renderVideo: async (
         parent: any,
-        args: {renderType: string; repoURL: string},
+        args: {renderType: string; repoURL: string, title: string, description: string},
         context: ExpressContext,
         info: any
       ) => {
         logger.info('args', args);
         // const ownerId = context.req.passport!.user.user.login;
         const ownerId = 'ownerid';
-        const videoId = await this.videoService.createVideo(ownerId, args.repoURL, 'ENQUEUED');
+        const videoId = await this.videoService.createVideo(ownerId, args.repoURL, 'ENQUEUED', args.title, args.description);
         this.workerService.enqueue(args.renderType, args.repoURL, videoId);
         
         // if(videoFinishedUploading){

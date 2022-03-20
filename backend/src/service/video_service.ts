@@ -3,7 +3,7 @@ import logger from "../logger";
 
 export interface IVideoService {
 
-    createVideo(ownerId: string, gitRepoURL: string, status: string): Promise<any>
+    createVideo(ownerId: string, gitRepoURL: string, status: string, title: string, description: string): Promise<any>
 
     /**
      * 
@@ -85,12 +85,13 @@ export class VideoService implements IVideoService {
     // TODO: @Robert how to mongoose and get the types working properly?
     // This returns the id of the new video right now, without error checking.
     // We probably want to return the inserted result.
-    async createVideo(ownerId: string, gitRepoURL: string, status: string): Promise<String> {
+    async createVideo(ownerId: string, gitRepoURL: string, status: string, title: string, description: string): Promise<String> {
         let video = await Video.create({
             ownerId: ownerId,
             visibility: 'PUBLIC',
-            title: 'An unnamed video',
-            description: 'Lorem Ipsum',
+            title: title,
+            description: description,
+            thumbnail: 'https://http.cat/404',
             repositoryURL: gitRepoURL,
             renderOptions: 'todo',
             status: status
