@@ -1,4 +1,4 @@
-import {execFile} from 'child_process';
+import {execFile, spawn} from 'child_process';
 import logger from '../logger';
 
 export interface VideoRenderer {
@@ -46,7 +46,7 @@ export class GourceVideoRenderer implements VideoRenderer {
       this.s3Bucket,
       this.timeout,
     ];
-    const childProcess = execFile('/worker/src/render/gource.sh', args);
+    const childProcess = spawn('/worker/src/render/gource.sh', args);
     logger.info(`Running gource.sh with arguments ${args}`);
 
     childProcess.stdout?.on('data', data => {

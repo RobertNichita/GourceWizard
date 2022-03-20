@@ -20,21 +20,23 @@ services:
   #     context : ./frontend
   #   ports:
   #    - "3000:3000"
-  # #
-  # # Backend
-  # #
-  # backend:
-  #   container_name: backend
-  #   image: robertnichita/gwiz:backend
-  #   volumes:
-  #     - ./backend/:/src/usr/backend/
-  #   stdin_open: true
-  #   tty: true
-  #   build:
-  #     dockerfile: Dockerfile
-  #     context : ./backend
-  #   ports:
-  #    - "5000:5000"
+  #
+  # Backend
+  #
+  backend:
+    build:
+      dockerfile: Dockerfile
+      context: ./backend/
+    volumes:
+      - ./backend/:/usr/src/backend
+    environment:
+      - DB_HOST=mongo
+      - QUEUE_URL=amqp://rabbitmq:5672
+    depends_on:
+      - mongo
+      - rabbitmq
+    ports:
+     - "4000:4000"
   worker:
     build:
       dockerfile: Dockerfile
@@ -45,11 +47,13 @@ services:
       - AWS_SECRET_ACCESS_KEY=yiKlcyx2aDZb719tBphuKtHkwKq33qJfrGcerltn
       - AWS_REGION=us-east-1
       - CDN_ROOT=https://d1c7jwqsei1woa.cloudfront.net/
+      - BACKEND_URL=http://backend:4000/graphql
     volumes:
       - ./worker/:/worker
     depends_on:
       - rabbitmq
       - mongo
+      - backend
     restart: always
   #
   # Infrastructure
@@ -72,7 +76,8 @@ services:
     volumes:
       - mongo_data:/data/db
     restart: always
-  mongoexpress:
+  
+  mongo-express:
     image: mongo-express:0.54
     ports:
       - 8081:8081
