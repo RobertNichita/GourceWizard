@@ -1,15 +1,15 @@
-import { Button } from '../components/Button';
-import { useNavigate } from 'react-router-dom';
-import { AppBanner } from '../components/navigation/AppBanner';
-import { Back } from '../components/navigation/Back';
-import { useState } from 'react';
+import {Button} from '../components/Button';
+import {useNavigate} from 'react-router-dom';
+import {AppBanner} from '../components/navigation/AppBanner';
+import {Back} from '../components/navigation/Back';
+import {useState} from 'react';
 
 export default function library() {
   const navigate = useNavigate();
 
-  const [repoURL, setRepoURL] = useState("");
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
+  const [repoURL, setRepoURL] = useState('');
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
 
   return (
     <div>
@@ -33,7 +33,7 @@ export default function library() {
                   id="grid-url"
                   type="text"
                   placeholder="https://github.com/acaudwell/Gource"
-                  onChange={(e) => {
+                  onChange={e => {
                     e.preventDefault();
                     setRepoURL(e.target.value);
                   }}
@@ -50,7 +50,7 @@ export default function library() {
                   id="grid-city"
                   type="title"
                   placeholder="Video Title"
-                  onChange={(e) => {
+                  onChange={e => {
                     e.preventDefault();
                     setTitle(e.target.value);
                   }}
@@ -87,7 +87,7 @@ export default function library() {
                   className="form-input"
                   id="grid-url"
                   placeholder="Describe the repository a little."
-                  onChange={(e) => {
+                  onChange={e => {
                     e.preventDefault();
                     setDescription(e.target.value);
                   }}
@@ -106,8 +106,8 @@ export default function library() {
                         repoURL: repoURL,
                         visibility: 'PUBLIC', // TODO: do not hardcode
                         title: title,
-                        description: description
-                      }
+                        description: description,
+                      },
                     });
                   }
                 }}

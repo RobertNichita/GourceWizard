@@ -2,24 +2,22 @@ import {Button} from '../components/Button';
 import {useLocation, useNavigate} from 'react-router-dom';
 import {AppBanner} from '../components/navigation/AppBanner';
 import {Back} from '../components/navigation/Back';
-import { useState } from 'react';
+import {useState} from 'react';
 import {IVideoService, MockVideoService} from '../services/video_service';
 
 export interface CreateVideoState {
-  repoURL: string
-  visibility: string
-  title: string
-  description: string
+  repoURL: string;
+  visibility: string;
+  title: string;
+  description: string;
 }
 
 export default function library() {
   const navigate = useNavigate();
 
-  const location = useLocation()
+  const location = useLocation();
 
   const videoService: IVideoService = new MockVideoService();
-
-  
 
   return (
     <div>
@@ -68,16 +66,24 @@ export default function library() {
                 onClick={() => {
                   const payload = location.state as CreateVideoState; // TODO: This is just stuff passed from create but in the future we should be a bit better than this.
                   console.log(payload);
-                  videoService.createVideo('GOURCE', payload.repoURL, payload.title, payload.description).then((video) => {
-                    // Assume enqueued successfully
-                    navigate('/loading', {
-                      state: {
-                        videoId: video._id
-                      }
+                  videoService
+                    .createVideo(
+                      'GOURCE',
+                      payload.repoURL,
+                      payload.title,
+                      payload.description
+                    )
+                    .then(video => {
+                      // Assume enqueued successfully
+                      navigate('/loading', {
+                        state: {
+                          videoId: video._id,
+                        },
+                      });
+                    })
+                    .catch(e => {
+                      console.warn('Failed to enqueue render job', e);
                     });
-                  }).catch((e) => {
-                    console.warn(`Failed to enqueue render job`,e);
-                  });
                 }}
               ></Button>
             </div>

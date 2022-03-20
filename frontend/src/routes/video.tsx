@@ -1,12 +1,11 @@
 import {useLocation} from 'react-router-dom';
 import {AppBanner} from '../components/navigation/AppBanner';
 import {Back} from '../components/navigation/Back';
-import { Video } from '../services/video_service';
+import {Video} from '../services/video_service';
 
 export default function library() {
   const location = useLocation();
-  const {title, description, createdAt, url} =
-    location.state as Video;
+  const {title, description, createdAt, url} = location.state as Video;
 
   return (
     <div>

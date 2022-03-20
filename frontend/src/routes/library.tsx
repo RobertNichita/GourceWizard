@@ -19,7 +19,7 @@ export default function library() {
 
   // Load videos
   useEffect(() => {
-    console.log("Loading library videos");
+    console.log('Loading library videos');
     videoService.getVideos(page).then(videos => {
       setVideos(videos);
     });
