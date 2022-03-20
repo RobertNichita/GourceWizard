@@ -19,7 +19,7 @@ services:
       dockerfile: Dockerfile
       context : ./frontend
       args:
-        - environment=development
+        environment: development
     ports:
      - "3000:3000"
   #
@@ -43,6 +43,8 @@ services:
     build:
       dockerfile: Dockerfile
       context: ./worker/
+      args:
+        environment: development
     environment:
       - QUEUE_AMQP_URL=amqp://rabbitmq:5672
       - AWS_ACCESS_KEY_ID=AKIA3SK6BFZU2XCMKO6A
