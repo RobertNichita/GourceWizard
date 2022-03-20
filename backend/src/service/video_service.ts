@@ -5,12 +5,31 @@ export interface IVideoService {
   createVideo(
     ownerId: string,
     gitRepoURL: string,
-    status: string
+    status: string,
+    title: string,
+    description: string
   ): Promise<any>;
 
-  setStatus(videoId: string, status: string): Promise<any>;
+  /**
+   *
+   * @param videoId Video Id
+   * @param status Status // TODO: enum
+   */
+  setStatus(videoId: string, status: string, uploadedURL: string): Promise<any>;
 
+  /**
+   * Return video with the specified video id
+   * @param videoId Video Id
+   * // TODO: return type
+   */
   getVideo(videoId: string): Promise<any>;
+
+  /**
+   * Return all videos owned by the user with the specified ownerId.
+   * // TODO: return type
+   * @param ownerId Owner Id
+   */
+  getVideos(ownerId: string): Promise<any>;
 }
 
 const videoSchema = new mongoose.Schema(
@@ -19,12 +38,28 @@ const videoSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    title: {
+      type: String,
+    },
+    description: {
+      type: String,
+    },
+    thumbnail: {
+      type: String,
+    },
     url: {
       type: String,
+    },
+    visibility: {
+      type: String,
+      required: true,
     },
     repositoryURL: {
       type: String,
       required: true,
+    },
+    renderOptions: {
+      type: String,
     },
     status: {
       type: String, // TODO: How to do enums?
@@ -42,8 +77,21 @@ export class VideoService implements IVideoService {
     return video;
   }
 
-  async setStatus(videoId: string, status: string): Promise<any> {
-    const video = await Video.findById(videoId).update({status: status});
+  async getVideos(ownerId: string): Promise<any> {
+    const videos = await Video.find({ownerId: ownerId});
+    logger.info(`Returning videos for owner ${ownerId}`, videos);
+    return videos;
+  }
+
+  async setStatus(
+    videoId: string,
+    status: string,
+    uploadedURL: string
+  ): Promise<any> {
+    const video = await Video.findById(videoId).update({
+      status: status,
+      url: uploadedURL,
+    });
     logger.info(`Update video ${videoId} to status ${status}`, video);
     return this.getVideo(videoId);
   }
@@ -54,11 +102,18 @@ export class VideoService implements IVideoService {
   async createVideo(
     ownerId: string,
     gitRepoURL: string,
-    status: string
+    status: string,
+    title: string,
+    description: string
   ): Promise<String> {
     const video = await Video.create({
       ownerId: ownerId,
+      visibility: 'PUBLIC',
+      title: title,
+      description: description,
+      thumbnail: 'https://http.cat/404',
       repositoryURL: gitRepoURL,
+      renderOptions: 'todo',
       status: status,
     });
     const videoId = video._id.toString();

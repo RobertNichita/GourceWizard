@@ -21,6 +21,13 @@ interface WorkerConfig {
   awsConfig: AWSConfig;
   queueConfig: QueueConfig;
   cdnConfig: CDNConfig;
+  
+  /**
+   * URL to Gource-Wizard GraphQL API
+   * 
+   * E.g. https://gource.wizard/graphql
+   */
+  backendURL: string;
 }
 
 interface CDNConfig {
@@ -52,6 +59,7 @@ const workerConfig: WorkerConfig = {
   cdnConfig: {
     cdnRoot: process.env.CDN_ROOT!,
   },
+  backendURL: process.env.BACKEND_URL!,
 };
 
 export default workerConfig;

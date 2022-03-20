@@ -1,18 +1,11 @@
 import {useLocation} from 'react-router-dom';
 import {AppBanner} from '../components/navigation/AppBanner';
 import {Back} from '../components/navigation/Back';
-
-interface VideoState {
-  title: string;
-  description: string;
-  createdAt: string;
-  thumbnail: string;
-}
+import {Video} from '../services/video_service';
 
 export default function library() {
   const location = useLocation();
-  const {title, description, createdAt, thumbnail} =
-    location.state as VideoState;
+  const {title, description, createdAt, url} = location.state as Video;
 
   return (
     <div>
@@ -28,12 +21,9 @@ export default function library() {
               <p className="mx-2 text-gray-500 text-2xl">{createdAt}</p>
             </div>
             <a data-mdb-ripple="true" data-mdb-ripple-color="light">
-              <img
-                className="rounded-t-lg max-w-4xl"
-                src={thumbnail}
-                alt=""
-                onClick={() => {}}
-              />
+              <video>
+                <source src={url} type="video/mp4"></source>
+              </video>
             </a>
 
             <div className="mt-5 max-w-fit">

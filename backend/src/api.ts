@@ -17,12 +17,13 @@ import cookieParser from 'cookie-parser';
 import {ApolloServer, ExpressContext} from 'apollo-server-express';
 import {ApolloServerPluginDrainHttpServer} from 'apollo-server-core';
 
-import resolvers from './resolvers';
 import ghEventsMiddleware from './middleware/GHEvents';
 import backEndConfig from './config';
 import {getCSP, removeHttp} from './common/util';
 import {ENVIRONMENT} from './common/enum';
 import {testRouter} from './routes/testroute';
+import {ComposedResolvers} from './resolvers';
+import {VideoService} from './service/video_service';
 
 const PORT = config.port;
 const app = express();
@@ -128,9 +129,14 @@ async function afterConnect() {
 
   const server = await app.listen(PORT);
 
+  const composedResolvers = new ComposedResolvers(
+    workerService,
+    new VideoService()
+  );
+
   const apolloServer = new ApolloServer({
     typeDefs: schema,
-    resolvers: resolvers,
+    resolvers: composedResolvers.compose(),
     mocks: config.returnMocks,
     plugins: [ApolloServerPluginDrainHttpServer({httpServer: server})],
     dataSources: () => {

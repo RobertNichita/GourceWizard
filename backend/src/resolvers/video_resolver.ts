@@ -23,11 +23,25 @@ export class VideoResolver {
       ) => {
         return this.videoService.getVideo(args.id);
       },
+      videos: async (
+        parent: any,
+        args: any,
+        context: ExpressContext,
+        info: any
+      ) => {
+        const ownerId = 'ownerid'; // TODO: replace with context ownerId.
+        return this.videoService.getVideos(ownerId);
+      },
     },
     Mutation: {
       renderVideo: async (
         parent: any,
-        args: {renderType: string; repoURL: string},
+        args: {
+          renderType: string;
+          repoURL: string;
+          title: string;
+          description: string;
+        },
         context: ExpressContext,
         info: any
       ) => {
@@ -37,7 +51,9 @@ export class VideoResolver {
         const videoId = await this.videoService.createVideo(
           ownerId,
           args.repoURL,
-          'ENQUEUED'
+          'ENQUEUED',
+          args.title,
+          args.description
         );
         this.workerService.enqueue(args.renderType, args.repoURL, videoId);
 
@@ -54,11 +70,15 @@ export class VideoResolver {
       },
       updateStatus: async (
         parent: any,
-        args: {id: string; status: string},
+        args: {id: string; status: string; uploadedURL: string},
         context: ExpressContext,
         info: any
       ) => {
-        return await this.videoService.setStatus(args.id, args.status);
+        return await this.videoService.setStatus(
+          args.id,
+          args.status,
+          args.uploadedURL
+        );
       },
     },
   };

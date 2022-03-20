@@ -11,6 +11,7 @@ import reportWebVitals from './reportWebVitals';
 import gqlClient from '../src/services';
 import {ApolloProvider} from '@apollo/client';
 import frontEndConfig from './config';
+import Loading from './routes/loading';
 
 console.log(`🧙 Started Gource Wizard Client server at ${frontEndConfig.url}`);
 
@@ -23,6 +24,7 @@ ReactDOM.render(
           <Route path="library" element={<Library />} />
           <Route path="create" element={<Create />} />
           <Route path="customize" element={<Customize />} />
+          <Route path="loading" element={<Loading />} />
           <Route path="video" element={<Video />} />
         </Routes>
       </BrowserRouter>

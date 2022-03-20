@@ -7,30 +7,46 @@ import {resolvers as userResolvers} from './user_resolver';
 import {resolvers as testResolvers} from './test_resolver';
 import {VideoResolver} from './video_resolver';
 import {composeResolvers} from '@graphql-tools/resolvers-composition';
-import {MockWorkerService} from '../service/worker-service';
-import {VideoService} from '../service/video_service';
+import {IWorkerService} from '../service/worker-service';
+import {IVideoService} from '../service/video_service';
 
-const videoResolver = new VideoResolver(
-  new MockWorkerService(),
-  new VideoService()
-); // TODO: replace mock
+export interface IComposedResolvers {
+  compose(): any; // TODO: type
+}
 
-// Merge all resolvers into single resolver object
-const mergedResolvers = mergeResolvers([
-  userResolvers,
-  videoResolver.resolvers,
-  testResolvers,
-]);
+export class ComposedResolvers implements IComposedResolvers {
+  workerService: IWorkerService;
+  videoService: IVideoService;
 
-const resolversComposition = {
-  'Query.helloAuth': [isAuthenticatedResolver()],
-  'Query.me': [isAuthenticatedResolver()],
-  // 'Mutation.renderVideo': [isAuthenticatedResolver(), addAuthKit()], // TODO: comment in
-};
+  constructor(workerService: IWorkerService, videoService: IVideoService) {
+    this.workerService = workerService;
+    this.videoService = videoService;
+  }
 
-const composedResolvers = composeResolvers(
-  mergedResolvers,
-  resolversComposition
-);
+  compose() {
+    const videoResolver = new VideoResolver(
+      this.workerService,
+      this.videoService
+    );
 
-export default composedResolvers;
+    // Merge all resolvers into single resolver object
+    const mergedResolvers = mergeResolvers([
+      userResolvers,
+      videoResolver.resolvers,
+      testResolvers,
+    ]);
+
+    const resolversComposition = {
+      'Query.helloAuth': [isAuthenticatedResolver()],
+      'Query.me': [isAuthenticatedResolver()],
+      // 'Mutation.renderVideo': [isAuthenticatedResolver(), addAuthKit()], // TODO: comment in
+    };
+
+    const composedResolvers = composeResolvers(
+      mergedResolvers,
+      resolversComposition
+    );
+
+    return composedResolvers;
+  }
+}

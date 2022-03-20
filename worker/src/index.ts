@@ -1,12 +1,12 @@
 import * as amqp from 'amqplib';
 import logger from './logger';
 import config from './config';
-import {GourceVideoRenderer, RenderStatus, VideoRenderer} from './render';
-import {APIClient, MockAPIClient} from './client';
-import {validateGourceSchema} from './schema/gource-schema';
+import { GourceVideoRenderer, RenderStatus, VideoRenderer } from './render';
+import { APIClient, GraphQLAPIClient } from './client';
+import { validateGourceSchema } from './schema/gource-schema';
 
 async function consume(): Promise<void> {
-  const apiClient: APIClient = new MockAPIClient();
+  const apiClient: APIClient = new GraphQLAPIClient(config.backendURL);
 
   const url = config.queueConfig.AMQPUrl;
   const queue = config.queueConfig.queueName;
@@ -62,7 +62,7 @@ async function consume(): Promise<void> {
       const ffmpegArgs = `-y -r 60 -f image2pipe -vcodec ppm -i - -vcodec libx264 -preset ultrafast -pix_fmt yuv420p -crf 1 -threads 0 -bf 0 ${videoId}.mp4`;
       const timeout = (10 * 60).toString(); // 10 minutes
 
-      if (renderType === 'gource') {
+      if (renderType === 'GOURCE') {
         videoRenderer = new GourceVideoRenderer(
           repoURL,
           videoId,
@@ -81,14 +81,14 @@ async function consume(): Promise<void> {
         return;
       }
 
-      videoRenderer!.render((status, uploadedURL) => {
+      videoRenderer!.render(async (status, uploadedURL) => {
         if (status === RenderStatus.success) {
           if (!uploadedURL) {
             throw 'uploadedURL is null.';
           }
           logger.info(`Successfully rendered video ${repoURL}`);
-          channel.ack(msg);
           apiClient.setStatus(videoId, status, uploadedURL);
+          channel.ack(msg);
         } else {
           logger.info(`Failed to rendered video ${repoURL}.`);
           channel.nack(msg);
@@ -96,7 +96,7 @@ async function consume(): Promise<void> {
         }
       });
     },
-    {noAck: false}
+    { noAck: false }
   );
 }
 
