@@ -4,7 +4,7 @@ import {useLayoutEffect} from 'react';
 export function Video(props) {
   const navigate = useNavigate();
   const {data} = props;
-  const {title, description, createdAt, thumbnail} = data;
+  const {title, description, createdAt, thumbnail, url} = data;
   useLayoutEffect(() => {
     window.scrollTo(0, 0);
   });

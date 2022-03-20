@@ -19,7 +19,7 @@ export default function library() {
       </div>
       <div className="flex h-screen items-center justify-center flex-col mx-10">
         <div className="flex items-start justify-center flex-col m-10 p-10 rounded-lg shadow-lg">
-          <p className="my-2 text-5xl">Potion Roomx</p>
+          <p className="my-2 text-5xl">Potion Room</p>
 
           {/* Form Design from: https://v1.tailwindcss.com/components/forms# */}
           <form className="w-full max-w-lg">

@@ -5,7 +5,7 @@ import {Video} from '../services/video_service';
 
 export default function library() {
   const location = useLocation();
-  const {title, description, createdAt, url} = location.state as Video;
+  const {title, description, createdAt, thumbnail, url} = location.state as Video;
 
   return (
     <div>
@@ -21,7 +21,7 @@ export default function library() {
               <p className="mx-2 text-gray-500 text-2xl">{createdAt}</p>
             </div>
             <a data-mdb-ripple="true" data-mdb-ripple-color="light">
-              <video>
+              <video poster={thumbnail} controls>
                 <source src={url} type="video/mp4"></source>
               </video>
             </a>
