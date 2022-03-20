@@ -1,30 +1,42 @@
 import {ExpressContext} from 'apollo-server-express';
 import logger from '../logger';
 import {IWorkerService} from '../service/worker-service';
-import {v4 as uuid} from 'uuid';
 import {createPushHook} from '../controllers/webhooks';
+import { IVideoService } from '../service/video_service';
 
 export class VideoResolver {
   workerService: IWorkerService;
+  videoService: IVideoService;
 
-  constructor(workerService: IWorkerService) {
+  constructor(workerService: IWorkerService, videoService: IVideoService) {
     this.workerService = workerService;
+    this.videoService = videoService;
   }
 
   resolvers = {
+    Query: {
+      video: async (
+        parent: any,
+        args: {id: string},
+        context: ExpressContext,
+        info: any
+      ) => {
+        return this.videoService.getVideo(args.id);
+      }
+    },
     Mutation: {
-      renderVideo: (
+      renderVideo: async (
         parent: any,
         args: {renderType: string; repoURL: string},
         context: ExpressContext,
         info: any
       ) => {
         logger.info('args', args);
-        const ownerId = context.req.passport!.user.user.login;
-        const videoId = uuid();
-        // TODO: Create a database entry
-
+        // const ownerId = context.req.passport!.user.user.login;
+        const ownerId = 'ownerid';
+        const videoId = await this.videoService.createVideo(ownerId, args.repoURL, 'ENQUEUED');
         this.workerService.enqueue(args.renderType, args.repoURL, videoId);
+        
         // if(videoFinishedUploading){
         const isWebhook = false; // TODO: replace with param from frontend
         if (isWebhook) {
@@ -34,8 +46,17 @@ export class VideoResolver {
             args.repoURL
           );
         }
-        //}
+        return this.videoService.getVideo(videoId);
       },
+      updateStatus: async (
+        parent: any,
+        args: {id: string, status: string},
+        context: ExpressContext,
+        info: any
+      ) => {
+        return await this.videoService.setStatus(args.id, args.status);
+      }
     },
   };
 }
+

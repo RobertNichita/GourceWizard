@@ -8,8 +8,9 @@ import {resolvers as testResolvers} from './test_resolver';
 import {VideoResolver} from './video_resolver';
 import {composeResolvers} from '@graphql-tools/resolvers-composition';
 import {MockWorkerService} from '../service/worker-service';
+import { VideoService } from '../service/video_service';
 
-const videoResolver = new VideoResolver(new MockWorkerService()); // TODO: replace mock
+const videoResolver = new VideoResolver(new MockWorkerService(), new VideoService()); // TODO: replace mock
 
 // Merge all resolvers into single resolver object
 const mergedResolvers = mergeResolvers([
@@ -21,7 +22,7 @@ const mergedResolvers = mergeResolvers([
 const resolversComposition = {
   'Query.helloAuth': [isAuthenticatedResolver()],
   'Query.me': [isAuthenticatedResolver()],
-  'Mutation.renderVideo': [isAuthenticatedResolver(), addAuthKit()], // TODO: comment in
+  // 'Mutation.renderVideo': [isAuthenticatedResolver(), addAuthKit()], // TODO: comment in
 };
 
 const composedResolvers = composeResolvers(
