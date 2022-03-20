@@ -81,12 +81,12 @@ export const schema = gql`
     """
     TODO: How do we want to do dates. unix time style or string timestamps?
     """
-    createdAt: Int!
+    createdAt: String!
 
     """
     TODO: How do we want to do dates. unix time style or string timestamps?
     """
-    lastModified: Int!
+    updatedAt: String!
   }
 
   enum VideoStatus {
@@ -179,6 +179,8 @@ export const schema = gql`
     ): Video
 
     createWebhook(repoURL: String!): Webhook
+
+    updateStatus(id: ID!, status: VideoStatus!): Video!
 
     """
     Update video title. Must be video owner.
