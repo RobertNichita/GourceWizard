@@ -1,8 +1,10 @@
 // TODO: This is temporary! Eventually this will be done by the API server.
 
 import amqp = require('amqplib');
+import {v4 as uuid} from 'uuid';
 
 async function produce(msg: String): Promise<void> {
+  console.log(`Producer sending message ${msg} to consumer.`);
   const url = 'amqp://localhost:5672'; // TODO: ENV VAR
 
   const queue = 'render';
@@ -19,24 +21,14 @@ async function produce(msg: String): Promise<void> {
   });
 }
 
-// TODO: Figure out inputs/outputs
-// gource -r 25 -c 4 -s 0.1 --key -o - | ffmpeg -y -r 60 -f image2pipe -vcodec ppm -i - -vcodec libx264 -preset ultrafast -pix_fmt yuv420p -crf 1 -threads 0 -bf 0 gource.mp4
-// const payload = {
-//   repo: {
-//     type: 'git',
-//     git: {
-//       url: 'https://github.com/Raieen',
-//     },
-//   },
-//   options: {
-//     gource: {
-//       lorem: 'ipsum',
-//     },
-//     ffmpeg: {
-//       lorem: 'ipsum',
-//     },
-//   },
-// };
-// produce(JSON.stringify(payload));
+// Send valid request
+const payload = {
+  renderType: 'gource',
+  repoURL: 'https://github.com/Raieen/Raieen.git',
+  videoId: uuid(),
+};
 
-produce(`Producer ${Date().toString()}`);
+produce(JSON.stringify(payload));
+
+// Send invalid message
+// produce(`Producer ${Date().toString()}`);

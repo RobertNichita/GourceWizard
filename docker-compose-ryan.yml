@@ -1,0 +1,77 @@
+version: '3'
+
+services:
+  # proxy:
+  #   container_name: nginx
+  #   image: nginx:stable-alpine
+  #   volumes:
+  #     - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+  #   ports:
+  #    - "80:80"
+  # frontend:
+  #   container_name: frontend
+  #   image: robertnichita/gwiz:frontend
+  #   volumes:
+  #     - ./frontend/:/src/usr/frontend/
+  #   stdin_open: true
+  #   tty: true
+  #   build:
+  #     dockerfile: Dockerfile
+  #     context : ./frontend
+  #   ports:
+  #    - "3000:3000"
+  # #
+  # # Backend
+  # #
+  # backend:
+  #   container_name: backend
+  #   image: robertnichita/gwiz:backend
+  #   volumes:
+  #     - ./backend/:/src/usr/backend/
+  #   stdin_open: true
+  #   tty: true
+  #   build:
+  #     dockerfile: Dockerfile
+  #     context : ./backend
+  #   ports:
+  #    - "5000:5000"
+  worker:
+    build:
+      dockerfile: Dockerfile
+      context: ./worker/
+    environment:
+      - QUEUE_AMQP_URL=amqp://rabbitmq:5672
+      - AWS_ACCESS_KEY_ID=AKIA3SK6BFZU2XCMKO6A
+      - AWS_SECRET_ACCESS_KEY=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
+      - AWS_REGION=us-east-1
+      - CDN_ROOT=https://d1c7jwqsei1woa.cloudfront.net/
+    volumes:
+      - ./worker/:/worker
+    depends_on:
+      - rabbitmq
+      - mongo
+    restart: always
+  #
+  # Infrastructure
+  #
+  rabbitmq: # Credentials: guest;guest
+    container_name: rabbitmq
+    hostname: rabbitmq # Needed, see docs: https://hub.docker.com/_/rabbitmq
+    image: rabbitmq:3-management-alpine
+    ports:
+        - 5672:5672 # AMQP
+        - 15672:15672 # Management UI
+  mongo:
+    image: mongo:5.0
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: gource-wizard
+    volumes:
+      - mongo_data:/data/db
+    restart: always
+
+volumes:
+  mongo_data:

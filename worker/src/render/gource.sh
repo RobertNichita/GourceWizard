@@ -28,7 +28,9 @@ FFMPEG_ARGS="$4"
 S3_BUCKET="$5"
 TIMEOUT="$6"
 
-TEMP_DIRECTORY="/tmp/$FILE_NAME"
+# Create temporary directory
+cd $(mktemp -d)
+TEMP_DIRECTORY=`pwd`
 
 function cleanup() {
     rm -rf $TEMP_DIRECTORY
@@ -37,18 +39,9 @@ function cleanup() {
 # Kill gource 1 second after timeout.
 KILL='1'
 
-# Create temporary directory
-mkdir $TEMP_DIRECTORY
-if [ $? -ne 0 ]; then
-    echo "Failed to create temporary directory $TEMP_DIRECTORY"
-    exit 1
-fi
-
-cd $TEMP_DIRECTORY
-
 # Only clone git history
 echo "Cloning repo $REPO_URL"
-git clone $REPO_URL --bare .git
+git clone $REPO_URL --bare --single-branch .git
 if [ $? -ne 0 ]; then
     echo "Failed to clone git repo $REPO_URL"
     cleanup
