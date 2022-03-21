@@ -107,6 +107,7 @@ declare module 'express-serve-static-core' {
     kit: any;
     nonsense?: string;
     passport?: {[key: string]: any};
+    userId?: string;
   }
 }
 
