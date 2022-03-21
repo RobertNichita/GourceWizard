@@ -29,7 +29,7 @@ export class VideoResolver {
         context: ExpressContext,
         info: any
       ) => {
-        const ownerId = 'ownerid'; // TODO: replace with context ownerId.
+        const ownerId = context.req.userId!;
         return this.videoService.getVideos(ownerId);
       },
     },
@@ -46,8 +46,7 @@ export class VideoResolver {
         info: any
       ) => {
         logger.info('args', args);
-        // const ownerId = context.req.passport!.user.user.login;
-        const ownerId = 'ownerid';
+        const ownerId = context.req.userId!;
         const videoId = await this.videoService.createVideo(
           ownerId,
           args.repoURL,
