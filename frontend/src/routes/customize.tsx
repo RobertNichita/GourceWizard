@@ -3,7 +3,7 @@ import {useLocation, useNavigate} from 'react-router-dom';
 import {AppBanner} from '../components/navigation/AppBanner';
 import {Back} from '../components/navigation/Back';
 import {useState} from 'react';
-import {IVideoService, MockVideoService} from '../services/video_service';
+import {IVideoService, VideoService} from '../services/video_service';
 
 export interface CreateVideoState {
   repoURL: string;
@@ -17,7 +17,7 @@ export default function library() {
 
   const location = useLocation();
 
-  const videoService: IVideoService = new MockVideoService();
+  const videoService: IVideoService = new VideoService();
 
   return (
     <div>
@@ -74,6 +74,7 @@ export default function library() {
                       payload.description
                     )
                     .then(video => {
+                      console.log(JSON.stringify(video));
                       // Assume enqueued successfully
                       navigate('/loading', {
                         state: {

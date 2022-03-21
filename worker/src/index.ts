@@ -19,7 +19,7 @@ async function consume(): Promise<void> {
     durable: true,
   });
 
-  // See Fair Dispatch: https://www.rabbitmq.com/tutorials/tutorial-two-javascript.html
+  // See Fair Dispatch: https://www.rabbitmq.com/tutorials/tutorial-two-javascript.htmla
   // TODO: How many gource renders can be done at once from a consumer? Cap this per worker?a
   channel.prefetch(1);
 

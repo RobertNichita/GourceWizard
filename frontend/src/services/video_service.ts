@@ -39,7 +39,7 @@ export class VideoService implements IVideoService {
     return gqlClient
       .query({
         query: gql`
-          query getVideo($id: String!) {
+          query getVideo($id: ID!) {
             video(id: $id) {
               title
               description
@@ -69,9 +69,20 @@ export class VideoService implements IVideoService {
     return gqlClient
       .mutate({
         mutation: gql`
-          query getVideos(renderType: String!, repoURL: String!, title: String!, description: String!) {
-            videos(renderType: $renderType, repoURL: $repoURL, title: $title, description: $description) {
-              
+          mutation renderVideos(
+            $renderType: RenderType!
+            $repoURL: String!
+            $title: String!
+            $description: String!
+          ) {
+            renderVideo(
+              renderType: $renderType
+              repoURL: $repoURL
+              title: $title
+              description: $description
+              renderOptions: "xd"
+            ) {
+              _id
             }
           }
         `,
@@ -92,7 +103,8 @@ export class VideoService implements IVideoService {
               )}`
             );
           }
-          return result.data!.Video;
+          console.log(JSON.stringify(result));
+          return result.data!.renderVideo;
         }
       );
   }

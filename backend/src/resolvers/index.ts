@@ -9,7 +9,7 @@ import {VideoResolver} from './video_resolver';
 import {composeResolvers} from '@graphql-tools/resolvers-composition';
 import {IWorkerService} from '../service/worker-service';
 import {IVideoService} from '../service/video_service';
-import { userIdResolver } from './middleware/user_id_resolver';
+import {userIdResolver} from './middleware/user_id_resolver';
 
 export interface IComposedResolvers {
   compose(): any; // TODO: type
@@ -41,7 +41,11 @@ export class ComposedResolvers implements IComposedResolvers {
       'Query.helloAuth': [isAuthenticatedResolver()],
       'Query.me': [isAuthenticatedResolver()],
       'Query.videos': [userIdResolver()],
-      'Mutation.renderVideo': [isAuthenticatedResolver(), userIdResolver(), addAuthKit()],
+      'Mutation.renderVideo': [
+        isAuthenticatedResolver(),
+        userIdResolver(),
+        addAuthKit(),
+      ],
     };
 
     const composedResolvers = composeResolvers(

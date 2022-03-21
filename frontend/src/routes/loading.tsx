@@ -3,7 +3,7 @@ import {useLocation, useNavigate} from 'react-router-dom';
 import {AppBanner} from '../components/navigation/AppBanner';
 import {Back} from '../components/navigation/Back';
 import {useEffect, useState} from 'react';
-import {IVideoService, MockVideoService} from '../services/video_service';
+import {IVideoService, VideoService} from '../services/video_service';
 
 export interface LoadingState {
   videoId: string;
@@ -14,7 +14,7 @@ export default function library() {
 
   const location = useLocation();
 
-  const videoService: IVideoService = new MockVideoService();
+  const videoService: IVideoService = new VideoService();
 
   useEffect(() => {
     const interval = setInterval(() => {
