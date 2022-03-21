@@ -1,5 +1,5 @@
 {
     "url":"localhost:3000",
-    "api_url":"localhost:5000/api",
-    "gql_url":"localhost:5000/api"
+    "api_url":"https://218e-184-148-0-86.ngrok.io/graphql/",
+    "gql_url":"https://218e-184-148-0-86.ngrok.io/graphql/"
 }

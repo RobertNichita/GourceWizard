@@ -1,46 +1,46 @@
 version: '3'
 
 services:
-  proxy:
-    container_name: nginx
-    image: nginx:stable-alpine
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-    ports:
-     - "80:80"
-    depends_on:
-      - backend
-      - frontend
-  frontend:
-    container_name: frontend
-    volumes:
-      - ./frontend/:/usr/src/frontend/
-    build:
-      dockerfile: Dockerfile
-      context : ./frontend
-      args:
-        environment: development
-    ports:
-     - "3000:3000"
-  #
-  # Backend
-  #
-  backend:
-    build:
-      dockerfile: Dockerfile
-      context: ./backend/
-      args:
-        environment: development
-    volumes:
-      - ./backend/:/usr/src/backend
-    environment:
-      - DB_HOST=mongo
-      - QUEUE_URL=amqp://rabbitmq:5672
-    depends_on:
-      - mongo
-      - rabbitmq
-    ports:
-     - "4000:4000"
+  # proxy:
+  #   container_name: nginx
+  #   image: nginx:stable-alpine
+  #   volumes:
+  #     - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+  #   ports:
+  #    - "80:80"
+  #   depends_on:
+  #     - backend
+  #     - frontend
+  # frontend:
+  #   container_name: frontend
+  #   volumes:
+  #     - ./frontend/:/usr/src/frontend/
+  #   build:
+  #     dockerfile: Dockerfile
+  #     context : ./frontend
+  #     args:
+  #       environment: development
+  #   ports:
+  #    - "3000:3000"
+  # #
+  # # Backend
+  # #
+  # backend:
+  #   build:
+  #     dockerfile: Dockerfile
+  #     context: ./backend/
+  #     args:
+  #       environment: development
+  #   volumes:
+  #     - ./backend/:/usr/src/backend
+  #   environment:
+  #     - DB_HOST=mongo
+  #     - QUEUE_URL=amqp://rabbitmq:5672
+  #   depends_on:
+  #     - mongo
+  #     - rabbitmq
+  #   ports:
+  #    - "4000:4000"
   worker:
     build:
       dockerfile: Dockerfile
@@ -57,7 +57,7 @@ services:
     depends_on:
       - rabbitmq
       - mongo
-      - backend
+      # - backend
     restart: always
   #
   # Infrastructure

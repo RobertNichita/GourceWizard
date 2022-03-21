@@ -1,9 +1,9 @@
 import * as amqp from 'amqplib';
 import logger from './logger';
 import config from './config';
-import { GourceVideoRenderer, RenderStatus, VideoRenderer } from './render';
-import { APIClient, GraphQLAPIClient } from './client';
-import { validateGourceSchema } from './schema/gource-schema';
+import {GourceVideoRenderer, RenderStatus, VideoRenderer} from './render';
+import {APIClient, GraphQLAPIClient} from './client';
+import {validateGourceSchema} from './schema/gource-schema';
 
 async function consume(): Promise<void> {
   const apiClient: APIClient = new GraphQLAPIClient(config.backendURL);
@@ -20,7 +20,7 @@ async function consume(): Promise<void> {
   });
 
   // See Fair Dispatch: https://www.rabbitmq.com/tutorials/tutorial-two-javascript.html
-  // TODO: How many gource renders can be done at once from a consumer? Cap this per worker?
+  // TODO: How many gource renders can be done at once from a consumer? Cap this per worker?a
   channel.prefetch(1);
 
   logger.info(`Waiting for messages in queue ${queue}`);
@@ -96,7 +96,7 @@ async function consume(): Promise<void> {
         }
       });
     },
-    { noAck: false }
+    {noAck: false}
   );
 }
 

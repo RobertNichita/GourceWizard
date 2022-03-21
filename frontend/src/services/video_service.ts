@@ -1,5 +1,5 @@
-import { gql } from "@apollo/client";
-import gqlClient from ".";
+import {ApolloQueryResult, FetchResult, gql} from '@apollo/client';
+import gqlClient from '.';
 
 export interface IVideoService {
   getVideos(page: number): Promise<Video[]>;
@@ -16,11 +16,31 @@ export interface IVideoService {
 
 export class VideoService implements IVideoService {
   async getVideos(page: number): Promise<Video[]> {
-    const videos = await gqlClient
+    const videos = await gqlClient.query({
+      query: gql`
+        query {
+          videos {
+            title
+            description
+            createdAt
+            thumbnail
+            status
+            _id
+            url
+          }
+        }
+      `,
+    });
+    console.log(videos.data.videos);
+    return videos.data.videos;
+  }
+
+  getVideo(videoId: string): Promise<Video> {
+    return gqlClient
       .query({
         query: gql`
-          query {
-            videos {
+          query getVideo($id: String!) {
+            video(id: $id) {
               title
               description
               createdAt
@@ -31,18 +51,51 @@ export class VideoService implements IVideoService {
             }
           }
         `,
+        variables: {id: videoId},
+      })
+      .then((result: ApolloQueryResult<Video>) => {
+        if (result.error) {
+          console.log(`could not get user videos due to error ${result.error}`);
+        }
+        return result.data;
       });
-      console.log(videos.data.videos)
-    return videos.data.videos;
   }
-  
-  getVideo(videoId: string): Promise<Video> {
-    throw new Error("Method not implemented.");
+  createVideo(
+    renderType: string,
+    repoURL: string,
+    title: string,
+    description: string
+  ): Promise<Video> {
+    return gqlClient
+      .mutate({
+        mutation: gql`
+          query getVideos(renderType: String!, repoURL: String!, title: String!, description: String!) {
+            videos(renderType: $renderType, repoURL: $repoURL, title: $title, description: $description) {
+              
+            }
+          }
+        `,
+        variables: {renderType, repoURL, title, description},
+      })
+      .then(
+        (
+          result: FetchResult<
+            Record<string, Video>,
+            Record<string, any>,
+            Record<string, any>
+          >
+        ) => {
+          if (result.errors) {
+            console.log(
+              `could not get user videos due to error ${JSON.stringify(
+                result.errors
+              )}`
+            );
+          }
+          return result.data!.Video;
+        }
+      );
   }
-  createVideo(renderType: string, repoURL: string, title: string, description: string): Promise<Video> {
-    throw new Error("Method not implemented.");
-  }
-
 }
 
 export class MockVideoService implements IVideoService {
