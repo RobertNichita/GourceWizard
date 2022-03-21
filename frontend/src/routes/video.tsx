@@ -18,7 +18,7 @@ export default function library() {
           <div className="flex items-start justify-center flex-col m-10 p-10 rounded-lg shadow-lg">
             <div className="mb-4 flex justify-start items-end">
               <p className="mr-2 text-5xl">{title}</p>
-              <p className="mx-2 text-gray-500 text-2xl">{createdAt}</p>
+              <p className="mx-2 text-gray-500 text-2xl">{new Date(parseInt(createdAt)).toLocaleString()}</p>
             </div>
             <a data-mdb-ripple="true" data-mdb-ripple-color="light">
               <video poster={thumbnail} controls>

@@ -30,6 +30,8 @@ export class VideoService implements IVideoService {
           }
         }
       `,
+      fetchPolicy: 'network-only',
+      partialRefetch: true,
     });
     console.log(videos.data.videos);
     return videos.data.videos;
@@ -51,13 +53,15 @@ export class VideoService implements IVideoService {
             }
           }
         `,
+        fetchPolicy: 'network-only',
+        partialRefetch: true,
         variables: {id: videoId},
       })
-      .then((result: ApolloQueryResult<Video>) => {
+      .then((result: ApolloQueryResult<any>) => {
         if (result.error) {
           console.log(`could not get user videos due to error ${result.error}`);
         }
-        return result.data;
+        return result.data!.video;
       });
   }
   createVideo(

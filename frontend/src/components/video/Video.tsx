@@ -25,7 +25,7 @@ export function Video(props) {
         <div className="p-6">
           <div className="flex justify-start items-end mb-2">
             <h1 className="text-black text-xl font-medium mr-2">{title}</h1>
-            <p className="text-gray-500 text-sm pb-0.5">{createdAt}</p>
+            <p className="text-gray-500 text-sm pb-0.5">{new Date(parseInt(createdAt)).toLocaleString()}</p>
           </div>
           <p className="text-base mb-4`">{description}</p>
           <div>

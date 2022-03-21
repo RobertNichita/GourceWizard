@@ -29,7 +29,7 @@ export default function library() {
           console.error('Failed to render video!'); // TODO: sad path
         }
       });
-    }, 1000 * 5); // TODO: Do we want to poll every second?
+    }, 1000); // TODO: Do we want to poll every second?
 
     return () => clearInterval(interval); // Th
   }, []);

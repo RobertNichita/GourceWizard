@@ -14,7 +14,7 @@ function App() {
         <p className="margin text-center text-5xl">
           Welcome. Everything is fine.
         </p>
-        <Button className="m-5" title="Github Magixc ✨"></Button>
+        <Button className="m-5" title="Github Magic ✨"></Button>
 
         <Button
           title="Wizard Library 📖"
