@@ -1,7 +1,7 @@
 import {Button} from '../components/Button';
 import {Videos} from '../components/video/Videos';
 import {AppBanner} from '../components/navigation/AppBanner';
-import {IVideoService, MockVideoService} from '../services/video_service';
+import {IVideoService, VideoService} from '../services/video_service';
 import {useNavigate} from 'react-router-dom';
 import {useEffect, useState} from 'react';
 
@@ -15,7 +15,7 @@ export default function library() {
    */
   const [page, setPage] = useState(0);
 
-  const videoService: IVideoService = new MockVideoService();
+  const videoService: IVideoService = new VideoService();
 
   // Load videos
   useEffect(() => {

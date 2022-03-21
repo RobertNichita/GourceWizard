@@ -28,7 +28,7 @@ export const schema = gql`
     """
     Unique video id
     """
-    id: ID!
+    _id: ID!
 
     """
     User who generated this video

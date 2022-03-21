@@ -1,3 +1,6 @@
+import { gql } from "@apollo/client";
+import gqlClient from ".";
+
 export interface IVideoService {
   getVideos(page: number): Promise<Video[]>;
 
@@ -12,16 +15,34 @@ export interface IVideoService {
 }
 
 export class VideoService implements IVideoService {
-  getVideos(page: number): Promise<Video[]> {
-    throw new Error("Method not implemented.");
+  async getVideos(page: number): Promise<Video[]> {
+    const videos = await gqlClient
+      .query({
+        query: gql`
+          query {
+            videos {
+              title
+              description
+              createdAt
+              thumbnail
+              status
+              _id
+              url
+            }
+          }
+        `,
+      });
+      console.log(videos.data.videos)
+    return videos.data.videos;
   }
+  
   getVideo(videoId: string): Promise<Video> {
     throw new Error("Method not implemented.");
   }
   createVideo(renderType: string, repoURL: string, title: string, description: string): Promise<Video> {
     throw new Error("Method not implemented.");
   }
-  
+
 }
 
 export class MockVideoService implements IVideoService {
