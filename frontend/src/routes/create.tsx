@@ -32,7 +32,7 @@ export default function library() {
                   className="form-input"
                   id="grid-url"
                   type="text"
-                  placeholder="https://github.com/acaudwell/Gource"
+                  placeholder="https://github.com/acaudwell/Gource.git"
                   onChange={e => {
                     e.preventDefault();
                     setRepoURL(e.target.value);
