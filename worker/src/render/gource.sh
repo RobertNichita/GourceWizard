@@ -33,14 +33,15 @@ cd $(mktemp -d)
 TEMP_DIRECTORY=`pwd`
 
 function cleanup() {
-    rm -rf $TEMP_DIRECTORY
+    # rm -rf $TEMP_DIRECTORY
+    echo "e"
 }
 
 # Kill gource 1 second after timeout.
 KILL='1'
 
 # Only clone git history
-echo "Cloning repo $REPO_URL"
+echo "Cloning repo $REPO_URL into $TEMP_DIRECTORY"
 git clone $REPO_URL --bare --single-branch .git
 if [ $? -ne 0 ]; then
     echo "Failed to clone git repo $REPO_URL"
@@ -49,6 +50,9 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "Visualizing repo $REPO_URL"
+# FFMPEG_ARGS is hard coded to:
+# -i - -profile:v high444 -preset ultrafast -start_number 0 -hls_list_size 0 -hls_segment_filename '$FILE_NAME-%06d.ts' -f hls $FILE_NAME.m3u8
+# Which generates a list of mpeg transport streams called ${videoId}-0000XXX.ts in order of time.
 timeout -k $KILL $TIMEOUT gource $GOURCE_ARGS | ffmpeg $FFMPEG_ARGS
 EXIT_VAL=$?
 if [ $EXIT_VAL -ne 0 ]; then
@@ -57,10 +61,25 @@ if [ $EXIT_VAL -ne 0 ]; then
     exit $EXIT_VAL
 fi
 
-echo "Uploading file $FILE_NAME to S3 bucket $S3_BUCKET"
-aws s3 cp $FILE_NAME.mp4 $S3_BUCKET
+# Generate thumbnail
+echo "Generating thumbnail"
+# Get the last transtorm stream and use that to get the stream's last frame.
+LAST_SEGMENT_FILE_NAME=`ls *.ts | grep $FILE_NAME- | sort -r | head -n 1`
+echo "USING FILEEEE" $LAST_SEGMENT_FILE_NAME
+echo "ffmpeg -i $LAST_SEGMENT_FILE_NAME -update 1 -q:v 1 $FILE_NAME-thumbnail.jpg"
+ffmpeg -i $LAST_SEGMENT_FILE_NAME -update 1 $FILE_NAME-thumbnail.jpg
+EXIT_VAL=$?
+if [ $EXIT_VAL -ne 0 ]; then
+    echo "Error generating thumbnail, with exit code $EXIT_VAL".
+    cleanup
+    exit $EXIT_VAL
+fi
+
+echo "Uploading files to S3 bucket $S3_BUCKET"
+# Copying multiple files: https://stackoverflow.com/questions/57765350/aws-how-to-copy-multiple-file-from-local-to-s3
+aws s3 cp $TEMP_DIRECTORY $S3_BUCKET/$FILE_NAME/  --recursive --exclude "*" --include "$FILE_NAME*"
 if [ $? -ne 0 ]; then
-    echo "Failed to upload $FILE_NAME to $S3_BUCKET"
+    echo "Failed to upload $FILE_NAME and it's thumbnail to $S3_BUCKET"
     exit 1
 fi
 

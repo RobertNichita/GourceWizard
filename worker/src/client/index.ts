@@ -4,11 +4,11 @@ import {RenderStatus} from '../render';
 
 // TODO: this.
 export interface APIClient {
-  setStatus(videoId: string, status: RenderStatus, uploadedURL?: string): any;
+  setStatus(videoId: string, status: RenderStatus, uploadedURL?: string, thumbnail?: string): any;
 }
 
 export class MockAPIClient implements APIClient {
-  setStatus(videoId: string, status: RenderStatus, uploadedURL?: string) {
+  setStatus(videoId: string, status: RenderStatus, uploadedURL?: string, thumbnail?: string) {
     logger.info(`Mock API Call with ${videoId} ${status} ${uploadedURL}`);
   }
 }
@@ -19,14 +19,15 @@ export class GraphQLAPIClient implements APIClient {
     this.backendURL = backendURL;
   }
 
-  async setStatus(videoId: string, status: RenderStatus, uploadedURL?: string) {
+  async setStatus(videoId: string, status: RenderStatus, uploadedURL?: string, thumbnail?: string) {
     const body = {
-      query:
-        'mutation($videoId: ID!, $status: VideoStatus!, $uploadedURL: String!) {updateStatus(id: $videoId, status: $status, uploadedURL: $uploadedURL) {status}}',
+      query: // TODO: add thumbnail... double check schema for failure case because we have optional stuff.
+        'mutation($videoId: ID!, $status: VideoStatus!, $uploadedURL: String, $thumbnail: String) {updateStatus(id: $videoId, status: $status, uploadedURL: $uploadedURL, thumbnail: $thumbnail) {status}}',
       variables: {
         videoId: videoId,
-        status: 'UPLOADED',
+        status: status,
         uploadedURL: uploadedURL,
+        thumbnail: thumbnail
       },
     };
 

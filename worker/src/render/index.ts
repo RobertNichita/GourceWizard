@@ -7,7 +7,8 @@ export interface VideoRenderer {
 
 export type VideoRendererCallback = (
   status: RenderStatus,
-  uploadedURL?: string
+  uploadedURL?: string,
+  thumbnail?: string
 ) => void;
 
 export class GourceVideoRenderer implements VideoRenderer {
@@ -62,7 +63,7 @@ export class GourceVideoRenderer implements VideoRenderer {
       logger.info(`Signal ${signal}`);
 
       if (code === 0) {
-        callback(RenderStatus.success, `${this.cdnRoot}${this.videoId}.mp4`);
+        callback(RenderStatus.success, `${this.cdnRoot}${this.videoId}/${this.videoId}.m3u8`, `${this.cdnRoot}${this.videoId}/${this.videoId}-thumbnail.jpg`);
       } else {
         callback(RenderStatus.failure);
       }
@@ -71,7 +72,7 @@ export class GourceVideoRenderer implements VideoRenderer {
 }
 
 export const enum RenderStatus {
-  success,
-  failure,
-  timeout,
+  success = "UPLOADED",
+  failure = "FAILURE",
+  timeout = "TIMEOUT",
 }
