@@ -56,10 +56,13 @@ async function consume(): Promise<void> {
       const videoId = jsonMessage.videoId;
 
       // TODO: generate the string from the arguments.
-      const gourceArgs = '-r 25 -c 4 -s 0.1 --key -o -';
+      const gourceArgs = '-r 25 -c 4 -s 0.1 -1280x720 --key -o -';
 
-      // This will remain hard coded since FFmpeg arguments will remain the same for all videos.
-      const ffmpegArgs = `-i - -profile:v high444 -preset ultrafast -start_number 0 -hls_list_size 0 -hls_segment_filename ${videoId}-%06d.ts -f hls ${videoId}.m3u8`;
+      // Create HLS stream using ultrafast present to save time
+      // and yuv420p pixel format (See "Encoding for dumb players" https://trac.ffmpeg.org/wiki/Encode/H.264)
+      // The average segment is 2 seconds long.
+      const ffmpegArgs = `-i - -preset ultrafast -pix_fmt yuv420p -start_number 0 -hls_time 2 -hls_list_size 0 -hls_segment_filename ${videoId}-%06d.ts -f hls ${videoId}.m3u8`;
+
       const timeout = (10 * 60).toString(); // 10 minutes
 
       if (renderType === 'GOURCE') {

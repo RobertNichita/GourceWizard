@@ -50,9 +50,13 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "Visualizing repo $REPO_URL"
-# FFMPEG_ARGS is hard coded to:
-# -i - -profile:v high444 -preset ultrafast -start_number 0 -hls_list_size 0 -hls_segment_filename '$FILE_NAME-%06d.ts' -f hls $FILE_NAME.m3u8
+# Currently FFMPEG_ARGS is hard coded to below in the worker:
+# -i - -preset ultrafast -pix_fmt yuv420p -start_number 0 -hls_time 2 -hls_list_size 0 -hls_segment_filename $FILE_NAME-%06d.ts -f hls $FILE_NAME.m3u8
 # Which generates a list of mpeg transport streams called ${videoId}-0000XXX.ts in order of time.
+# ultrafast is used to save time
+# yuv420p is pixel format, (See "Encoding for dumb players" https://trac.ffmpeg.org/wiki/Encode/H.264)
+# The average segment is 2 seconds long for better video player UX and produces
+# a decent file size per segment.
 timeout -k $KILL $TIMEOUT gource $GOURCE_ARGS | ffmpeg $FFMPEG_ARGS
 EXIT_VAL=$?
 if [ $EXIT_VAL -ne 0 ]; then
@@ -76,8 +80,12 @@ if [ $EXIT_VAL -ne 0 ]; then
 fi
 
 echo "Uploading files to S3 bucket $S3_BUCKET"
+# There's a funny quirk where AWS assumes the mimetype is wrong, so it must be set explicitly.
+# This was fun to discover and debug.
+aws s3 cp $FILE_NAME.m3u8 $S3_BUCKET/$FILE_NAME/$FILE_NAME.m3u8 --content-type application/vnd.apple.mpegurl
+aws s3 cp $FILE_NAME-thumbnail.jpg $S3_BUCKET/$FILE_NAME/$FILE_NAME-thumbnail.jpg
 # Copying multiple files: https://stackoverflow.com/questions/57765350/aws-how-to-copy-multiple-file-from-local-to-s3
-aws s3 cp $TEMP_DIRECTORY $S3_BUCKET/$FILE_NAME/  --recursive --exclude "*" --include "$FILE_NAME*"
+aws s3 cp $TEMP_DIRECTORY $S3_BUCKET/$FILE_NAME/ --recursive --exclude "*" --include "$FILE_NAME*.ts" --content-type video/MP2T
 if [ $? -ne 0 ]; then
     echo "Failed to upload $FILE_NAME and it's thumbnail to $S3_BUCKET"
     exit 1
