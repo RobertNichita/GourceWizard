@@ -66,6 +66,7 @@ services:
       - AWS_S3_BUCKET=s3://c09-videos
       - CDN_ROOT=https://d1c7jwqsei1woa.cloudfront.net/
       - BACKEND_URL=http://backend:4000/graphql
+      - QUEUE_PREFETCH_LIMIT=5
     volumes:
       - ./worker/:/worker
     depends_on:

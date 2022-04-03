@@ -11,6 +11,7 @@ async function consume(): Promise<void> {
   const url = config.queueConfig.AMQPUrl;
   const queue = config.queueConfig.queueName;
   const s3Bucket = config.awsConfig.s3Bucket;
+  const prefetchLimit = config.queueConfig.prefetchLimit;
 
   const conn = await amqp.connect(url);
   const channel = await conn.createChannel();
@@ -19,9 +20,7 @@ async function consume(): Promise<void> {
     durable: true,
   });
 
-  // See Fair Dispatch: https://www.rabbitmq.com/tutorials/tutorial-two-javascript.htmla
-  // TODO: How many gource renders can be done at once from a consumer? Cap this per worker?a
-  channel.prefetch(1);
+  channel.prefetch(prefetchLimit);
 
   logger.info(`Waiting for messages in queue ${queue}`);
 
@@ -29,8 +28,7 @@ async function consume(): Promise<void> {
     queue,
     msg => {
       if (!msg) {
-        // TODO: when does this happen?
-        logger.error('msg is null');
+        logger.error('Incoming message is null.');
         return;
       }
 
@@ -90,12 +88,12 @@ async function consume(): Promise<void> {
             throw 'uploadedURL is null.';
           }
           logger.info(`Successfully rendered video ${repoURL}`);
-          apiClient.setStatus(videoId, status, uploadedURL, thumbnail); // this should always be success.
+          apiClient.setStatus(videoId, status, uploadedURL, thumbnail);
           channel.ack(msg);
         } else {
           logger.info(`Failed to rendered video ${repoURL}.`);
-          channel.nack(msg);
-          apiClient.setStatus(videoId, status); // TODO: this should be timeout or failire
+          apiClient.setStatus(videoId, status);
+          channel.reject(msg, false);
         }
       });
     },
@@ -103,5 +101,4 @@ async function consume(): Promise<void> {
   );
 }
 
-// TODO: Figure out inputs/outputs
 consume();
