@@ -41,8 +41,8 @@ services:
       - DB_PASS=password
       - DB_HOST=mongo
       - DB_NAME=gource-wizard
-      - URL=https://09cf-70-48-15-189.ngrok.io
-      - FRONTEND_URL=https://09cf-70-48-15-189.ngrok.io
+      - URL=https://ee10-70-48-15-189.ngrok.io
+      - FRONTEND_URL=https://ee10-70-48-15-189.ngrok.io
       - SESSION_SECRET=secret
       - NODE_ENV=development
       - PORT=4000
@@ -63,7 +63,7 @@ services:
       - AWS_ACCESS_KEY_ID=AKIA3SK6BFZU2XCMKO6A
       - AWS_SECRET_ACCESS_KEY=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
       - AWS_REGION=us-east-1
-      - AWS_S3_BUCKET=s3://c09-videos/
+      - AWS_S3_BUCKET=s3://c09-videos
       - CDN_ROOT=https://d1c7jwqsei1woa.cloudfront.net/
       - BACKEND_URL=http://backend:4000/graphql
     volumes:

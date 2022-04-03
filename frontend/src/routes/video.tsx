@@ -2,6 +2,7 @@ import {useLocation} from 'react-router-dom';
 import {AppBanner} from '../components/navigation/AppBanner';
 import {Back} from '../components/navigation/Back';
 import {Video} from '../services/video_service';
+import ReactPlayer from 'react-player'
 
 export default function library() {
   const location = useLocation();
@@ -24,11 +25,13 @@ export default function library() {
               </p>
             </div>
             <a data-mdb-ripple="true" data-mdb-ripple-color="light">
-              <video poster={thumbnail} controls>
-                <source src={url} type="video/mp4"></source>
-              </video>
+              <ReactPlayer
+                playsinline={true}
+                controls={true}
+                light={thumbnail}
+                url={url}
+                />
             </a>
-
             <div className="mt-5 max-w-fit">
               <p className="text-base mb-4 ">{description}</p>
             </div>
