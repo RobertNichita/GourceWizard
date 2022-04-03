@@ -1,4 +1,4 @@
-import {execFile, spawn} from 'child_process';
+import {spawn} from 'child_process';
 import logger from '../logger';
 
 export interface VideoRenderer {
@@ -73,6 +73,6 @@ export class GourceVideoRenderer implements VideoRenderer {
 
 export const enum RenderStatus {
   success = "UPLOADED",
-  failure = "FAILURE",
+  failure = "FAILED",
   timeout = "TIMEOUT",
 }

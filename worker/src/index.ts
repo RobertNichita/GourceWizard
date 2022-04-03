@@ -59,6 +59,7 @@ async function consume(): Promise<void> {
       // Create HLS stream using ultrafast present to save time
       // and yuv420p pixel format (See "Encoding for dumb players" https://trac.ffmpeg.org/wiki/Encode/H.264)
       // The average segment is 2 seconds long.
+      // See gource.sh for details.
       const ffmpegArgs = `-i - -preset ultrafast -pix_fmt yuv420p -start_number 0 -hls_time 2 -hls_list_size 0 -hls_segment_filename ${videoId}-%06d.ts -f hls ${videoId}.m3u8`;
 
       const timeout = (10 * 60).toString(); // 10 minutes
@@ -84,15 +85,20 @@ async function consume(): Promise<void> {
 
       videoRenderer!.render(async (status, uploadedURL, thumbnail) => {
         if (status === RenderStatus.success) {
-          if (!uploadedURL) {
-            throw 'uploadedURL is null.';
+          if (!uploadedURL || !thumbnail) {
+            throw 'uploadedURL or thumbnail is null. This should not happen if the status is success!';
           }
           logger.info(`Successfully rendered video ${repoURL}`);
-          apiClient.setStatus(videoId, status, uploadedURL, thumbnail);
+          await apiClient.setStatus(videoId, status, uploadedURL, thumbnail);
           channel.ack(msg);
         } else {
-          logger.info(`Failed to rendered video ${repoURL}.`);
-          apiClient.setStatus(videoId, status);
+          logger.info(`Failed to rendered video ${repoURL} with status ${status}.`);
+          if (status === RenderStatus.failure) {
+            await apiClient.setStatus(videoId, status, undefined, "https://http.cat/204");
+          } else if (status === RenderStatus.timeout) {
+            await apiClient.setStatus(videoId, status, undefined, "https://http.cat/408");
+          }
+          
           channel.reject(msg, false);
         }
       });
