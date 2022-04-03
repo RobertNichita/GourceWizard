@@ -1,9 +1,9 @@
-import {Button} from '../components/Button';
 import {useLocation, useNavigate} from 'react-router-dom';
 import {AppBanner} from '../components/navigation/AppBanner';
 import {Back} from '../components/navigation/Back';
 import {useEffect, useState} from 'react';
 import {IVideoService, VideoService} from '../services/video_service';
+import DotLoader from "react-spinners/DotLoader";
 
 export interface LoadingState {
   videoId: string;
@@ -26,7 +26,13 @@ export default function library() {
             state: video,
           });
         } else if (video.status === 'FAILED') {
-          console.error('Failed to render video!'); // TODO: sad path
+          navigate('/video/failed', {
+            state: video,
+          });
+        } else if (video.status === 'TIMEOUT') {
+          navigate('/video/timeout', {
+            state: video,
+          });
         }
       });
     }, 1000); // TODO: Do we want to poll every second?
@@ -40,10 +46,17 @@ export default function library() {
         <AppBanner></AppBanner>
         <Back></Back>
       </div>
+      <div className='flex justify-center flex-col'>
+        <p>hi</p>
+      </div>
       <div className="flex h-screen items-center justify-center flex-col mx-10">
         <div className="flex items-start justify-center flex-col m-10 p-10 rounded-lg shadow-lg">
-          <p className="my-2 text-5xl">Rendering Video...</p>
-          <p>This may take a while. Grab some popcorn.</p>
+          <p className="my-2 text-5xl">Rendering Video</p>
+          <p>This may take a while. Go grab some popcorn.</p>
+          <div className="flex justify-center">
+            <p>asdas</p>
+            <DotLoader size={40}/>
+          </div>
         </div>
       </div>
     </div>

@@ -4,7 +4,7 @@ import {useLayoutEffect} from 'react';
 export function Video(props) {
   const navigate = useNavigate();
   const {data} = props;
-  const {title, description, createdAt, thumbnail, url} = data;
+  const {title, description, createdAt, thumbnail, status, _id} = data;
   useLayoutEffect(() => {
     window.scrollTo(0, 0);
   });
@@ -14,7 +14,20 @@ export function Video(props) {
       <div
         className="relative rounded-lg shadow-lg bg-white max-w-md max-h-min"
         onClick={() => {
-          navigate('/video', {state: data});
+          console.log("status, id" + status + _id)
+          if(status === "SUCCESS") {
+            navigate('/video', {state: data});
+          } else if (status === "ENQUEUED") {
+            navigate('/loading', {
+              state: {
+                videoId: _id,
+              },
+            });
+          } else if (status === "FAILED") {
+            navigate('/video/failed');
+          } else if (status === "TIMEOUT") {
+            navigate('/video/timeout');
+          }
         }}
       >
         <div className="overflow-hidden max-h-96">

@@ -12,9 +12,15 @@ export interface IVideoService {
     title: string,
     description: string
   ): Promise<Video>;
+
+  deleteVideo(videoId: string): Promise<Video>;
 }
 
 export class VideoService implements IVideoService {
+  async deleteVideo(videoId: string): Promise<Video> {
+    throw new Error('Method not implemented.');
+  }
+
   async getVideos(page: number): Promise<Video[]> {
     const videos = await gqlClient.query({
       query: gql`
@@ -174,6 +180,10 @@ export class MockVideoService implements IVideoService {
         url: null,
       },
     ];
+  }
+  
+  async deleteVideo(videoId: string): Promise<Video> {
+    return this.mockData[0];
   }
 
   async getVideos(page: number): Promise<Video[]> {

@@ -92,6 +92,7 @@ export const schema = gql`
   enum VideoStatus {
     ENQUEUED
     FAILED
+    TIMEOUT
     UPLOADED
   }
 

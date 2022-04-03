@@ -113,7 +113,7 @@ export class VideoService implements IVideoService {
       visibility: 'PUBLIC',
       title: title,
       description: description,
-      thumbnail: 'https://http.cat/404',
+      thumbnail: 'https://http.cat/102',
       repositoryURL: gitRepoURL,
       renderOptions: 'todo',
       status: status,

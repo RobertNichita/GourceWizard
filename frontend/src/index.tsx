@@ -12,6 +12,8 @@ import gqlClient from '../src/services';
 import {ApolloProvider} from '@apollo/client';
 import frontEndConfig from './config';
 import Loading from './routes/loading';
+import FailedRender from './routes/failed_render';
+import TimeoutRender from './routes/timeout_render';
 
 console.log(`🧙 Started Gource Wizard Client server at ${frontEndConfig.url}`);
 
@@ -26,6 +28,8 @@ ReactDOM.render(
           <Route path="customize" element={<Customize />} />
           <Route path="loading" element={<Loading />} />
           <Route path="video" element={<Video />} />
+          <Route path="video/failed" element={<FailedRender/>} />
+          <Route path="video/timeout" element={<TimeoutRender/>} />
         </Routes>
       </BrowserRouter>
     </ApolloProvider>
