@@ -1,81 +1,97 @@
-# CSCC09: Team `sans nom` Project Proposal
+# Project sans-nom: Gource Wizard
 
-### Project Title: 
+## Project URL
 
-Gource Wizard
+https://gource-wizard.ryan.software
 
-### Team Members:
+## Project Video URL 
 
-- Darren Liu, 1005024046, [dar.liu@mail.utoronto.ca](mailto:dar.liu@mail.utoronto.ca)
-- Ryan Sue, 1005253431, [ryan.sue@mail.utoronto.ca](mailto:ryan.sue@mail.utoronto.ca)
-- Robert Nichita, 1005036890, [robert.nichita@mail.utoronto.ca](mailto:robert.nichita@mail.utoronto.ca)
+**Task:** Provide the link to your youtube video. Please make sure the link works. 
 
-### Description of the web application: 
+## Project Description
 
-Create a web application which generates customizable timelapse video visualizations of a GitHub repository using open source tools (Gource https://github.com/acaudwell/Gource, FFmpeg), given the GitHub repository link. This web application will rely on various third party APIs to authenticate the user, queue jobs, generate videos and host videos.
+**Task:** Provide a detailed description of your app
 
-### Description of the key features that will be completed by the Beta version:
+## Development
 
-- Authentication using GitHub
-  - Since this application visualizes GitHub repos, users will log in using their GitHub account and the visualizations of inputted GitHub repos will be linked to their accounts.
+**Task:** Leaving deployment aside, explain how the app is built. Please describe the overall code design and be specific about the programming languages, framework, libraries and third-party api that you have used. 
 
-- Video Generation
-  - GitHub repo visualizations will be generated using Gource.
-- Video Serving
-  - Visualizations will be saved somewhere in a file/video hosting service and made accessible to the user.
-- Basic UI
-  - The user interface will be minimal, supporting only the features proposed in this list
-- Constraints
-  - No customization of video properties
-    - Gource has many visual configuration options (see https://github.com/acaudwell/Gource/wiki/Controls) which can change the video produced. These properties will not be customizable in the beta version.
-  - No private videos
-    - All generated visualization videos will be public in the beta version.
-  - No visualization of private github repos
+### Overall Architecture
 
-### Description of the additional features that will be complete by the Final version:
+Draw a quick system diagram with all the players then talk about them at a low level.
 
-- "Library Page" with descriptions and public/private video link
-  - This page will list all the visualization videos created by the user, along with descriptions next to the video. Also, the user can make videos publicly visible or not
-- Gource Customizations
-  - The user can toggle some ffmpeg and gource customizations to change the visualization video.
-    - See https://github.com/acaudwell/Gource/wiki/Controls for some options
-- Private Repos
-  - Private Git repositories will be supported and the user interface will display a list of the user’s private repos by using the GitHub API.
+- Talk about how we're using typescript and gsx.
 
-### Description of the technology stack that you will use to build and deploy it:
+### Front End
 
-#### Frontend
+Talk about front end. React, tailwind and stuff.
 
-- React
-- Typescript
-- scss
-- Tailwind CSS
+### Back End
 
-#### Backend
+Talk about back end. GraphQL and stuff.
 
-- Nodejs/Express
-- GraphQL
-- Non-Standard Libraries:
-  - Gource
-  - FFMPEG
-- PassportJS
-- MongoDB/Mongoose
-- Message Queue, possibly AWS SQS
+#### Authentication with GitHub
 
-#### Deployment / Infrastructure
+Talk about GitHub.
 
-- Docker
-- Linux (Ubuntu)
-- AWS EC2 and SQS (simple queue system)
-- MongoDB Atlas Database (Cloud hosted MongoDB)
+#### Database
 
-#### Description of the top 5 technical challenges:
+Talk about why we're using Mongo.
 
-- Storing large video files and serving them efficiently
-- Security
-  - Git clone for random repos
-  - Securing Shell command arguments passed in from UI to shell (gource)
-- Producing video files in parallel
-- Github integrations
-  - Authentication and using the GitHub API for account information
-- Webhooks to alert Gource Wizard to re-create the video visualization upon every new commit
+#### Message Queue
+
+Talk about why we're using Rabbit
+
+### Worker
+
+Talk about how the worker works.
+
+### Content Delivery Network
+
+Talk about content delivery network.
+
+## Deployment
+
+**Task:** Explain how you have deployed your application. 
+
+Deployed on AWS to an t2.medium
+- Database
+- Rabbit
+- Frontend
+- Backend
+- Prom/Grafana
+- Sentry
+
+Deployed on our school VMs
+- 1 worker per group member = 3 workers total.
+
+Security Group/Firewall
+- Only incoming SSH from a non-standard port, HTTP on 80 for nginx. Frontend/Backend are not directly accessible, must go through nginx.
+- Database not accessible unless you connect through SSH.
+- TCP on a non-standard rabbit port.
+- Rabbit requires authenticated, it is publicly accessible because we want to use our school nodes as
+
+
+## Maintenance
+
+**Task:** Explain how you monitor your deployed app to make sure that everything is working as expected.
+
+- Grafana
+- Sentry
+- UptimeRobot for basic uptime of the service.
+
+## Challenges
+
+**Task:** What is the top 3 most challenging things that you have learned/developed for you app? Please restrict your answer to only three items. 
+
+1.
+2.
+3. CDN stuff.
+
+## Contributions
+
+**Task:** Describe the contribution of each team member to the project. Please provide the full name of each team member (but no student number). 
+
+# One more thing? 
+
+**Task:** Any additional comment you want to share with the course staff? 
