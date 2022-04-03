@@ -33,8 +33,7 @@ cd $(mktemp -d)
 TEMP_DIRECTORY=`pwd`
 
 function cleanup() {
-    # rm -rf $TEMP_DIRECTORY
-    echo "e"
+    rm -rf $TEMP_DIRECTORY
 }
 
 # Kill gource 1 second after timeout.
