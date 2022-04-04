@@ -5,7 +5,9 @@ export function Back(props) {
   const navigate = useNavigate();
   const {isNotFixed} = props;
 
-  const className = isNotFixed ? "left-3 top-10 mt-7" : "fixed left-3 top-10 mt-7"
+  const className = isNotFixed
+    ? 'left-3 top-10 mt-7'
+    : 'fixed left-3 top-10 mt-7';
 
   return (
     <div>

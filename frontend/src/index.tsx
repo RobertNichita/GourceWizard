@@ -28,8 +28,8 @@ ReactDOM.render(
           <Route path="customize" element={<Customize />} />
           <Route path="loading" element={<Loading />} />
           <Route path="video" element={<Video />} />
-          <Route path="video/failed" element={<FailedRender/>} />
-          <Route path="video/timeout" element={<TimeoutRender/>} />
+          <Route path="video/failed" element={<FailedRender />} />
+          <Route path="video/timeout" element={<TimeoutRender />} />
         </Routes>
       </BrowserRouter>
     </ApolloProvider>
