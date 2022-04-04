@@ -28,13 +28,7 @@ async function consume(): Promise<void> {
     queue,
     msg => {
       if (!msg) {
-<<<<<<< Updated upstream
         logger.error('Incoming message is null.');
-=======
-        // sad
-        // TODO: when does this happen?
-        logger.error('msg is null');
->>>>>>> Stashed changes
         return;
       }
 
@@ -98,13 +92,25 @@ async function consume(): Promise<void> {
           await apiClient.setStatus(videoId, status, uploadedURL, thumbnail);
           channel.ack(msg);
         } else {
-          logger.info(`Failed to rendered video ${repoURL} with status ${status}.`);
+          logger.info(
+            `Failed to rendered video ${repoURL} with status ${status}.`
+          );
           if (status === RenderStatus.failure) {
-            await apiClient.setStatus(videoId, status, undefined, "https://http.cat/204");
+            await apiClient.setStatus(
+              videoId,
+              status,
+              undefined,
+              'https://http.cat/204'
+            );
           } else if (status === RenderStatus.timeout) {
-            await apiClient.setStatus(videoId, status, undefined, "https://http.cat/408");
+            await apiClient.setStatus(
+              videoId,
+              status,
+              undefined,
+              'https://http.cat/408'
+            );
           }
-          
+
           channel.reject(msg, false);
         }
       });
