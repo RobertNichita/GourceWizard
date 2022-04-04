@@ -4,7 +4,7 @@ export function Videos(props) {
   const {items} = props;
   if (items.length === 0) {
     return (
-      <div>
+      <div className="py-20 m-5">
         <p className="text-center w-full">
           No videos added yet, try adding some.
         </p>
