@@ -23,12 +23,18 @@ async function produce(msg: String): Promise<void> {
 
 // Send valid request
 const payload = {
-  renderType: 'gource',
+  renderType: 'GOURCE',
   repoURL: 'https://github.com/Raieen/Raieen.git',
-  videoId: uuid(),
+  // repoURL: 'https://github.com/scikit-learn/scikit-learn',
+  // repoURL: 'https://github.com/linux-kernel-mirror/linux-stable.git',
+  videoId: `manual-test-${uuid()}`,
 };
 
-produce(JSON.stringify(payload));
+// https://github.com/linux-kernel-mirror/linux-stable.git
+// for (let index = 0; index < 50; index++) {
+  produce(JSON.stringify(payload));
+// }
+
 
 // Send invalid message
 // produce(`Producer ${Date().toString()}`);

@@ -15,7 +15,7 @@ export interface IVideoService {
    * @param videoId Video Id
    * @param status Status // TODO: enum
    */
-  setStatus(videoId: string, status: string, uploadedURL: string): Promise<any>;
+  setStatus(videoId: string, status: string, uploadedURL: string, thumbnail: string): Promise<any>;
 
   /**
    * Return video with the specified video id
@@ -92,11 +92,13 @@ export class VideoService implements IVideoService {
   async setStatus(
     videoId: string,
     status: string,
-    uploadedURL: string
+    uploadedURL: string,
+    thumbnail: string,
   ): Promise<any> {
     const video = await Video.findById(videoId).update({
       status: status,
       url: uploadedURL,
+      thumbnail: thumbnail,
     });
     logger.info(`Update video ${videoId} to status ${status}`, video);
     return this.getVideo(videoId);
@@ -117,7 +119,7 @@ export class VideoService implements IVideoService {
       visibility: 'PUBLIC',
       title: title,
       description: description,
-      thumbnail: 'https://http.cat/404',
+      thumbnail: 'https://http.cat/102',
       repositoryURL: gitRepoURL,
       renderOptions: 'todo',
       status: status,

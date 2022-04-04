@@ -74,14 +74,15 @@ export class VideoResolver {
       },
       updateStatus: async (
         parent: any,
-        args: {id: string; status: string; uploadedURL: string},
+        args: {id: string; status: string; uploadedURL: string, thumbnail: string},
         context: ExpressContext,
         info: any
       ) => {
         return await this.videoService.setStatus(
           args.id,
           args.status,
-          args.uploadedURL
+          args.uploadedURL,
+          args.thumbnail,
         );
       },
     },

@@ -23,3 +23,4 @@ Cloudfront is the CDN used to cache generated videos in S3.
 - Price Class: Use only North America and Europe.
 - Viewer Protocol Policy: HTTPS Only
 3. Configure the worker with the distribution domain name from S3. E.g. `nonsense.cloudfront.net`.
+4. Edit Behaviour > Set `Response headers policy - optional` to `CORS-with-preflight-and-SecurityHeadersPolicy`

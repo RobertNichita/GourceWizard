@@ -92,6 +92,7 @@ export const schema = gql`
   enum VideoStatus {
     ENQUEUED
     FAILED
+    TIMEOUT
     UPLOADED
   }
 
@@ -189,7 +190,7 @@ export const schema = gql`
     so we need a way to restrict this. For now it is left open.
     This is an internal mutation.
     """
-    updateStatus(id: ID!, status: VideoStatus!, uploadedURL: String!): Video!
+    updateStatus(id: ID!, status: VideoStatus!, uploadedURL: String, thumbnail: String): Video!
 
     """
     Update video title. Must be video owner.

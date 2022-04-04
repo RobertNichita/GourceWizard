@@ -11,6 +11,7 @@ async function consume(): Promise<void> {
   const url = config.queueConfig.AMQPUrl;
   const queue = config.queueConfig.queueName;
   const s3Bucket = config.awsConfig.s3Bucket;
+  const prefetchLimit = config.queueConfig.prefetchLimit;
 
   const conn = await amqp.connect(url);
   const channel = await conn.createChannel();
@@ -19,9 +20,7 @@ async function consume(): Promise<void> {
     durable: true,
   });
 
-  // See Fair Dispatch: https://www.rabbitmq.com/tutorials/tutorial-two-javascript.htmla
-  // TODO: How many gource renders can be done at once from a consumer? Cap this per worker?asdasdf
-  channel.prefetch(1);
+  channel.prefetch(prefetchLimit);
 
   logger.info(`Waiting for messages in queue ${queue}`);
 
@@ -29,8 +28,7 @@ async function consume(): Promise<void> {
     queue,
     msg => {
       if (!msg) {
-        // TODO: when does this happen?
-        logger.error('msg is null');
+        logger.error('Incoming message is null.');
         return;
       }
 
@@ -56,11 +54,15 @@ async function consume(): Promise<void> {
       const videoId = jsonMessage.videoId;
       const token = jsonMessage.token;
 
-      // TODO: generate the string from the arguments. aa
-      const gourceArgs = '-r 25 -c 4 -s 0.1 --key -o -';
+      // TODO: generate the string from the arguments.
+      const gourceArgs = '-r 25 -c 4 -s 0.1 -1280x720 --key -o -';
 
-      // This will remain hard coded since FFmpeg arguments will remain the same for all videos.
-      const ffmpegArgs = `-y -r 60 -f image2pipe -vcodec ppm -i - -vcodec libx264 -preset ultrafast -pix_fmt yuv420p -crf 1 -threads 0 -bf 0 ${videoId}.mp4`;
+      // Create HLS stream using ultrafast present to save time
+      // and yuv420p pixel format (See "Encoding for dumb players" https://trac.ffmpeg.org/wiki/Encode/H.264)
+      // The average segment is 2 seconds long.
+      // See gource.sh for details.
+      const ffmpegArgs = `-i - -preset ultrafast -pix_fmt yuv420p -start_number 0 -hls_time 2 -hls_list_size 0 -hls_segment_filename ${videoId}-%06d.ts -f hls ${videoId}.m3u8`;
+
       const timeout = (10 * 60).toString(); // 10 minutes
 
       if (renderType === 'GOURCE') {
@@ -83,18 +85,35 @@ async function consume(): Promise<void> {
         return;
       }
 
-      videoRenderer!.render(async (status, uploadedURL) => {
+      videoRenderer!.render(async (status, uploadedURL, thumbnail) => {
         if (status === RenderStatus.success) {
-          if (!uploadedURL) {
-            throw 'uploadedURL is null.';
+          if (!uploadedURL || !thumbnail) {
+            throw 'uploadedURL or thumbnail is null. This should not happen if the status is success!';
           }
           logger.info(`Successfully rendered video ${repoURL}`);
-          apiClient.setStatus(videoId, status, uploadedURL);
+          await apiClient.setStatus(videoId, status, uploadedURL, thumbnail);
           channel.ack(msg);
         } else {
-          logger.info(`Failed to rendered video ${repoURL}.`);
-          channel.nack(msg);
-          apiClient.setStatus(videoId, status);
+          logger.info(
+            `Failed to rendered video ${repoURL} with status ${status}.`
+          );
+          if (status === RenderStatus.failure) {
+            await apiClient.setStatus(
+              videoId,
+              status,
+              undefined,
+              'https://http.cat/204'
+            );
+          } else if (status === RenderStatus.timeout) {
+            await apiClient.setStatus(
+              videoId,
+              status,
+              undefined,
+              'https://http.cat/408'
+            );
+          }
+
+          channel.reject(msg, false);
         }
       });
     },
@@ -102,5 +121,4 @@ async function consume(): Promise<void> {
   );
 }
 
-// TODO: Figure out inputs/outputs
 consume();
