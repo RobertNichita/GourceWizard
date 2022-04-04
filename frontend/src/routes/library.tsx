@@ -30,8 +30,8 @@ export default function library() {
       <div className="relative">
         <AppBanner></AppBanner>
         <Button
-          className="fixed bottom-5 right-5 p-5 text-xl"
-          title="Potion Brewing 🧪"
+          className="fixed bottom-5 right-5 p-5 text-xl z-50"
+          title="Visualize 🧪"
           onClick={() => {
             navigate('/create');
           }}
