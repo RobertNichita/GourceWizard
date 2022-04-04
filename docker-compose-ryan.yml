@@ -7,7 +7,7 @@ services:
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
     ports:
-     - "80:80"
+      - "80:80"
     depends_on:
       - backend
       - frontend
@@ -17,11 +17,11 @@ services:
       - ./frontend/:/usr/src/frontend/
     build:
       dockerfile: Dockerfile
-      context : ./frontend
+      context: ./frontend
       args:
         environment: development
     ports:
-     - "3000:3000"
+      - "3000:3000"
   #
   # Backend
   #
@@ -33,26 +33,26 @@ services:
         environment: development
     volumes:
       - ./backend/:/usr/src/backend
-    environment:
-      - GH_CLIENT_ID=71d18ade70ffd0d06a1d
-      - GH_CLIENT_SECRET=a98ad2cd6344c33308e6e2ce3eabf14c076e8a8f
-      - GH_WEBHOOK_SECRET=secet
-      - DB_USER=root
-      - DB_PASS=password
-      - DB_HOST=mongo
-      - DB_NAME=gource-wizard
-      - URL=https://ee10-70-48-15-189.ngrok.io
-      - FRONTEND_URL=https://ee10-70-48-15-189.ngrok.io
-      - SESSION_SECRET=secret
-      - NODE_ENV=development
-      - PORT=4000
-      - QUEUE_URL=amqp://rabbitmq:5672
-      - QUEUE_NAME=render
+      # environment:
+      # - GH_CLIENT_ID=71d18ade70ffd0d06a1d
+      # - GH_CLIENT_SECRET=a98ad2cd6344c33308e6e2ce3eabf14c076e8a8f
+      # - GH_WEBHOOK_SECRET=secet
+      # - DB_USER=root
+      # - DB_PASS=password
+      # - DB_HOST=mongo
+      # - DB_NAME=gource-wizard
+      # - URL=https://09cf-70-48-15-189.ngrok.io
+      # - FRONTEND_URL=https://09cf-70-48-15-189.ngrok.io
+      # - SESSION_SECRET=secret
+      # - NODE_ENV=development
+      # - PORT=4000
+      # - QUEUE_URL=amqp://rabbitmq:5672
+      # - QUEUE_NAME=render
     depends_on:
       - mongo
       - rabbitmq
     ports:
-     - "4000:4000"
+      - "4000:4000"
   worker:
     build:
       dockerfile: Dockerfile
@@ -77,13 +77,14 @@ services:
   #
   # Infrastructure
   #
-  rabbitmq: # Credentials: guest;guest
+  rabbitmq:
+    # Credentials: guest;guest
     container_name: rabbitmq
     hostname: rabbitmq # Needed, see docs: https://hub.docker.com/_/rabbitmq
     image: rabbitmq:3-management-alpine
     ports:
-        - 5672:5672 # AMQP
-        - 15672:15672 # Management UI
+      - 5672:5672 # AMQP
+      - 15672:15672 # Management UI
   mongo:
     image: mongo:5.0
     ports:
@@ -95,7 +96,7 @@ services:
     volumes:
       - mongo_data:/data/db
     restart: always
-  
+
   mongo-express:
     image: mongo-express:0.54
     ports:

@@ -28,7 +28,13 @@ async function consume(): Promise<void> {
     queue,
     msg => {
       if (!msg) {
+<<<<<<< Updated upstream
         logger.error('Incoming message is null.');
+=======
+        // sad
+        // TODO: when does this happen?
+        logger.error('msg is null');
+>>>>>>> Stashed changes
         return;
       }
 
