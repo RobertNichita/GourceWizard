@@ -83,7 +83,7 @@ const corsOptions = {
 app.use(cookieParser());
 app.use(express.urlencoded({extended: false}));
 app.use(express.json());
-app.use(cors(corsOptions)); // TODO: disabling this for apollo, but should probably ask Robert
+app.use(cors(corsOptions)); // TODO: disabling this for apollo, but should probably ask Roberta
 app.use(passport.initialize());
 
 app.use((req, res, next) => {
@@ -111,7 +111,7 @@ declare module 'express-serve-static-core' {
   }
 }
 
-//ADD ROUTES AND MIDDLEWARE WHICH REQUIRES DB OR SESSION HERE
+//ADD ROUTES AND MIDDLEWARE WHICH REQUIRES DB OR SESSION HEREa
 async function afterConnect() {
   app.use(passport.initialize());
   app.use(passport.session());

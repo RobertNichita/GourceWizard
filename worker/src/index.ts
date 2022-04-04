@@ -20,7 +20,7 @@ async function consume(): Promise<void> {
   });
 
   // See Fair Dispatch: https://www.rabbitmq.com/tutorials/tutorial-two-javascript.htmla
-  // TODO: How many gource renders can be done at once from a consumer? Cap this per worker?a
+  // TODO: How many gource renders can be done at once from a consumer? Cap this per worker?asdasdf
   channel.prefetch(1);
 
   logger.info(`Waiting for messages in queue ${queue}`);
@@ -54,8 +54,9 @@ async function consume(): Promise<void> {
       const renderType = jsonMessage.renderType;
       const repoURL = jsonMessage.repoURL;
       const videoId = jsonMessage.videoId;
+      const token = jsonMessage.token;
 
-      // TODO: generate the string from the arguments.
+      // TODO: generate the string from the arguments. aa
       const gourceArgs = '-r 25 -c 4 -s 0.1 --key -o -';
 
       // This will remain hard coded since FFmpeg arguments will remain the same for all videos.
@@ -70,7 +71,8 @@ async function consume(): Promise<void> {
           ffmpegArgs,
           s3Bucket,
           timeout,
-          config.cdnConfig.cdnRoot
+          config.cdnConfig.cdnRoot,
+          token
         );
       } else {
         logger.error(

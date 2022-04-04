@@ -2,7 +2,12 @@ import * as amqp from 'amqplib';
 import logger from '../logger';
 
 export interface IWorkerService {
-  enqueue(renderType: string, repoURL: string, videoId: string): any; // TODO: Define the return value
+  enqueue(
+    renderType: string,
+    repoURL: string,
+    videoId: string,
+    token: string
+  ): any; // TODO: Define the return value
 }
 
 /**
@@ -49,8 +54,9 @@ export class WorkerService implements IWorkerService {
    * @param renderType Render Type
    * @param repoURL Repository URL, including https:// or git://
    * @param videoId Video ID
+   * @param token User Token
    */
-  enqueue(renderType: string, repoURL: string, videoId: string) {
+  enqueue(renderType: string, repoURL: string, videoId: string, token: string) {
     if (!this.channel && !this.connection) {
       throw Error('Worker Service is not initalized.');
     }
@@ -59,6 +65,7 @@ export class WorkerService implements IWorkerService {
       renderType: renderType,
       repoURL: repoURL,
       videoId: videoId,
+      token: token,
     };
 
     logger.info('Queued render job', message);
@@ -77,11 +84,12 @@ export class WorkerService implements IWorkerService {
  * Does not queue anything, just logs the parameters.
  */
 export class MockWorkerService implements IWorkerService {
-  enqueue(renderType: string, repoURL: string, videoId: string) {
+  enqueue(renderType: string, repoURL: string, videoId: string, token: string) {
     logger.info('Job has been sent to mock worker service.', {
       renderType,
       repoURL,
       videoId,
+      token,
     });
   }
 }

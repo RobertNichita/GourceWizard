@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import logger from '../logger';
+import logger, {log} from '../logger';
 
 export interface IVideoService {
   createVideo(
@@ -74,6 +74,12 @@ export class VideoService implements IVideoService {
   async getVideo(videoId: string): Promise<any> {
     const video = await Video.findById(videoId);
     logger.info('Returning video', video);
+    return video;
+  }
+
+  async getRepoVideo(repoURL: string): Promise<any> {
+    const video = await Video.findOne({repositoryURL: repoURL});
+    log(`Returning Video from repo ${repoURL}`);
     return video;
   }
 

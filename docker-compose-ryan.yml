@@ -33,21 +33,21 @@ services:
         environment: development
     volumes:
       - ./backend/:/usr/src/backend
-    environment:
-      - GH_CLIENT_ID=71d18ade70ffd0d06a1d
-      - GH_CLIENT_SECRET=a98ad2cd6344c33308e6e2ce3eabf14c076e8a8f
-      - GH_WEBHOOK_SECRET=secet
-      - DB_USER=root
-      - DB_PASS=password
-      - DB_HOST=mongo
-      - DB_NAME=gource-wizard
-      - URL=https://09cf-70-48-15-189.ngrok.io
-      - FRONTEND_URL=https://09cf-70-48-15-189.ngrok.io
-      - SESSION_SECRET=secret
-      - NODE_ENV=development
-      - PORT=4000
-      - QUEUE_URL=amqp://rabbitmq:5672
-      - QUEUE_NAME=render
+    # environment:
+    #   - GH_CLIENT_ID=9df2ede3fc9b87defeea
+    #   - GH_CLIENT_SECRET=270bd625e8da6a442ed57cb37bdf9f873bf6716bef
+    #   - GH_WEBHOOK_SECRET=secet
+    #   - DB_USER=root
+    #   - DB_PASS=password
+    #   - DB_HOST=mongo
+    #   - DB_NAME=gource-wizard
+    #   - URL=https://6be4-138-51-82-91.ngrok.io
+    #   - FRONTEND_URL=https://6be4-138-51-82-91.ngrok.io
+    #   - SESSION_SECRET=secret
+    #   - NODE_ENV=development
+    #   - PORT=4000
+    #   - QUEUE_URL=amqp://rabbitmq:5672
+    #   - QUEUE_NAME=render
     depends_on:
       - mongo
       - rabbitmq

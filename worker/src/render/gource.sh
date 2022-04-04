@@ -27,6 +27,7 @@ GOURCE_ARGS="$3"
 FFMPEG_ARGS="$4"
 S3_BUCKET="$5"
 TIMEOUT="$6"
+TOKEN="$7"
 
 # Create temporary directory
 cd $(mktemp -d)

@@ -54,7 +54,12 @@ export class VideoResolver {
           args.title,
           args.description
         );
-        this.workerService.enqueue(args.renderType, args.repoURL, videoId);
+        this.workerService.enqueue(
+          args.renderType,
+          args.repoURL,
+          videoId,
+          context.req.session.passport!.user.auth.access_token
+        );
 
         // if(videoFinishedUploading){
         const isWebhook = false; // TODO: replace with param from frontend
