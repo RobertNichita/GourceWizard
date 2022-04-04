@@ -2,7 +2,7 @@ import {useLocation} from 'react-router-dom';
 import {AppBanner} from '../components/navigation/AppBanner';
 import {Back} from '../components/navigation/Back';
 import {Video} from '../services/video_service';
-import ReactPlayer from 'react-player'
+import ReactPlayer from 'react-player';
 
 export default function library() {
   const location = useLocation();
@@ -30,7 +30,7 @@ export default function library() {
                 controls={true}
                 light={thumbnail}
                 url={url}
-                />
+              />
             </a>
             <div className="mt-5 max-w-fit">
               <p className="text-base mb-4 ">{description}</p>
