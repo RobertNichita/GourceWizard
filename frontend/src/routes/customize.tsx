@@ -14,11 +14,15 @@ export interface FormState {
 }
 
 export default function customize() {
-  const navigate = useNavigate();
-
-  const location = useLocation();
-
   const videoService: IVideoService = new VideoService();
+
+  const navigate = useNavigate();
+  const location = useLocation();
+  const previousState = location.state as FormState;
+
+  const [webhookURL, setWebhookURL] = previousState.webhookURL
+    ? useState(previousState.webhookURL)
+    : useState('');
 
   return (
     <div>
@@ -53,8 +57,13 @@ export default function customize() {
                 <input
                   className="form-input"
                   id="grid-url"
+                  value={webhookURL}
                   type="text"
                   placeholder="https://github.com/acaudwell/Gource"
+                  onChange={e => {
+                    e.preventDefault();
+                    setWebhookURL(e.target.value);
+                  }}
                 ></input>
               </div>
             </div>
@@ -66,6 +75,7 @@ export default function customize() {
                 type="button"
                 onClick={() => {
                   const prevState = location.state as FormState;
+                  prevState.webhookURL = webhookURL;
                   navigate('/create', {
                     state: prevState,
                   });
