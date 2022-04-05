@@ -39,7 +39,7 @@ export default function library() {
                 visibility: 'Public',
                 title: '',
                 description: '',
-                webhookURL: '',
+                hasWebhook: false,
               },
             });
           }}

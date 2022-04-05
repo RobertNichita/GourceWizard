@@ -9,7 +9,7 @@ export interface FormState {
   visibility: string;
   title: string;
   description: string;
-  webhookURL: string;
+  hasWebhook: boolean;
 }
 
 export default function create() {
@@ -33,9 +33,9 @@ export default function create() {
     ? useState(previousState.description)
     : useState('');
 
-  const [webhookURL, setWebhookURL] = previousState.webhookURL
-    ? useState(previousState.webhookURL)
-    : useState('');
+  const [hasWebhook] = previousState.hasWebhook
+    ? useState(previousState.hasWebhook)
+    : useState(false);
 
   const [error, setError] = useState(null);
 
@@ -65,7 +65,7 @@ export default function create() {
           visibility: visibility,
           title: title,
           description: description,
-          webhookURL: webhookURL,
+          hasWebhook: hasWebhook,
         },
       });
     }
@@ -88,6 +88,7 @@ export default function create() {
           </div>
           <p className="my-2 text-5xl">Potion Room</p>
 
+          {/* Form Design from: https://v1.tailwindcss.com/components/forms# */}
           <form className="w-full max-w-lg">
             <div className="flex flex-wrap -mx-3">
               <div className="w-full px-3">

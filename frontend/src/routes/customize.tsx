@@ -1,7 +1,6 @@
 import {Button} from '../components/Button';
 import {useLocation, useNavigate} from 'react-router-dom';
 import {AppBanner} from '../components/navigation/AppBanner';
-import {Back} from '../components/navigation/Back';
 import {useState} from 'react';
 import {IVideoService, VideoService} from '../services/video_service';
 import {ErrorAlert} from '../components/alert/ErrorAlert';
@@ -11,7 +10,7 @@ export interface FormState {
   visibility: string;
   title: string;
   description: string;
-  webhookURL: string;
+  hasWebhook: boolean;
 }
 
 export interface CustomizeState {
@@ -20,7 +19,6 @@ export interface CustomizeState {
 
 export default function customize() {
   const videoService: IVideoService = new VideoService();
-  const [hasWebhook, setHasWebook] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -42,9 +40,7 @@ export default function customize() {
     ? useState(previousState.description)
     : useState('');
 
-  const [webhookURL, setWebhookURL] = previousState.webhookURL
-    ? useState(previousState.webhookURL)
-    : useState('');
+  const [hasWebhook, setHasWebhook] = useState(previousState.hasWebhook);
 
   const [error, setError] = useState(null);
 
@@ -102,9 +98,28 @@ export default function customize() {
           </div>
           <p className="my-2 text-5xl">Customize.</p>
 
+          {/* Form Design from: https://v1.tailwindcss.com/components/forms# */}
           <form className="w-full max-w-lg">
-            <div className="flex flex-wrap -mx-3">
-              <div className="w-full px-3">
+            <div className="flex flex-wrap">
+              <div className="w-full">
+                <div className="flex justify-start items-center">
+                  <input
+                    type="checkbox"
+                    checked={hasWebhook}
+                    className="form-checkbox m-2"
+                    onChange={e => {
+                      setHasWebhook(e.target.checked);
+                    }}
+                  />
+                  <label className="form-label text-center m-2">
+                    Render on commit
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap m-2">
+              <div className="w-full">
                 <label className="form-label" htmlFor="grid-url">
                   Parameters
                 </label>
@@ -117,29 +132,9 @@ export default function customize() {
               </div>
             </div>
 
-            <div className="flex flex-wrap -mx-3">
-              <div className="w-full px-3">
-                <label className="form-label" htmlFor="grid-url">
-                  Webhook URL (optional)
-                </label>
-                <input
-                  className="form-input z-50"
-                  id="grid-url"
-                  value={webhookURL}
-                  type="text"
-                  placeholder="https://github.com/acaudwell/Gource"
-                  onChange={e => {
-                    e.preventDefault();
-                    setWebhookURL(e.target.value);
-                    setHasWebook(e.target.value.trim() !== '');
-                  }}
-                ></input>
-              </div>
-            </div>
-
             <div className="flex items-end justify-between">
               <Button
-                className="-mx-0"
+                className=""
                 title="Back ⬅️"
                 type="button"
                 onClick={() => {
@@ -149,13 +144,13 @@ export default function customize() {
                       visibility: visibility,
                       title: title,
                       description: description,
-                      webhookURL: webhookURL,
+                      hasWebhook: hasWebhook,
                     },
                   });
                 }}
               ></Button>
               <Button
-                className="-mx-0"
+                className=""
                 title="Render 🧪"
                 onClick={e => {
                   handleSubmit(e);
