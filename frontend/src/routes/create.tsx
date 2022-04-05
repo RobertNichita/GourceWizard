@@ -49,7 +49,6 @@ export default function library() {
     <div>
       <div className="relative">
         <AppBanner></AppBanner>
-        <Back></Back>
       </div>
       <div className="flex h-screen items-center justify-center flex-col mx-10">
         <div className="relative flex items-start justify-center flex-col m-10 p-10 rounded-lg shadow-lg">
