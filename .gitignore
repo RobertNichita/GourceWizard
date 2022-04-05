@@ -17,3 +17,5 @@ build/
 *.pem*
 *.log*
 .vscode
+*.pem
+*.ppk

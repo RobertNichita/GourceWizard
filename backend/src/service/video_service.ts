@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import logger from '../logger';
+import logger, {log} from '../logger';
 
 export interface IVideoService {
   createVideo(
@@ -15,7 +15,12 @@ export interface IVideoService {
    * @param videoId Video Id
    * @param status Status // TODO: enum
    */
-  setStatus(videoId: string, status: string, uploadedURL: string, thumbnail: string): Promise<any>;
+  setStatus(
+    videoId: string,
+    status: string,
+    uploadedURL: string,
+    thumbnail: string
+  ): Promise<any>;
 
   /**
    * Return video with the specified video id
@@ -77,6 +82,12 @@ export class VideoService implements IVideoService {
     return video;
   }
 
+  async getRepoVideo(repoURL: string): Promise<any> {
+    const video = await Video.findOne({repositoryURL: repoURL});
+    log(`Returning Video from repo ${repoURL}`);
+    return video;
+  }
+
   async getVideos(ownerId: string): Promise<any> {
     const videos = await Video.find({ownerId: ownerId});
     logger.info(`Returning videos for owner ${ownerId}`, videos);
@@ -87,7 +98,7 @@ export class VideoService implements IVideoService {
     videoId: string,
     status: string,
     uploadedURL: string,
-    thumbnail: string,
+    thumbnail: string
   ): Promise<any> {
     const video = await Video.findById(videoId).update({
       status: status,

@@ -1,5 +1,3 @@
-import express, {Router, Request, Response, NextFunction} from 'express';
-import crypto from 'crypto';
 import {
   Webhooks,
   createNodeMiddleware,
@@ -7,6 +5,9 @@ import {
 } from '@octokit/webhooks';
 import backEndConfig from '../config';
 import logger, {log} from '../logger';
+import {PushEvent} from '@octokit/webhooks-types';
+import {installationAuth} from './authentication';
+import {InstallationAccessTokenAuthentication} from '@octokit/auth-app';
 
 function eventTransformer(event: EmitterWebhookEvent) {
   //... change the event if needed...
@@ -39,8 +40,38 @@ hooks.onAny((event: EmitterWebhookEvent) => {
  * if it is a new commit, generate a video and append it
  *
  **/
-hooks.on('push', (event: EmitterWebhookEvent) => {
+hooks.on('push', (event: EmitterWebhookEvent<'push'>) => {
   console.log('push');
+  const payload: PushEvent = event.payload;
+  const installation = payload.installation;
+  installationAuth(installation!.id).then(
+    (auth: InstallationAccessTokenAuthentication) => {
+      try {
+        if (!auth) {
+          throw 'ERROR: failed to create installation auth for push event';
+        }
+        if (!payload.repository.owner.name) {
+          throw 'ERROR: event missing repo owner name';
+        }
+
+        // const videoId = await this.videoService.createVideo(
+        //   ownerId,
+        //   args.repoURL,
+        //   'ENQUEUED',
+        //   args.title,
+        //   args.description
+        // );
+        // workerService.enqueue(
+        //   renderType,
+        //   payload.repository.name,
+        //   videoId,
+        //   context.req.session.passport!.user.auth.access_token
+        // );
+      } catch (err) {
+        log(`could not handle push event ${event}`, err);
+      }
+    }
+  );
 });
 
 // /**
