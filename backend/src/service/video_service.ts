@@ -15,24 +15,38 @@ export interface IVideoService {
    * @param videoId Video Id
    * @param status Status // TODO: enum
    */
-  setStatus(videoId: string, status: string, uploadedURL: string, thumbnail: string): Promise<any>;
+  setStatus(videoId: string, status: string, uploadedURL: string, thumbnail: string): Promise<IVideo>;
 
   /**
    * Return video with the specified video id
    * @param videoId Video Id
    * // TODO: return type
    */
-  getVideo(videoId: string): Promise<any>;
+  getVideo(videoId: string): Promise<IVideo>;
 
   /**
    * Return all videos owned by the user with the specified ownerId.
    * // TODO: return type
    * @param ownerId Owner Id
    */
-  getVideos(ownerId: string): Promise<any>;
+  getVideos(ownerId: string): Promise<IVideo[]>;
 }
 
-const videoSchema = new mongoose.Schema(
+export interface IVideo {
+  ownerId: string;
+  title: string;
+  description: string;
+  thumbnail: string;
+  url: string;
+  visibility: string;
+  repositoryURL: string;
+  renderOptions: string;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+const videoSchema = new mongoose.Schema<IVideo>(
   {
     ownerId: {
       type: String,
@@ -71,13 +85,16 @@ const videoSchema = new mongoose.Schema(
 export const Video = mongoose.model('Video', videoSchema);
 
 export class VideoService implements IVideoService {
-  async getVideo(videoId: string): Promise<any> {
+  async getVideo(videoId: string): Promise<IVideo> {
     const video = await Video.findById(videoId);
+    if (video == null) {
+      throw Error("Video not found")
+    }
     logger.info('Returning video', video);
     return video;
   }
 
-  async getVideos(ownerId: string): Promise<any> {
+  async getVideos(ownerId: string): Promise<IVideo[]> {
     const videos = await Video.find({ownerId: ownerId});
     logger.info(`Returning videos for owner ${ownerId}`, videos);
     return videos;
@@ -88,7 +105,7 @@ export class VideoService implements IVideoService {
     status: string,
     uploadedURL: string,
     thumbnail: string,
-  ): Promise<any> {
+  ): Promise<IVideo> {
     const video = await Video.findById(videoId).update({
       status: status,
       url: uploadedURL,
