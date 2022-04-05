@@ -1,9 +1,9 @@
 import {ExpressContext} from 'apollo-server-express';
-import logger from '../logger';
+import logger, {log} from '../logger';
 import {IWorkerService} from '../service/worker-service';
 import {createPushHook} from '../controllers/webhooks';
-import {IVideoService} from '../service/video_service';
 import { VideoNotFound } from '../error/video_not_found_error';
+import {IVideoService, RenderStatus} from '../service/video_service';
 
 export class VideoResolver {
   workerService: IWorkerService;
@@ -54,35 +54,46 @@ export class VideoResolver {
           repoURL: string;
           title: string;
           description: string;
+          hasWebhook: boolean;
         },
         context: ExpressContext,
         info: any
       ) => {
         logger.info('args', args);
+        log(`ffffff${JSON.stringify(context.req.session.passport)}`);
         const ownerId = context.req.userId!;
-        const videoId = await this.videoService.createVideo(
+        const video = await this.videoService.createVideo(
           ownerId,
           args.repoURL,
-          'ENQUEUED',
+          RenderStatus.queued,
           args.title,
-          args.description
+          args.description,
+          args.hasWebhook
         );
-        this.workerService.enqueue(args.renderType, args.repoURL, videoId);
-
-        // if(videoFinishedUploading){
-        const isWebhook = false; // TODO: replace with param from frontend
-        if (isWebhook) {
-          createPushHook(
-            context.req.kit,
-            context.req.passport!.user.user,
-            args.repoURL
-          );
-        }
+        const videoId = video._id;
+        this.workerService.enqueue(
+          args.renderType,
+          args.repoURL,
+          videoId,
+          context.req.session.passport!.user.auth.access_token
+        );
+        // if (args.hasWebhook) {
+        //   await createPushHook(
+        //     context.req.kit,
+        //     context.req.session.passport!.user.user.login,
+        //     args.repoURL
+        //   );
+        // }
         return this.videoService.getVideo(videoId);
       },
       updateStatus: async (
         parent: any,
-        args: {id: string; status: string; uploadedURL: string, thumbnail: string},
+        args: {
+          id: string;
+          status: string;
+          uploadedURL: string;
+          thumbnail: string;
+        },
         context: ExpressContext,
         info: any
       ) => {
@@ -90,7 +101,7 @@ export class VideoResolver {
           args.id,
           args.status,
           args.uploadedURL,
-          args.thumbnail,
+          args.thumbnail
         );
       },
     },

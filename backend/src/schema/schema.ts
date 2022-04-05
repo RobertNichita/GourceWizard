@@ -17,11 +17,6 @@ export const schema = gql`
     List of videos created by the user
     """
     videos: [Video!]
-
-    """
-    List of webhooks configured by the user
-    """
-    webhooks: [Webhook!]
   }
 
   type Video {
@@ -79,6 +74,11 @@ export const schema = gql`
     status: VideoStatus!
 
     """
+    Whether the video has a webhook associated with it or not
+    """
+    hasWebhook: Boolean!
+
+    """
     TODO: How do we want to do dates. unix time style or string timestamps?
     """
     createdAt: String!
@@ -107,24 +107,6 @@ export const schema = gql`
     Video is private, only accessible to the video owner.
     """
     PRIVATE
-  }
-
-  type Webhook {
-    id: ID!
-
-    owner: User!
-
-    repositoryURL: String!
-
-    """
-    Webhook URL
-    """
-    webhookURL: String!
-
-    """
-    Videos generated due to this webhook.
-    """
-    videos: [Video]
   }
 
   enum RenderType {
@@ -157,11 +139,6 @@ export const schema = gql`
     Return video with the specified id
     """
     video(id: ID!): Video
-
-    """
-    Return webhooks created by the current user
-    """
-    webhooks: [Webhook]
   }
 
   """
@@ -179,9 +156,8 @@ export const schema = gql`
       renderOptions: String!
       title: String!
       description: String!
+      hasWebhook: Boolean!
     ): Video
-
-    createWebhook(repoURL: String!): Webhook
 
     """
     Update the video status.
@@ -190,7 +166,12 @@ export const schema = gql`
     so we need a way to restrict this. For now it is left open.
     This is an internal mutation.
     """
-    updateStatus(id: ID!, status: VideoStatus!, uploadedURL: String, thumbnail: String): Video!
+    updateStatus(
+      id: ID!
+      status: VideoStatus!
+      uploadedURL: String
+      thumbnail: String
+    ): Video!
 
     """
     Update video title. Must be video owner.

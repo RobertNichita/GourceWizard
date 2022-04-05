@@ -1,4 +1,4 @@
-import { ExpressContext } from 'apollo-server-express';
+import {ExpressContext} from 'apollo-server-express';
 
 export const userIdResolver =
   () =>
@@ -7,5 +7,5 @@ export const userIdResolver =
         if (context.req.session.passport)
           context.req.userId = context.req.session.passport!.user.user.github_id;
 
-        return next(root, args, context, info);
-      };
+    return next(root, args, context, info);
+  };

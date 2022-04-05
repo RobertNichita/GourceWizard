@@ -19,6 +19,7 @@ async function createPushHook(kit: Octokit, login: string, repo: string) {
     events: [HookEventName.PUSH],
     active: true,
   };
+  log(`params: ${params}`);
 
   return createHook(kit, params);
 }

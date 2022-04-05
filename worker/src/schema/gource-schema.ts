@@ -12,6 +12,7 @@ export interface RenderRequest {
   renderType: string;
   repoURL: string;
   videoId: string;
+  token: string;
 }
 
 const gourceSchema: JSONSchemaType<RenderRequest> = {
@@ -20,6 +21,7 @@ const gourceSchema: JSONSchemaType<RenderRequest> = {
     renderType: {type: 'string'},
     repoURL: {type: 'string'},
     videoId: {type: 'string'},
+    token: {type: 'string'},
     // gource: {
     //     type: "object",
     //     properties: {

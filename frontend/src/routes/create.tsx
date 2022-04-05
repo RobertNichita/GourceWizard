@@ -1,27 +1,93 @@
 import {Button} from '../components/Button';
-import {useNavigate} from 'react-router-dom';
 import {AppBanner} from '../components/navigation/AppBanner';
-import {Back} from '../components/navigation/Back';
+import {ErrorAlert} from '../components/alert/ErrorAlert';
+import {useLocation, useNavigate} from 'react-router-dom';
 import {useState} from 'react';
 
-export default function library() {
-  const navigate = useNavigate();
+export interface FormState {
+  repoURL: string;
+  visibility: string;
+  title: string;
+  description: string;
+  webhookURL: string;
+}
 
-  const [repoURL, setRepoURL] = useState('');
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
+export default function create() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const previousState = location.state as FormState;
+
+  const [repoURL, setRepoURL] = previousState.repoURL
+    ? useState(previousState.repoURL)
+    : useState('');
+
+  const [title, setTitle] = previousState.title
+    ? useState(previousState.title)
+    : useState('');
+
+  const [visibility, setVisibility] = previousState.visibility
+    ? useState(previousState.visibility)
+    : useState('Public');
+
+  const [description, setDescription] = previousState.description
+    ? useState(previousState.description)
+    : useState('');
+
+  const [webhookURL, setWebhookURL] = previousState.webhookURL
+    ? useState(previousState.webhookURL)
+    : useState('');
+
+  const [error, setError] = useState(null);
+
+  const handleSubmit = event => {
+    event.preventDefault();
+    if (!repoURL) {
+      setError({
+        title: 'Missing Repository URL',
+        description: 'The Repository URL is required before continuing.',
+      });
+    } else if (!title) {
+      setError({
+        title: 'Missing Video Title',
+        description: 'A Video Title is required before continuing.',
+      });
+    } else if (!visibility) {
+      setError({
+        title: 'Missing Video Visibility',
+        description:
+          'You must declare the visibility of the repository is required before continuing.',
+      });
+    } else {
+      setError(null);
+      navigate('/customize', {
+        state: {
+          repoURL: repoURL,
+          visibility: visibility,
+          title: title,
+          description: description,
+          webhookURL: webhookURL,
+        },
+      });
+    }
+  };
 
   return (
     <div>
       <div className="relative">
         <AppBanner></AppBanner>
-        <Back></Back>
       </div>
       <div className="flex h-screen items-center justify-center flex-col mx-10">
-        <div className="flex items-start justify-center flex-col m-10 p-10 rounded-lg shadow-lg">
+        <div className="relative flex items-start justify-center flex-col m-10 p-10 rounded-lg shadow-lg">
+          <div className="absolute -top-1/4 w-3/4">
+            {error && (
+              <ErrorAlert
+                title={error.title}
+                description={error.description}
+              ></ErrorAlert>
+            )}
+          </div>
           <p className="my-2 text-5xl">Potion Room</p>
 
-          {/* Form Design from: https://v1.tailwindcss.com/components/forms# */}
           <form className="w-full max-w-lg">
             <div className="flex flex-wrap -mx-3">
               <div className="w-full px-3">
@@ -30,6 +96,7 @@ export default function library() {
                 </label>
                 <input
                   className="form-input"
+                  value={repoURL}
                   id="grid-url"
                   type="text"
                   placeholder="https://github.com/acaudwell/Gource.git"
@@ -48,6 +115,7 @@ export default function library() {
                 <input
                   className="form-input"
                   id="grid-city"
+                  value={title}
                   type="title"
                   placeholder="Video Title"
                   onChange={e => {
@@ -61,7 +129,15 @@ export default function library() {
                   Visibility
                 </label>
                 <div className="relative">
-                  <select className="form-input" id="grid-state">
+                  <select
+                    value={visibility}
+                    className="form-input"
+                    id="grid-state"
+                    onChange={e => {
+                      e.preventDefault();
+                      setVisibility(e.target.value);
+                    }}
+                  >
                     <option>Public</option>
                     <option>Private</option>
                   </select>
@@ -81,9 +157,10 @@ export default function library() {
             <div className="flex flex-wrap -mx-3">
               <div className="w-full px-3">
                 <label className="form-label" htmlFor="grid-url">
-                  Description
+                  Description (optional)
                 </label>
                 <textarea
+                  value={description}
                   className="form-input"
                   id="grid-url"
                   placeholder="Describe the repository a little."
@@ -95,21 +172,21 @@ export default function library() {
               </div>
             </div>
 
-            <div className="flex items-end justify-end">
+            <div className="flex items-end justify-between">
               <Button
                 className="-mx-0"
-                title="Next Step ➡️"
+                title="Back 📖"
+                type="button"
                 onClick={() => {
-                  if (repoURL && title && description) {
-                    navigate('/customize', {
-                      state: {
-                        repoURL: repoURL,
-                        visibility: 'PUBLIC', // TODO: do not hardcode
-                        title: title,
-                        description: description,
-                      },
-                    });
-                  }
+                  navigate('/library');
+                }}
+              ></Button>
+              <Button
+                className="-mx-0"
+                type="submit"
+                title="Next Step ➡️"
+                onClick={e => {
+                  handleSubmit(e);
                 }}
               ></Button>
             </div>

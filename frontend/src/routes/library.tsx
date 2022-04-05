@@ -33,7 +33,15 @@ export default function library() {
           className="fixed bottom-5 right-5 p-5 text-xl z-50"
           title="Visualize 🧪"
           onClick={() => {
-            navigate('/create');
+            navigate('/create', {
+              state: {
+                repoURL: '',
+                visibility: 'Public',
+                title: '',
+                description: '',
+                webhookURL: '',
+              },
+            });
           }}
         ></Button>
       </div>

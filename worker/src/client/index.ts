@@ -32,7 +32,7 @@ export class GraphQLAPIClient implements APIClient {
 
     logger.info(`body`, body)
     const response = await axios.post(this.backendURL, body);
-    logger.info(`Successfully updated status of video ${videoId}`)
+    logger.info(`Successfully updated status of video ${videoId}`);
 
     if (response.status !== 200) {
       logger.error(`Failed to update status of video ${videoId}`, body, response)
