@@ -3,7 +3,7 @@ import {AppBanner} from '../components/navigation/AppBanner';
 import {Back} from '../components/navigation/Back';
 import {useEffect, useState} from 'react';
 import {IVideoService, VideoService} from '../services/video_service';
-import DotLoader from "react-spinners/DotLoader";
+import DotLoader from 'react-spinners/DotLoader';
 
 export interface LoadingState {
   videoId: string;
@@ -46,7 +46,7 @@ export default function library() {
         <AppBanner></AppBanner>
         <Back></Back>
       </div>
-      <div className='flex justify-center flex-col'>
+      <div className="flex justify-center flex-col">
         <p>hi</p>
       </div>
       <div className="flex h-screen items-center justify-center flex-col mx-10">
@@ -54,8 +54,7 @@ export default function library() {
           <p className="my-2 text-5xl">Rendering Video</p>
           <p>This may take a while. Go grab some popcorn.</p>
           <div className="flex justify-center">
-            <p>asdas</p>
-            <DotLoader size={40}/>
+            <DotLoader size={40} />
           </div>
         </div>
       </div>

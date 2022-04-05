@@ -14,18 +14,18 @@ export function Video(props) {
       <div
         className="relative rounded-lg shadow-lg bg-white max-w-md max-h-min"
         onClick={() => {
-          console.log("status, id" + status + _id)
-          if(status === "UPLOADED") {
+          console.log('status, id' + status + _id);
+          if (status === 'UPLOADED') {
             navigate('/video', {state: data});
-          } else if (status === "ENQUEUED") {
+          } else if (status === 'ENQUEUED') {
             navigate('/loading', {
               state: {
                 videoId: _id,
               },
             });
-          } else if (status === "FAILED") {
+          } else if (status === 'FAILED') {
             navigate('/video/failed');
-          } else if (status === "TIMEOUT") {
+          } else if (status === 'TIMEOUT') {
             navigate('/video/timeout');
           }
         }}
@@ -38,7 +38,9 @@ export function Video(props) {
         <div className="p-6">
           <div className="flex justify-start items-end mb-2">
             <h1 className="text-black text-xl font-medium mr-2">{title}</h1>
-            <p className="text-gray-500 text-sm pb-0.5">{new Date(parseInt(createdAt)).toLocaleString()}</p>
+            <p className="text-gray-500 text-sm pb-0.5">
+              {new Date(parseInt(createdAt)).toLocaleString()}
+            </p>
           </div>
           <p className="text-base mb-4`">{description}</p>
           <div>

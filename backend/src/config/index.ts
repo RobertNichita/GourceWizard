@@ -24,6 +24,7 @@ interface GHClientConfig {
   hookSecret: string;
   appID: string;
   appKeyFile: string;
+  appName: string;
 }
 
 interface DBConfig {
@@ -72,6 +73,7 @@ const backEndConfig: BackEndConfig = {
     hookSecret: process.env.GH_WEBHOOK_SECRET!,
     appID: process.env.GH_APP_ID!,
     appKeyFile: process.env.GH_APP_KEY!,
+    appName: process.env.GH_APP_NAME!,
   },
   dbConfig: {
     user: process.env.DB_USER!,

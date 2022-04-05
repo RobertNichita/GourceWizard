@@ -3,7 +3,7 @@ import logger from '../logger';
 
 function insertToken(repoURL: string, token: string): string {
   const splitURL: string[] = repoURL.split('/');
-  const inserted = `${token}+@${splitURL[2]}`;
+  const inserted = `${token}@${splitURL[2]}`;
   splitURL[2] = inserted;
   return splitURL.join('/');
 }
@@ -49,7 +49,11 @@ export class GourceVideoRenderer implements VideoRenderer {
   }
 
   render(callback: VideoRendererCallback): void {
-    const authUrl = insertToken(this.repoURL, this.token);
+    let authUrl = this.repoURL;
+    if (this.token) {
+      authUrl = insertToken(this.repoURL, this.token);
+    }
+
     const args = [
       authUrl,
       this.videoId,
@@ -57,7 +61,6 @@ export class GourceVideoRenderer implements VideoRenderer {
       this.ffmpegArgs,
       this.s3Bucket,
       this.timeout,
-      this.token,
     ];
     const childProcess = spawn('/worker/src/render/gource.sh', args);
     logger.info(`Running gource.sh with arguments ${args}`);
@@ -75,7 +78,11 @@ export class GourceVideoRenderer implements VideoRenderer {
       logger.info(`Signal ${signal}`);
 
       if (code === 0) {
-        callback(RenderStatus.success, `${this.cdnRoot}${this.videoId}/${this.videoId}.m3u8`, `${this.cdnRoot}${this.videoId}/${this.videoId}-thumbnail.jpg`);
+        callback(
+          RenderStatus.success,
+          `${this.cdnRoot}${this.videoId}/${this.videoId}.m3u8`,
+          `${this.cdnRoot}${this.videoId}/${this.videoId}-thumbnail.jpg`
+        );
       } else {
         callback(RenderStatus.failure);
       }
@@ -84,7 +91,7 @@ export class GourceVideoRenderer implements VideoRenderer {
 }
 
 export const enum RenderStatus {
-  success = "UPLOADED",
-  failure = "FAILED",
-  timeout = "TIMEOUT",
+  success = 'UPLOADED',
+  failure = 'FAILED',
+  timeout = 'TIMEOUT',
 }

@@ -179,7 +179,7 @@ async function handleConnect(value: typeof mongoose) {
       store: MongoStore.create({
         client: mongoose.connection.getClient(),
         collectionName: 'sessions',
-        stringify: false, //change to true if using datatypes unsupported by mongodb in the session
+        stringify: false, //change to true if using datatypes unsupported by mongodb in the sessiona
         autoRemove: 'native',
         crypto: {
           secret: config.session_secret,

@@ -74,7 +74,12 @@ export class VideoResolver {
       },
       updateStatus: async (
         parent: any,
-        args: {id: string; status: string; uploadedURL: string, thumbnail: string},
+        args: {
+          id: string;
+          status: string;
+          uploadedURL: string;
+          thumbnail: string;
+        },
         context: ExpressContext,
         info: any
       ) => {
@@ -82,7 +87,7 @@ export class VideoResolver {
           args.id,
           args.status,
           args.uploadedURL,
-          args.thumbnail,
+          args.thumbnail
         );
       },
     },

@@ -54,7 +54,7 @@ async function consume(): Promise<void> {
       const videoId = jsonMessage.videoId;
       const token = jsonMessage.token;
 
-      // TODO: generate the string from the arguments.
+      // TODO: generate the string from the arguments.a
       const gourceArgs = '-r 25 -c 4 -s 0.1 -1280x720 --key -o -';
 
       // Create HLS stream using ultrafast present to save time
