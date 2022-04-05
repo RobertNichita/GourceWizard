@@ -16,6 +16,7 @@
 		"@graphql-tools/merge": "^8.2.4",
 		"@graphql-tools/resolvers-composition": "^6.4.3",
 		"@graphql-tools/schema": "^8.3.3",
+		"@octokit/auth-app": "^3.6.1",
 		"@octokit/graphql": "^4.8.0",
 		"@octokit/plugin-retry": "^3.0.9",
 		"@octokit/plugin-throttling": "^3.6.2",

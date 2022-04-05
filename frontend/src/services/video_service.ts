@@ -10,7 +10,8 @@ export interface IVideoService {
     renderType: string,
     repoURL: string,
     title: string,
-    description: string
+    description: string,
+    hasWebhook: boolean
   ): Promise<Video>;
 
   deleteVideo(videoId: string): Promise<Video>;
@@ -74,7 +75,8 @@ export class VideoService implements IVideoService {
     renderType: string,
     repoURL: string,
     title: string,
-    description: string
+    description: string,
+    hasWebhook: boolean
   ): Promise<Video> {
     return gqlClient
       .mutate({
@@ -84,6 +86,7 @@ export class VideoService implements IVideoService {
             $repoURL: String!
             $title: String!
             $description: String!
+            $hasWebhook: Boolean!
           ) {
             renderVideo(
               renderType: $renderType
@@ -91,12 +94,13 @@ export class VideoService implements IVideoService {
               title: $title
               description: $description
               renderOptions: "xd"
+              hasWebhook: $hasWebhook
             ) {
               _id
             }
           }
         `,
-        variables: {renderType, repoURL, title, description},
+        variables: {renderType, repoURL, title, description, hasWebhook},
       })
       .then(
         (
@@ -134,6 +138,7 @@ export class MockVideoService implements IVideoService {
           'https://imgix.bustle.com/uploads/image/2020/2/26/76316f92-c732-47cf-8f6d-e63dba5877c2-1601055a.jpg?w=1200&h=630&fit=crop&crop=faces&fm=jpg',
         status: 'UPLOADED',
         url: 'https://d1c7jwqsei1woa.cloudfront.net/62378b2de6c3eeebacb30ee2.mp4',
+        hasWebhook: false,
       },
       {
         _id: '2',
@@ -145,6 +150,7 @@ export class MockVideoService implements IVideoService {
           'https://prod-ripcut-delivery.disney-plus.net/v1/variant/disney/F8E06B89CCFCCB4660AC6EC26D4A7CC8BEBA67D9595B4197A5AEC5DCA188F4BE/scale?width=1200&aspectRatio=1.78&format=jpeg',
         status: 'ENQUEUED',
         url: null,
+        hasWebhook: false,
       },
       {
         _id: '3',
@@ -156,6 +162,7 @@ export class MockVideoService implements IVideoService {
           'https://thedisinsider.com/wp-content/uploads/2020/05/85E52E97-8540-44CB-8D7D-A173CD92F1BD.jpeg',
         status: 'ENQUEUED',
         url: null,
+        hasWebhook: false,
       },
       {
         _id: '4',
@@ -167,6 +174,7 @@ export class MockVideoService implements IVideoService {
           'https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/4de7856b-9425-4b91-b489-4bff9b1a8658/dbeifzj-7e5a441c-352a-4d89-9026-7773909cfd24.jpg/v1/fill/w_1024,h_693,q_75,strp/commission__beauty_and_the_bat_by_raizel_v_dbeifzj-fullview.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzRkZTc4NTZiLTk0MjUtNGI5MS1iNDg5LTRiZmY5YjFhODY1OFwvZGJlaWZ6ai03ZTVhNDQxYy0zNTJhLTRkODktOTAyNi03NzczOTA5Y2ZkMjQuanBnIiwiaGVpZ2h0IjoiPD02OTMiLCJ3aWR0aCI6Ijw9MTAyNCJ9XV0sImF1ZCI6WyJ1cm46c2VydmljZTppbWFnZS53YXRlcm1hcmsiXSwid21rIjp7InBhdGgiOiJcL3dtXC80ZGU3ODU2Yi05NDI1LTRiOTEtYjQ4OS00YmZmOWIxYTg2NThcL3JhaXplbC12LTQucG5nIiwib3BhY2l0eSI6OTUsInByb3BvcnRpb25zIjowLjQ1LCJncmF2aXR5IjoiY2VudGVyIn19.MRsolrHlsxH2IWAfw4I-1YBvi_RUssvtBaP_QDOdzF8',
         status: 'ENQUEUED',
         url: null,
+        hasWebhook: false,
       },
       {
         _id: '5',
@@ -178,6 +186,7 @@ export class MockVideoService implements IVideoService {
           'https://lumiere-a.akamaihd.net/v1/images/p_encanto_homeent_22359_4892ae1c.jpeg',
         status: 'ENQUEUED',
         url: null,
+        hasWebhook: false,
       },
     ];
   }
@@ -194,7 +203,8 @@ export class MockVideoService implements IVideoService {
     renderType: string,
     repoURL: string,
     title: string,
-    description: string
+    description: string,
+    hasWebhook: boolean
   ): Promise<Video> {
     return this.mockData[0];
   }
@@ -212,4 +222,5 @@ export interface Video {
   status: string; // TODO: enum
   _id: string;
   url: string | null;
+  hasWebhook: boolean;
 }

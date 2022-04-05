@@ -1,6 +1,13 @@
 import {spawn} from 'child_process';
 import logger from '../logger';
 
+function insertToken(repoURL: string, token: string): string {
+  const splitURL: string[] = repoURL.split('/');
+  const inserted = `${token}@${splitURL[2]}`;
+  splitURL[2] = inserted;
+  return splitURL.join('/');
+}
+
 export interface VideoRenderer {
   render(callback: VideoRendererCallback): void;
 }
@@ -19,6 +26,7 @@ export class GourceVideoRenderer implements VideoRenderer {
   s3Bucket: string;
   timeout: string;
   cdnRoot: string;
+  token: string;
 
   constructor(
     repoURL: string,
@@ -27,7 +35,8 @@ export class GourceVideoRenderer implements VideoRenderer {
     ffmpegArgs: string,
     s3Bucket: string,
     timeout: string,
-    cdnRoot: string
+    cdnRoot: string,
+    token: string
   ) {
     this.repoURL = repoURL;
     this.videoId = videoId;
@@ -36,11 +45,17 @@ export class GourceVideoRenderer implements VideoRenderer {
     this.s3Bucket = s3Bucket;
     this.timeout = timeout;
     this.cdnRoot = cdnRoot;
+    this.token = token;
   }
 
   render(callback: VideoRendererCallback): void {
+    let authUrl = this.repoURL;
+    if (this.token) {
+      authUrl = insertToken(this.repoURL, this.token);
+    }
+
     const args = [
-      this.repoURL,
+      authUrl,
       this.videoId,
       this.gourceArgs,
       this.ffmpegArgs,
@@ -63,7 +78,11 @@ export class GourceVideoRenderer implements VideoRenderer {
       logger.info(`Signal ${signal}`);
 
       if (code === 0) {
-        callback(RenderStatus.success, `${this.cdnRoot}${this.videoId}/${this.videoId}.m3u8`, `${this.cdnRoot}${this.videoId}/${this.videoId}-thumbnail.jpg`);
+        callback(
+          RenderStatus.success,
+          `${this.cdnRoot}${this.videoId}/${this.videoId}.m3u8`,
+          `${this.cdnRoot}${this.videoId}/${this.videoId}-thumbnail.jpg`
+        );
       } else {
         callback(RenderStatus.failure);
       }
@@ -72,7 +91,7 @@ export class GourceVideoRenderer implements VideoRenderer {
 }
 
 export const enum RenderStatus {
-  success = "UPLOADED",
-  failure = "FAILED",
-  timeout = "TIMEOUT",
+  success = 'UPLOADED',
+  failure = 'FAILED',
+  timeout = 'TIMEOUT',
 }

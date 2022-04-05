@@ -14,8 +14,13 @@ export interface FormState {
   webhookURL: string;
 }
 
+export interface CustomizeState {
+  hasWebhook: boolean;
+}
+
 export default function customize() {
   const videoService: IVideoService = new VideoService();
+  const [hasWebhook, setHasWebook] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -64,7 +69,7 @@ export default function customize() {
     } else {
       setError(null);
       videoService
-        .createVideo('GOURCE', repoURL, title, description)
+        .createVideo('GOURCE', repoURL, title, description, hasWebhook)
         .then(video => {
           console.log(JSON.stringify(video));
           // Assume enqueued successfully
@@ -126,7 +131,7 @@ export default function customize() {
                   placeholder="https://github.com/acaudwell/Gource"
                   onChange={e => {
                     e.preventDefault();
-                    setWebhookURL(e.target.value);
+                    setHasWebook(e.target.value.trim() !== '');
                   }}
                 ></input>
               </div>

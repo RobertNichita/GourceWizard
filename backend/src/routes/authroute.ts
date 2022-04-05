@@ -35,7 +35,7 @@ router.get(
   '/github/callback/',
   passport.authenticate('github', {
     failureRedirect: `${backEndConfig.url}`,
-    successRedirect: `${backEndConfig.frontend_url}/library`,
+    successRedirect: `${backEndConfig.url}/library`,
   }),
   (req, res) => {
     // Successful authentication, redirect home.

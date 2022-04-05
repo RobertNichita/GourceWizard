@@ -1,5 +1,3 @@
-import express, {Router, Request, Response, NextFunction} from 'express';
-import crypto from 'crypto';
 import {
   Webhooks,
   createNodeMiddleware,
@@ -7,31 +5,38 @@ import {
 } from '@octokit/webhooks';
 import backEndConfig from '../config';
 import logger, {log} from '../logger';
+import {PushEvent} from '@octokit/webhooks-types';
+import {installationAuth} from './authentication';
+import {InstallationAccessTokenAuthentication} from '@octokit/auth-app';
+import {IVideoService, RenderStatus, Video} from '../service/video_service';
+import {IWorkerService} from '../service/worker-service';
 
 function eventTransformer(event: EmitterWebhookEvent) {
   //... change the event if needed...
   return event;
 }
 
-const hooks: Webhooks = new Webhooks({
-  secret: backEndConfig.ghClientConfig.hookSecret,
-  transform: eventTransformer,
-});
-
 //method called before any individual event handler
-hooks.onAny((event: EmitterWebhookEvent) => {
-  log('recieved event');
-  hooks
-    .sign(event.payload)
-    .then((signature: string) => {
-      return hooks.verify(event.payload, signature);
-    })
-    .then((isLegitimate: boolean) => {
-      if (!isLegitimate) {
-        log('', 'Illegitimate webhook request', 'verifyWebhookSignature');
-      }
-    });
-});
+function addPreHandler(hooks: Webhooks) {
+  hooks.onAny((event: EmitterWebhookEvent) => {
+    log('recieved event');
+    hooks
+      .sign(event.payload)
+      .then((signature: string) => {
+        return hooks.verify(event.payload, signature);
+      })
+      .then((isLegitimate: boolean) => {
+        if (!isLegitimate) {
+          log('', 'Illegitimate webhook request', 'verifyWebhookSignature');
+        }
+      });
+  });
+  return hooks;
+}
+
+function repositoryURL(repoName: string, repoOwner: string) {
+  return `https://github.com/${repoOwner}/${repoName}.git`;
+}
 
 /**
  * handler for push events should check to see that the user has enabled webhooks for this repo.
@@ -39,37 +44,74 @@ hooks.onAny((event: EmitterWebhookEvent) => {
  * if it is a new commit, generate a video and append it
  *
  **/
-hooks.on('push', (event: EmitterWebhookEvent) => {
-  console.log('push');
-});
+function addPushHandler(
+  hooks: Webhooks,
+  workerService: IWorkerService,
+  videoService: IVideoService
+) {
+  hooks.on('push', (event: EmitterWebhookEvent<'push'>) => {
+    console.log('push');
+    const payload: PushEvent = event.payload;
+    const installation = payload.installation;
+    installationAuth(installation!.id).then(
+      (auth: InstallationAccessTokenAuthentication) => {
+        try {
+          if (!auth) {
+            throw 'ERROR: failed to create installation auth for push event';
+          }
+          if (!payload.repository.owner.name) {
+            throw 'ERROR: event missing repo owner name';
+          }
+          videoService
+            .getLatestRepoVideo(
+              repositoryURL(
+                payload.repository.name,
+                payload.repository.owner.name!
+              )
+            )
+            .then((video: Video) => {
+              return videoService.createVideo(
+                video.ownerId,
+                video.repositoryURL,
+                RenderStatus.queued,
+                video.title ? video.title : '',
+                video.description ? video.description : '',
+                true
+              );
+            })
+            .then((createdVideo: Video) => {
+              workerService.enqueue(
+                'GOURCE',
+                payload.repository.name,
+                createdVideo._id,
+                auth.token
+              );
+            });
+        } catch (err) {
+          log(`could not handle push event ${event}`, err);
+        }
+      }
+    );
+  });
+  return hooks;
+}
 
-// /**
-//  * Verifies the signature of a webhook against the webhook token
-//  *
-//  * @param request_signature the HTTP_X_HUB_SIGNATURE_256 signature of the request
-//  * @param payload_body the payload
-//  * @returns whether this request is a ligitimate request from a Github webhook
-//  */
+function ghEventsMiddleware(
+  workerService: IWorkerService,
+  videoService: IVideoService
+) {
+  let hooks: Webhooks = new Webhooks({
+    secret: backEndConfig.ghClientConfig.hookSecret,
+    transform: eventTransformer,
+  });
 
-// const verify_signature = (request_signature: string, payload_body: string) => {
-//   const signature =
-//     'sha256=' +
-//     crypto
-//       .createHmac('sha256', process.env.WEBHOOK_TOKEN!)
-//       .update(payload_body)
-//       .digest('hex');
-//   return crypto.timingSafeEqual(
-//     Buffer.from(signature),
-//     Buffer.from(request_signature)
-//   );
-// };
+  hooks = addPushHandler(hooks, workerService, videoService);
+  hooks = addPreHandler(hooks);
 
-// router.get('/', (req: Request, res: Response, next: NextFunction) => {
-//   res.redirect();
-// });
+  return createNodeMiddleware(hooks, {
+    path: '/events/github',
+    log: logger,
+  });
+}
 
-const ghEventsMiddleware = createNodeMiddleware(hooks, {
-  path: '/events/github',
-  log: logger,
-});
 export default ghEventsMiddleware;
