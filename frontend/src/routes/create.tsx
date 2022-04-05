@@ -1,17 +1,42 @@
 import {Button} from '../components/Button';
-import {useNavigate} from 'react-router-dom';
 import {AppBanner} from '../components/navigation/AppBanner';
-import {Back} from '../components/navigation/Back';
 import {ErrorAlert} from '../components/alert/ErrorAlert';
+import {useLocation, useNavigate} from 'react-router-dom';
 import {useState} from 'react';
 
-export default function library() {
-  const navigate = useNavigate();
+export interface FormState {
+  repoURL: string;
+  visibility: string;
+  title: string;
+  description: string;
+  webhookURL: string;
+}
 
-  const [repoURL, setRepoURL] = useState('');
-  const [title, setTitle] = useState('');
-  const [visibility, setVisibility] = useState('Public');
-  const [description, setDescription] = useState('');
+export default function create() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const previousState = location.state as FormState;
+
+  const [repoURL, setRepoURL] = previousState.repoURL
+    ? useState(previousState.repoURL)
+    : useState('');
+
+  const [title, setTitle] = previousState.title
+    ? useState(previousState.title)
+    : useState('');
+
+  const [visibility, setVisibility] = previousState.visibility
+    ? useState(previousState.visibility)
+    : useState('Public');
+
+  const [description, setDescription] = previousState.description
+    ? useState(previousState.description)
+    : useState('');
+
+  const [webhookURL, setWebhookURL] = previousState.webhookURL
+    ? useState(previousState.webhookURL)
+    : useState('');
+
   const [error, setError] = useState(null);
 
   const handleSubmit = event => {
@@ -40,6 +65,7 @@ export default function library() {
           visibility: visibility,
           title: title,
           description: description,
+          webhookURL: webhookURL,
         },
       });
     }
@@ -70,6 +96,7 @@ export default function library() {
                 </label>
                 <input
                   className="form-input"
+                  value={repoURL}
                   id="grid-url"
                   type="text"
                   placeholder="https://github.com/acaudwell/Gource.git"
@@ -88,6 +115,7 @@ export default function library() {
                 <input
                   className="form-input"
                   id="grid-city"
+                  value={title}
                   type="title"
                   placeholder="Video Title"
                   onChange={e => {
@@ -102,6 +130,7 @@ export default function library() {
                 </label>
                 <div className="relative">
                   <select
+                    value={visibility}
                     className="form-input"
                     id="grid-state"
                     onChange={e => {
@@ -131,6 +160,7 @@ export default function library() {
                   Description
                 </label>
                 <textarea
+                  value={description}
                   className="form-input"
                   id="grid-url"
                   placeholder="Describe the repository a little."

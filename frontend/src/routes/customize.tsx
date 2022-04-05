@@ -5,14 +5,15 @@ import {Back} from '../components/navigation/Back';
 import {useState} from 'react';
 import {IVideoService, VideoService} from '../services/video_service';
 
-export interface CreateVideoState {
+export interface FormState {
   repoURL: string;
   visibility: string;
   title: string;
   description: string;
+  webhookURL: string;
 }
 
-export default function library() {
+export default function customize() {
   const navigate = useNavigate();
 
   const location = useLocation();
@@ -29,7 +30,6 @@ export default function library() {
         <div className="flex items-start justify-center flex-col m-10 p-10 rounded-lg shadow-lg">
           <p className="my-2 text-5xl">Customize.</p>
 
-          {/* Form Design from: https://v1.tailwindcss.com/components/forms# */}
           <form className="w-full max-w-lg">
             <div className="flex flex-wrap -mx-3">
               <div className="w-full px-3">
@@ -59,12 +59,23 @@ export default function library() {
               </div>
             </div>
 
-            <div className="flex items-end justify-end">
+            <div className="flex items-end justify-between">
+              <Button
+                className="-mx-0"
+                title="Back ⬅️"
+                type="button"
+                onClick={() => {
+                  const prevState = location.state as FormState;
+                  navigate('/create', {
+                    state: prevState,
+                  });
+                }}
+              ></Button>
               <Button
                 className="-mx-0"
                 title="Render 🧪"
                 onClick={() => {
-                  const payload = location.state as CreateVideoState; // TODO: This is just stuff passed from create but in the future we should be a bit better than this.
+                  const payload = location.state as FormState; // TODO: This is just stuff passed from create but in the future we should be a bit better than this.
                   console.log(payload);
                   videoService
                     .createVideo(
