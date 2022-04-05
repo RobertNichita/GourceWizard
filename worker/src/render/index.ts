@@ -3,6 +3,9 @@ import logger from '../logger';
 
 function insertToken(repoURL: string, token: string): string {
   const splitURL: string[] = repoURL.split('/');
+  if (token.substring(0, 3) === 'ghs') {
+    token = 'x-access-token:'.concat(token);
+  }
   const inserted = `${token}@${splitURL[2]}`;
   splitURL[2] = inserted;
   return splitURL.join('/');

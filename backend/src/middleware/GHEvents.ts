@@ -62,30 +62,34 @@ function addPushHandler(
           if (!payload.repository.owner.name) {
             throw 'ERROR: event missing repo owner name';
           }
+          const repoUrl = repositoryURL(
+            payload.repository.name,
+            payload.repository.owner.name!
+          );
           videoService
-            .getLatestRepoVideo(
-              repositoryURL(
-                payload.repository.name,
-                payload.repository.owner.name!
-              )
-            )
+            .getLatestRepoVideo(repoUrl)
             .then((video: Video) => {
-              return videoService.createVideo(
-                video.ownerId,
-                video.repositoryURL,
-                RenderStatus.queued,
-                video.title ? video.title : '',
-                video.description ? video.description : '',
-                true
-              );
+              if (video) {
+                return videoService.createVideo(
+                  video.ownerId,
+                  video.repositoryURL,
+                  RenderStatus.queued,
+                  video.title ? video.title : '',
+                  video.description ? video.description : '',
+                  true
+                );
+              }
+              return undefined;
             })
-            .then((createdVideo: Video) => {
-              workerService.enqueue(
-                'GOURCE',
-                payload.repository.name,
-                createdVideo._id,
-                auth.token
-              );
+            .then((createdVideo: Video | undefined) => {
+              if (createdVideo) {
+                workerService.enqueue(
+                  'GOURCE',
+                  repoUrl,
+                  createdVideo._id,
+                  auth.token
+                );
+              }
             });
         } catch (err) {
           log(`could not handle push event ${event}`, err);
@@ -109,7 +113,7 @@ function ghEventsMiddleware(
   hooks = addPreHandler(hooks);
 
   return createNodeMiddleware(hooks, {
-    path: '/events/github',
+    path: '/api/events/github',
     log: logger,
   });
 }

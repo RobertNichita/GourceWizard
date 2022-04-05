@@ -11,7 +11,7 @@ async function createPushHook(kit: Octokit, login: string, repo: string) {
     repo: repo,
     name: 'web',
     config: {
-      url: `${backEndConfig.url}/events/github`,
+      url: `${backEndConfig.url}/api/events/github`,
       content_type: CONTENT_TYPE.JSON,
       secret: backEndConfig.ghClientConfig.hookSecret,
       insecure_ssl: INSECURE_SSL.INSECURE,
@@ -19,7 +19,7 @@ async function createPushHook(kit: Octokit, login: string, repo: string) {
     events: [HookEventName.PUSH],
     active: true,
   };
-  log(`params: ${params}`);
+  log(`params: ${JSON.stringify(params)}`);
 
   return createHook(kit, params);
 }

@@ -116,8 +116,13 @@ export class VideoService implements IVideoService {
     return video;
   }
 
+  /**
+   *
+   * @param repoURL the URL of the repo being queried
+   * @returns the latest video from this repo which has webhook enabled
+   */
   async getLatestRepoVideo(repoURL: string): Promise<Video> {
-    const videos = await Video.find({repositoryURL: repoURL})
+    const videos = await Video.find({repositoryURL: repoURL, hasWebhook: true})
       .sort({
         createdAt: 'desc',
       })

@@ -25,11 +25,11 @@ function onAbuseLimit(retryAfter: Number, options: any) {
   );
 }
 
-function authKit(accessToken: string) {
+function authKit(accessToken: string, tokentype = 'token') {
   let kit;
   try {
     kit = new RetryThrottleKit({
-      auth: `token ${accessToken}`,
+      auth: `${tokentype} ${accessToken}`,
       throttle: {onRateLimit: onRateLimit, onAbuseLimit: onAbuseLimit},
       log: logger,
     });

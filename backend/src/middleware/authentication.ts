@@ -65,7 +65,7 @@ async function getInstallationKit(userToken: string): Promise<Octokit> {
       throw `failed to get installation auth ${err}`;
     })
     .then(installationAuth => {
-      return authKit(installationAuth!.token);
+      return authKit(installationAuth!.token, 'Bearer');
     })
     .catch(err => {
       return err;
@@ -114,6 +114,7 @@ async function installationAuth(
     type: 'installation',
     installationId: installationId,
   });
+  log(`installation: ${JSON.stringify(installationAuthentication)}`);
   return installationAuthentication;
 }
 

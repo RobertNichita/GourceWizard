@@ -3,6 +3,7 @@ import logger, {log} from '../logger';
 import {IWorkerService} from '../service/worker-service';
 import {createPushHook} from '../controllers/webhooks';
 import {IVideoService, RenderStatus} from '../service/video_service';
+import {getRepo} from '../common/util';
 
 export class VideoResolver {
   workerService: IWorkerService;
@@ -64,13 +65,6 @@ export class VideoResolver {
           videoId,
           context.req.session.passport!.user.auth.access_token
         );
-        // if (args.hasWebhook) {
-        //   await createPushHook(
-        //     context.req.kit,
-        //     context.req.session.passport!.user.user.login,
-        //     args.repoURL
-        //   );
-        // }
         return this.videoService.getVideo(videoId);
       },
       updateStatus: async (
