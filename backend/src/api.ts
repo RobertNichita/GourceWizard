@@ -116,7 +116,7 @@ async function afterConnect() {
   app.use(passport.initialize());
   app.use(passport.session());
   // memecachexd
-  app.use(ghEventsMiddleware);
+
   app.use((req: Request, res: Response, next: NextFunction) => {
     //TODO: create a type declaration to add user.id
     // req.user = {id: req.session.id ? req.session.id : null};
@@ -127,13 +127,12 @@ async function afterConnect() {
   // TODO: initialize database connection
 
   await (workerService as WorkerService).initialize();
+  const videoService = new VideoService();
+  app.use(ghEventsMiddleware(workerService, videoService));
 
   const server = await app.listen(PORT);
 
-  const composedResolvers = new ComposedResolvers(
-    workerService,
-    new VideoService()
-  );
+  const composedResolvers = new ComposedResolvers(workerService, videoService);
 
   const apolloServer = new ApolloServer({
     typeDefs: schema,

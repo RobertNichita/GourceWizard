@@ -12,7 +12,13 @@ export interface CreateVideoState {
   description: string;
 }
 
+export interface CustomizeState {
+  hasWebhook: boolean;
+}
+
 export default function library() {
+  const [hasWebhook, setHasWebook] = useState(false);
+
   const navigate = useNavigate();
 
   const location = useLocation();
@@ -55,6 +61,10 @@ export default function library() {
                   id="grid-url"
                   type="text"
                   placeholder="https://github.com/acaudwell/Gource"
+                  onChange={e => {
+                    e.preventDefault();
+                    setHasWebook(e.target.value.trim() !== '');
+                  }}
                 ></input>
               </div>
             </div>
@@ -66,12 +76,14 @@ export default function library() {
                 onClick={() => {
                   const payload = location.state as CreateVideoState; // TODO: This is just stuff passed from create but in the future we should be a bit better than this.
                   console.log(payload);
+                  console.log(hasWebhook);
                   videoService
                     .createVideo(
                       'GOURCE',
                       payload.repoURL,
                       payload.title,
-                      payload.description
+                      payload.description,
+                      hasWebhook
                     )
                     .then(video => {
                       console.log(JSON.stringify(video));

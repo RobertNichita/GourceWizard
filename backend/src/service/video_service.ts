@@ -1,14 +1,36 @@
 import mongoose from 'mongoose';
 import logger, {log} from '../logger';
 
+export enum RenderStatus {
+  success = 'UPLOADED',
+  failure = 'FAILED',
+  timeout = 'TIMEOUT',
+  queued = 'ENQUEUED',
+}
+
+export interface Video {
+  _id: string;
+  ownerId: string;
+  title?: string;
+  description?: string;
+  thumbnail?: string;
+  url?: string;
+  visibility: string;
+  repositoryURL: string;
+  renderOptions?: string; //TODO: make this a separate interface probs
+  status?: RenderStatus;
+  hasWebhook: boolean;
+}
+
 export interface IVideoService {
   createVideo(
     ownerId: string,
     gitRepoURL: string,
     status: string,
     title: string,
-    description: string
-  ): Promise<any>;
+    description: string,
+    hasWebhook: boolean
+  ): Promise<Video>;
 
   /**
    *
@@ -20,21 +42,28 @@ export interface IVideoService {
     status: string,
     uploadedURL: string,
     thumbnail: string
-  ): Promise<any>;
+  ): Promise<Video>;
+
+  /**
+   * get the latest video from this repository
+   *
+   * @param repoURL the URL of the repository
+   */
+  getLatestRepoVideo(repoURL: string): Promise<Video>;
 
   /**
    * Return video with the specified video id
    * @param videoId Video Id
    * // TODO: return type
    */
-  getVideo(videoId: string): Promise<any>;
+  getVideo(videoId: string): Promise<Video>;
 
   /**
    * Return all videos owned by the user with the specified ownerId.
    * // TODO: return type
    * @param ownerId Owner Id
    */
-  getVideos(ownerId: string): Promise<any>;
+  getVideos(ownerId: string): Promise<Video[]>;
 }
 
 const videoSchema = new mongoose.Schema(
@@ -67,7 +96,12 @@ const videoSchema = new mongoose.Schema(
       type: String,
     },
     status: {
-      type: String, // TODO: How to do enums?
+      type: String,
+      enum: Object.values(RenderStatus),
+    },
+    hasWebhook: {
+      type: Boolean,
+      required: true,
     },
   },
   {timestamps: true}
@@ -76,19 +110,23 @@ const videoSchema = new mongoose.Schema(
 export const Video = mongoose.model('Video', videoSchema);
 
 export class VideoService implements IVideoService {
-  async getVideo(videoId: string): Promise<any> {
+  async getVideo(videoId: string): Promise<Video> {
     const video = await Video.findById(videoId);
     logger.info('Returning video', video);
     return video;
   }
 
-  async getRepoVideo(repoURL: string): Promise<any> {
-    const video = await Video.findOne({repositoryURL: repoURL});
+  async getLatestRepoVideo(repoURL: string): Promise<Video> {
+    const videos = await Video.find({repositoryURL: repoURL})
+      .sort({
+        createdAt: 'desc',
+      })
+      .limit(1);
     log(`Returning Video from repo ${repoURL}`);
-    return video;
+    return videos[0];
   }
 
-  async getVideos(ownerId: string): Promise<any> {
+  async getVideos(ownerId: string): Promise<Video[]> {
     const videos = await Video.find({ownerId: ownerId});
     logger.info(`Returning videos for owner ${ownerId}`, videos);
     return videos;
@@ -99,7 +137,7 @@ export class VideoService implements IVideoService {
     status: string,
     uploadedURL: string,
     thumbnail: string
-  ): Promise<any> {
+  ): Promise<Video> {
     const video = await Video.findById(videoId).update({
       status: status,
       url: uploadedURL,
@@ -117,8 +155,9 @@ export class VideoService implements IVideoService {
     gitRepoURL: string,
     status: string,
     title: string,
-    description: string
-  ): Promise<String> {
+    description: string,
+    hasWebhook: boolean
+  ): Promise<Video> {
     const video = await Video.create({
       ownerId: ownerId,
       visibility: 'PUBLIC',
@@ -128,10 +167,11 @@ export class VideoService implements IVideoService {
       repositoryURL: gitRepoURL,
       renderOptions: 'todo',
       status: status,
+      hasWebhook: hasWebhook,
     });
     const videoId = video._id.toString();
     logger.info(`Created video ${videoId}`, video);
-    return videoId;
+    return video;
   }
 }
 

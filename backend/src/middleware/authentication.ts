@@ -15,7 +15,7 @@ const dirname = path.resolve();
 
 function isAuthenticated(req: Request, res: Response, next: NextFunction) {
   if (req.isAuthenticated()) {
-    getUserInstallation(authKit(req.passport!.user.auth.access_token)!)
+    getUserInstallation(authKit(req.passport!.session.user.auth.access_token)!)
       .then(installation => {
         return next();
       })
@@ -29,7 +29,7 @@ function isAuthenticated(req: Request, res: Response, next: NextFunction) {
 async function getUserInstallation(
   kit: Octokit
 ): Promise<void | InstallationLite> {
-  kit
+  return kit
     .request('GET /user/installations')
     .catch(err => {
       throw `failed to get installations ${err}`;
@@ -42,29 +42,34 @@ async function getUserInstallation(
       if (!ourInstallations || !(ourInstallations.length > 0)) {
         throw 'user has not installed our app';
       }
+
       return ourInstallations[0];
+    })
+    .catch(err => {
+      log('error filtering installations', err);
+      return err;
     });
 }
 
-function getInstallationKit(userToken: string) {
-  try {
-    const kit = authKit(userToken);
-    if (!kit) {
-      throw 'failed to create authKit';
-    }
-    getUserInstallation(kit)
-      .then(ourInstallations => {
-        return installationAuth(ourInstallations!.id);
-      })
-      .catch(err => {
-        throw `failed to get installation auth ${err}`;
-      })
-      .then(installationAuth => {
-        return authKit(installationAuth!.token);
-      });
-  } catch (err) {
-    log('could not get installations for user', err);
-  }
+async function getInstallationKit(userToken: string): Promise<Octokit> {
+  return getUserInstallation(authKit(userToken)!)
+    .catch(err => {
+      log(`err ${err}`);
+      throw err;
+    })
+    .then(ourInstallations => {
+      log(`does it exist ${ourInstallations}`);
+      return installationAuth(ourInstallations!.id);
+    })
+    .catch(err => {
+      throw `failed to get installation auth ${err}`;
+    })
+    .then(installationAuth => {
+      return authKit(installationAuth!.token);
+    })
+    .catch(err => {
+      return err;
+    });
 }
 
 /**
@@ -112,4 +117,10 @@ async function installationAuth(
   return installationAuthentication;
 }
 
-export {isAuthenticated, addAuthKit, getInstallationKit, installationAuth};
+export {
+  isAuthenticated,
+  addAuthKit,
+  getInstallationKit,
+  installationAuth,
+  getUserInstallation,
+};
