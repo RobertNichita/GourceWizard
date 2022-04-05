@@ -14,7 +14,6 @@ export function Video(props) {
       <div
         className="relative rounded-lg shadow-lg bg-white max-w-md max-h-min"
         onClick={() => {
-          console.log('status, id' + status + _id);
           if (status === 'UPLOADED') {
             navigate('/video', {state: data});
           } else if (status === 'ENQUEUED') {

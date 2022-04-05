@@ -181,7 +181,7 @@ export class MockVideoService implements IVideoService {
       },
     ];
   }
-  
+
   async deleteVideo(videoId: string): Promise<Video> {
     return this.mockData[0];
   }
