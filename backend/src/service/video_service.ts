@@ -112,8 +112,8 @@ export const Video = mongoose.model('Video', videoSchema);
 export class VideoService implements IVideoService {
   async getVideo(videoId: string): Promise<Video> {
     const video = await Video.findById(videoId);
-    if (video == null) {
-      throw Error("Video not found")
+    if (video === null) {
+      throw Error('Video not found');
     }
     logger.info('Returning video', video);
     return video;
