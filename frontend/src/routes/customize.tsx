@@ -89,7 +89,6 @@ export default function customize() {
     <div>
       <div className="relative">
         <AppBanner></AppBanner>
-        <Back></Back>
       </div>
       <div className="flex h-screen items-center justify-center flex-col mx-10">
         <div className="relative flex items-start justify-center flex-col m-10 p-10 rounded-lg shadow-lg">
@@ -121,16 +120,17 @@ export default function customize() {
             <div className="flex flex-wrap -mx-3">
               <div className="w-full px-3">
                 <label className="form-label" htmlFor="grid-url">
-                  Webhook URL
+                  Webhook URL (optional)
                 </label>
                 <input
-                  className="form-input"
+                  className="form-input z-50"
                   id="grid-url"
                   value={webhookURL}
                   type="text"
                   placeholder="https://github.com/acaudwell/Gource"
                   onChange={e => {
                     e.preventDefault();
+                    setWebhookURL(e.target.value);
                     setHasWebook(e.target.value.trim() !== '');
                   }}
                 ></input>

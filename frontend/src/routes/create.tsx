@@ -157,7 +157,7 @@ export default function create() {
             <div className="flex flex-wrap -mx-3">
               <div className="w-full px-3">
                 <label className="form-label" htmlFor="grid-url">
-                  Description
+                  Description (optional)
                 </label>
                 <textarea
                   value={description}
