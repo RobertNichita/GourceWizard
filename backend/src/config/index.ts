@@ -24,7 +24,6 @@ interface GHClientConfig {
   hookSecret: string;
   appID: string;
   appKeyFile: string;
-  appName: string;
 }
 
 interface DBConfig {
@@ -39,7 +38,6 @@ interface BackEndConfig {
   ghClientConfig: GHClientConfig;
   dbConfig: DBConfig;
   url: string;
-  frontend_url: string;
   session_secret: string;
   environment: string;
   port: number;
@@ -73,7 +71,6 @@ const backEndConfig: BackEndConfig = {
     hookSecret: process.env.GH_WEBHOOK_SECRET!,
     appID: process.env.GH_APP_ID!,
     appKeyFile: process.env.GH_APP_KEY!,
-    appName: process.env.GH_APP_NAME!,
   },
   dbConfig: {
     user: process.env.DB_USER!,
@@ -83,7 +80,6 @@ const backEndConfig: BackEndConfig = {
     options: JSON.parse(process.env.DB_OPTIONS!),
   },
   url: process.env.URL!,
-  frontend_url: process.env.FRONTEND_URL!,
   session_secret: process.env.SESSION_SECRET!,
   environment: process.env.NODE_ENV!,
   port: parseInt(process.env.PORT!),
