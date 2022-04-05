@@ -29,11 +29,11 @@ export class VideoResolver {
           console.log(userId)
           console.log(video.ownerId)
           if (video.visibility !== "PUBLIC" && video.ownerId !== userId) {
-            throw new VideoNotFound(`Video not found`);
+            throw new VideoNotFound(`Video not found!`);
           }
           return video;
         } catch (error) {
-          throw new VideoNotFound(`Video not found`);
+          throw new VideoNotFound(`Video not found!`);
         }
       },
       videos: async (

@@ -33,12 +33,9 @@ export default function library(props) {
       videoService.getVideo(videoId).then((video) => {
         setIsLoading(false);
         setVideo(video);
-        
-        console.log("GOASDNKLANS")
-        console.log(video)
       }).catch((error) => {
         setIsLoading(false);
-        setErrorMessage(JSON.stringify(error));
+        setErrorMessage(error.message);
       });
     }
   }, []);
