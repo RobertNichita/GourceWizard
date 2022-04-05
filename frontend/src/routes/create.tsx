@@ -2,6 +2,7 @@ import {Button} from '../components/Button';
 import {useNavigate} from 'react-router-dom';
 import {AppBanner} from '../components/navigation/AppBanner';
 import {Back} from '../components/navigation/Back';
+import {ErrorAlert} from '../components/alert/ErrorAlert';
 import {useState} from 'react';
 
 export default function library() {
@@ -9,7 +10,40 @@ export default function library() {
 
   const [repoURL, setRepoURL] = useState('');
   const [title, setTitle] = useState('');
+  const [visibility, setVisibility] = useState('Public');
   const [description, setDescription] = useState('');
+  const [error, setError] = useState(null);
+
+  const handleSubmit = event => {
+    event.preventDefault();
+    if (!repoURL) {
+      setError({
+        title: 'Missing Repository URL',
+        description: 'The Repository URL is required before continuing.',
+      });
+    } else if (!title) {
+      setError({
+        title: 'Missing Video Title',
+        description: 'A Video Title is required before continuing.',
+      });
+    } else if (!visibility) {
+      setError({
+        title: 'Missing Video Visibility',
+        description:
+          'You must declare the visibility of the repository is required before continuing.',
+      });
+    } else {
+      setError(null);
+      navigate('/customize', {
+        state: {
+          repoURL: repoURL,
+          visibility: visibility,
+          title: title,
+          description: description,
+        },
+      });
+    }
+  };
 
   return (
     <div>
@@ -18,10 +52,17 @@ export default function library() {
         <Back></Back>
       </div>
       <div className="flex h-screen items-center justify-center flex-col mx-10">
-        <div className="flex items-start justify-center flex-col m-10 p-10 rounded-lg shadow-lg">
+        <div className="relative flex items-start justify-center flex-col m-10 p-10 rounded-lg shadow-lg">
+          <div className="absolute -top-1/4 w-3/4">
+            {error && (
+              <ErrorAlert
+                title={error.title}
+                description={error.description}
+              ></ErrorAlert>
+            )}
+          </div>
           <p className="my-2 text-5xl">Potion Room</p>
 
-          {/* Form Design from: https://v1.tailwindcss.com/components/forms# */}
           <form className="w-full max-w-lg">
             <div className="flex flex-wrap -mx-3">
               <div className="w-full px-3">
@@ -61,7 +102,14 @@ export default function library() {
                   Visibility
                 </label>
                 <div className="relative">
-                  <select className="form-input" id="grid-state">
+                  <select
+                    className="form-input"
+                    id="grid-state"
+                    onChange={e => {
+                      e.preventDefault();
+                      setVisibility(e.target.value);
+                    }}
+                  >
                     <option>Public</option>
                     <option>Private</option>
                   </select>
@@ -95,21 +143,21 @@ export default function library() {
               </div>
             </div>
 
-            <div className="flex items-end justify-end">
+            <div className="flex items-end justify-between">
               <Button
                 className="-mx-0"
-                title="Next Step ➡️"
+                title="Back 📖"
+                type="button"
                 onClick={() => {
-                  if (repoURL && title && description) {
-                    navigate('/customize', {
-                      state: {
-                        repoURL: repoURL,
-                        visibility: 'PUBLIC', // TODO: do not hardcode
-                        title: title,
-                        description: description,
-                      },
-                    });
-                  }
+                  navigate('/library');
+                }}
+              ></Button>
+              <Button
+                className="-mx-0"
+                type="submit"
+                title="Next Step ➡️"
+                onClick={e => {
+                  handleSubmit(e);
                 }}
               ></Button>
             </div>
