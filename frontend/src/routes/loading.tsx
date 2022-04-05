@@ -22,7 +22,7 @@ export default function library() {
       videoService.getVideo(videoId).then(video => {
         console.log(`Got video ${JSON.stringify(video)}`);
         if (video.status === 'UPLOADED') {
-          navigate('/video', {
+          navigate(`/video/${video._id}`, {
             state: video,
           });
         } else if (video.status === 'FAILED') {

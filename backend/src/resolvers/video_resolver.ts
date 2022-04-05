@@ -2,6 +2,7 @@ import {ExpressContext} from 'apollo-server-express';
 import logger, {log} from '../logger';
 import {IWorkerService} from '../service/worker-service';
 import {createPushHook} from '../controllers/webhooks';
+import { VideoNotFound } from '../error/video_not_found_error';
 import {IVideoService, RenderStatus} from '../service/video_service';
 import {getRepo} from '../common/util';
 
@@ -22,7 +23,19 @@ export class VideoResolver {
         context: ExpressContext,
         info: any
       ) => {
-        return this.videoService.getVideo(args.id);
+        const userId = context.req.userId;
+
+        try {
+          const video = await this.videoService.getVideo(args.id);
+          console.log(userId)
+          console.log(video.ownerId)
+          if (video.visibility !== "PUBLIC" && video.ownerId !== userId) {
+            throw new VideoNotFound(`Video not found!`);
+          }
+          return video;
+        } catch (error) {
+          throw new VideoNotFound(`Video not found!`);
+        }
       },
       videos: async (
         parent: any,
