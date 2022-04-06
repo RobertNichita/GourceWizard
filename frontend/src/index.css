@@ -3,43 +3,53 @@
 @tailwind utilities;
 
 @layer base {
-    h1 {
-      @apply text-2xl;
-      @apply text-gource-blue1;
-      @apply font-mono
-    }
-    h2 {
-      @apply text-xl;
-      @apply text-gource-blue2;
-      @apply font-mono
-    }
-    p {
-      @apply text-black;
-      @apply font-mono
-    }
+  h1 {
+    @apply text-2xl;
+    @apply text-gource-blue1;
+    @apply font-mono
   }
-  
-  @layer components {
-    .btn-blue {
-      @apply bg-gource-blue1 hover:bg-gource-blue2 hover:text-gource-blue4 text-white font-bold py-2 px-4 rounded;
-      @apply font-mono
-    }
-    .margin {
-      @apply m-2
-    }
-    .form-input {
-      @apply appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500
-    }
-    .form-label {
-      @apply block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2
-    }
+
+  h2 {
+    @apply text-xl;
+    @apply text-gource-blue2;
+    @apply font-mono
   }
-  
-  @layer utilities {
-    .filter-none {
-      filter: none;
-    }
-    .filter-grayscale {
-      filter: grayscale(100%);
-    }
+
+  p {
+    @apply text-black;
+    @apply font-mono
   }
+}
+
+@layer components {
+  .btn-blue {
+    @apply bg-gource-blue1 hover:bg-gource-blue2 hover:text-gource-blue4 text-white font-bold py-2 px-4 rounded;
+    @apply font-mono
+  }
+
+  .margin {
+    @apply m-2
+  }
+
+  .form-input {
+    @apply appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500
+  }
+
+  .form-label {
+    @apply block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2
+  }
+
+  .form-checkbox {
+    @apply block h-5 w-5 accent-gource-blue1
+  }
+}
+
+@layer utilities {
+  .filter-none {
+    filter: none;
+  }
+
+  .filter-grayscale {
+    filter: grayscale(100%);
+  }
+}

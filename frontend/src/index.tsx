@@ -14,6 +14,7 @@ import frontEndConfig from './config';
 import Loading from './routes/loading';
 import FailedRender from './routes/failed_render';
 import TimeoutRender from './routes/timeout_render';
+import Unauthenticated from './routes/unauthenticated';
 
 console.log(`🧙 Started Gource Wizard Client server at ${frontEndConfig.url}`);
 
@@ -30,6 +31,7 @@ ReactDOM.render(
           <Route path="video/:videoId" element={<Video />} />
           <Route path="video/failed" element={<FailedRender />} />
           <Route path="video/timeout" element={<TimeoutRender />} />
+          <Route path="unauthenticated" element={<Unauthenticated />} />
         </Routes>
       </BrowserRouter>
     </ApolloProvider>
