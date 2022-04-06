@@ -1,0 +1,17 @@
+FROM node:17-alpine
+
+WORKDIR /usr/src/frontend
+
+COPY . .
+# Copy .eslintrc and other dotfiles.
+COPY .* ./
+# RUN npm install react-scripts -g
+RUN npm install
+RUN npm run build
+
+ENV NODE_ENV "production"
+WORKDIR /usr/src/frontend/build
+RUN npm install serve pm2 -g
+EXPOSE 3000
+# CMD ["pm2", "serve" "." "3000"]
+CMD ["sleep", "10000000"]
