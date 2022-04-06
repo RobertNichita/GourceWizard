@@ -160,14 +160,19 @@ export const schema = gql`
     user(id: ID!): User
 
     """
-    Return videos created by the current user
+    Return the page of 6 videos offset by 6 * offset videos, created by the current user
     """
-    videos: [Video]
+    videos(offset: Int!): videoPage
 
     """
     Return video with the specified id
     """
     video(id: ID!): Video
+  }
+
+  type videoPage {
+    videos: [Video]
+    next: Boolean
   }
 
   """

@@ -15,25 +15,27 @@ export default function library() {
    * Pagination
    */
   const [page, setPage] = useState(0);
+  const [next, setNext] = useState(false);
   const [busy, setBusy] = useState(true);
   const videoService: IVideoService = new VideoService();
 
-  const deleteVideo = itemIdx => {
-    setVideos(() => {
-      const newVideos = [...videos];
-      newVideos.splice(itemIdx, 1);
-      return newVideos;
+  const updatePage = (page, next) => {
+    videoService.getVideos(page).then(videoPage => {
+      setBusy(false);
+      setVideos(videoPage.videos);
+      //TODO: update visibility of next button based on videoPage.next
     });
+  };
+
+  const deleteVideo = itemIdx => {
+    updatePage(page, next);
   };
 
   // Load videos
   useEffect(() => {
     console.log('Loading library videos');
-    videoService.getVideos(page).then(videos => {
-      setBusy(false);
-      setVideos(videos);
-    });
-  }, []);
+    updatePage(page, next);
+  }, [page]);
 
   return (
     <div className="p-20">
@@ -85,7 +87,9 @@ export default function library() {
                 title="Previous"
                 className="px-4 py-2 font-bold text-gray-700 bg-gray-200 rounded-md hover:bg-gray-400 hover:text-white"
                 onClick={() => {
-                  navigate('/library');
+                  setPage(page => {
+                    return page - 1;
+                  });
                 }}
               ></Button>
               <p className="px-10 py-2 text-gray-700 bg-gray-200 rounded-md font-mono">
@@ -95,7 +99,9 @@ export default function library() {
                 title="Next"
                 className="px-4 py-2 font-bold text-gray-700 bg-gray-200 rounded-md hover:bg-gray-400 hover:text-white"
                 onClick={() => {
-                  navigate('/library');
+                  setPage(page => {
+                    return page + 1;
+                  });
                 }}
               ></Button>
             </div>
