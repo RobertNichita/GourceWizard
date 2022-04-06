@@ -8,8 +8,16 @@ export function Video(props) {
 
   const navigate = useNavigate();
   const {data, update} = props;
-  const {title, description, createdAt, thumbnail, status, _id, hasWebhook} =
-    data;
+  const {
+    title,
+    description,
+    createdAt,
+    thumbnail,
+    status,
+    _id,
+    hasWebhook,
+    visibility,
+  } = data;
   useLayoutEffect(() => {
     window.scrollTo(0, 0);
   });
@@ -62,24 +70,28 @@ export function Video(props) {
                 e.stopPropagation();
               }}
             ></Button>
-            <Button
-              className="absolute top-1 left-1 m-0 p-0 text-lg bg-transparent hover:bg-transparent"
-              title="🔒"
-              onClick={e => {
-                // videoService.deleteVideo(_id);
-                // deleteThis();
-                e.stopPropagation();
-              }}
-            ></Button>
-            <Button
-              className="absolute top-8 left-1 m-0 p-0 text-lg bg-transparent hover:bg-transparent"
-              title="🔁"
-              onClick={e => {
-                // videoService.deleteVideo(_id);
-                // deleteThis();
-                e.stopPropagation();
-              }}
-            ></Button>
+            {visibility === 'Private' && (
+              <Button
+                className="absolute top-1 left-1 m-0 p-0 text-lg bg-transparent hover:bg-transparent"
+                title="🔒"
+                onClick={e => {
+                  // videoService.deleteVideo(_id);
+                  // deleteThis();
+                  e.stopPropagation();
+                }}
+              ></Button>
+            )}
+            {hasWebhook && (
+              <Button
+                className="absolute top-8 left-1 m-0 p-0 text-lg bg-transparent hover:bg-transparent"
+                title="🔁"
+                onClick={e => {
+                  // videoService.deleteVideo(_id);
+                  // deleteThis();
+                  e.stopPropagation();
+                }}
+              ></Button>
+            )}
           </div>
         </div>
       </div>
