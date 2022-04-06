@@ -10,12 +10,18 @@ We chose SOPS because it looked easy to use and fairly transparent. We are able 
 ## Encrypting/Opening Encrypted File
 
 ```bash
+GPG_TTY=$(tty)
+export GPG_TTY
+
 EDITOR="code --wait" sops malicious-mallory-cannot-read-this.yml
 ```
 
 ## Decrypting File
 
 ```bash
+GPG_TTY=$(tty)
+export GPG_TTY
+
 sops --decrypt malicious-mallory-cannot-read-this.yml
 ```
 
@@ -30,4 +36,20 @@ sops --decrypt malicious-mallory-cannot-read-this.yml
 
 ```bash
 ssh -i C09-Gource-Ryan.pem admin@gource-wizard.ryan.software 
+```
+
+# Installing SOPS
+
+```bash
+curl -L https://github.com/mozilla/sops/releases/download/v3.7.2/sops-v3.7.2.linux --output sops
+chmod +x sops
+```
+
+# Deploy
+
+```bash
+# SSH into VM
+git pull
+sops --decrypt docker-compose-prod.yml > docker-compose-prod.yml
+docker-compose up -d
 ```
