@@ -1,7 +1,7 @@
 import {useLocation, useNavigate} from 'react-router-dom';
 import {AppBanner} from '../components/navigation/AppBanner';
 import {Back} from '../components/navigation/Back';
-import {useEffect, useState} from 'react';
+import {useEffect} from 'react';
 import {IVideoService, VideoService} from '../services/video_service';
 import DotLoader from 'react-spinners/DotLoader';
 

@@ -2,7 +2,7 @@ import {useNavigate} from 'react-router-dom';
 import axios from 'axios';
 import frontEndConfig from '../../config';
 
-export function AppBanner(props) {
+export function AppBanner() {
   const navigate = useNavigate();
   return (
     <div>

@@ -19,16 +19,17 @@ import {ApolloServerPluginDrainHttpServer} from 'apollo-server-core';
 
 import ghEventsMiddleware from './middleware/GHEvents';
 import backEndConfig from './config';
-import {getCSP, removeHttp} from './common/util';
+import {getCSP} from './common/util';
 import {ENVIRONMENT} from './common/enum';
 import {testRouter} from './routes/testroute';
 import {ComposedResolvers} from './resolvers';
 import {VideoService} from './service/video_service';
+import { sys } from 'typescript';
 
 const PORT = config.port;
 const app = express();
 const dirname = path.resolve();
-
+app.enable('trust proxy');
 app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
 const origins = [
@@ -92,7 +93,6 @@ app.use((req, res, next) => {
 });
 
 const {user, password, host, db_name, options} = config.dbConfig;
-const dbname = db_name + '_' + process.env.NODE_ENV;
 const uri = `mongodb://${user}:${password}@${host}/`;
 
 declare module 'express-session' {
@@ -173,6 +173,7 @@ async function handleConnect(value: typeof mongoose) {
       cookie: {
         sameSite: 'lax',
         secure: backEndConfig.environment === 'production',
+        httpOnly: true,
         maxAge: 8 * 60 * 60 * 1000,
       },
       store: MongoStore.create({
@@ -188,12 +189,13 @@ async function handleConnect(value: typeof mongoose) {
     })
   );
   await afterConnect();
-  log(`successfully connected to DB ${dbname}`);
+  log(`successfully connected to DB ${db_name}`);
 }
 
 async function handleConnectErr(err: any) {
-  log(`failed to connect to Db ${dbname}`, err);
+  log(`failed to connect to Db ${db_name}`, err);
   log(`db props ${uri} ${JSON.stringify(options)}`);
+  sys.exit(1)
 }
 
 mongoose.connect(uri, options).then(handleConnect).catch(handleConnectErr);

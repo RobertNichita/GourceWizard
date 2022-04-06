@@ -15,7 +15,7 @@ import {ErrorAlert} from '../components/alert/ErrorAlert';
 import {Button} from '../components/Button';
 import {useNavigate} from 'react-router-dom';
 
-export default function library(props) {
+export default function library() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
 

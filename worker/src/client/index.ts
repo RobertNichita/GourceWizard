@@ -8,7 +8,7 @@ export interface APIClient {
     status: RenderStatus,
     uploadedURL?: string,
     thumbnail?: string
-  ): any;
+  ): void;
 }
 
 export class MockAPIClient implements APIClient {
@@ -18,9 +18,7 @@ export class MockAPIClient implements APIClient {
     uploadedURL?: string,
     thumbnail?: string
   ) {
-    logger.info(
-      `Mock API Call with ${videoId} ${status} ${uploadedURL} ${thumbnail}`
-    );
+    logger.info(`Mock API Call with ${videoId} ${status} ${uploadedURL} ${thumbnail}`);
   }
 }
 

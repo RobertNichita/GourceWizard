@@ -5,7 +5,8 @@ import {v4 as uuid} from 'uuid';
 
 async function produce(msg: String): Promise<void> {
   console.log(`Producer sending message ${msg} to consumer.`);
-  const url = 'amqp://localhost:5672'; // TODO: ENV VAR
+  // const url = 'amqp://localhost:5672'; // TODO: ENV VAR
+  const url = 'amqp://gourcerabbitmq:xA9YM9CJTXxq9b4VRoh5qNCUDKs4Hx9CHQQFToixz5pm3nmttiwPbag7CA52Cqew@localhost:8752'
 
   const queue = 'render';
 
@@ -23,7 +24,7 @@ async function produce(msg: String): Promise<void> {
 
 // Send valid request
 const payload = {
-  renderType: 'GOURCE',
+  renderType: 'GOURCE-INVALID',
   repoURL: 'https://github.com/Raieen/Raieen.git',
   // repoURL: 'https://github.com/scikit-learn/scikit-learn',
   // repoURL: 'https://github.com/linux-kernel-mirror/linux-stable.git',

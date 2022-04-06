@@ -1,0 +1,17 @@
+FROM node:17-alpine
+
+WORKDIR /usr/src/frontend
+
+COPY . .
+# Copy .eslintrc and other dotfiles.
+COPY .* ./
+ENV DISABLE_ESLINT_PLUGIN "true"
+RUN npm install
+RUN npm run build
+
+ENV NODE_ENV "production"
+
+WORKDIR /usr/src/frontend/build
+RUN npm install serve pm2 -g
+EXPOSE 3000
+CMD ["sh", "-c", "pm2 serve . --spa --no-daemon --port 3000"]
