@@ -19,7 +19,7 @@ import {ApolloServerPluginDrainHttpServer} from 'apollo-server-core';
 
 import ghEventsMiddleware from './middleware/GHEvents';
 import backEndConfig from './config';
-import {getCSP, removeHttp} from './common/util';
+import {getCSP} from './common/util';
 import {ENVIRONMENT} from './common/enum';
 import {testRouter} from './routes/testroute';
 import {ComposedResolvers} from './resolvers';
@@ -28,7 +28,7 @@ import {VideoService} from './service/video_service';
 const PORT = config.port;
 const app = express();
 const dirname = path.resolve();
-
+app.enable('trust proxy');
 app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
 const origins = [
@@ -172,6 +172,7 @@ async function handleConnect(value: typeof mongoose) {
       cookie: {
         sameSite: 'lax',
         secure: backEndConfig.environment === 'production',
+        httpOnly: true,
         maxAge: 8 * 60 * 60 * 1000,
       },
       store: MongoStore.create({
