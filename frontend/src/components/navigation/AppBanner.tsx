@@ -1,4 +1,6 @@
 import {useNavigate} from 'react-router-dom';
+import axios from 'axios';
+import frontEndConfig from '../../config';
 
 export function AppBanner(props) {
   const navigate = useNavigate();
@@ -12,7 +14,17 @@ export function AppBanner(props) {
       </button>
       <button
         className="btn-blue bg-gource-red margin font-mono fixed top-0 right-0 m-5 z-40"
-        onClick={() => console.log('there is no escape')}
+        onClick={() =>
+          axios
+            .post(
+              `${frontEndConfig.url}/api/auth/signout`,
+              {},
+              {withCredentials: true}
+            )
+            .then(response => {
+              window.location.href = frontEndConfig.url;
+            })
+        }
       >
         logout
       </button>
