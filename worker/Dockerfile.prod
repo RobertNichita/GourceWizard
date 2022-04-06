@@ -6,14 +6,10 @@ RUN apk add --no-cache git gource ffmpeg aws-cli npm
 
 # Compile and run code
 WORKDIR /worker/
-ADD package*.json /worker/
-ADD tsconfig*.json /worker/
+COPY . .
 RUN npm install typescript -g
 RUN npm install
-COPY .env /worker
-COPY . /worker
 RUN chmod +x /worker/src/render/gource.sh
 RUN npm run compile
 
-# CMD [ "node", "/worker/build/src/index.js" ]
-CMD ["sleep", "1000000000"]
+CMD [ "node", "/worker/build/src/index.js" ]
