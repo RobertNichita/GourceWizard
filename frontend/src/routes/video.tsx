@@ -1,6 +1,5 @@
 import {useLocation} from 'react-router-dom';
 import {AppBanner} from '../components/navigation/AppBanner';
-import {Back} from '../components/navigation/Back';
 import {IVideoService, Video, VideoService} from '../services/video_service';
 import {useParams} from 'react-router-dom';
 import {useEffect, useState} from 'react';
@@ -10,7 +9,7 @@ import {ErrorAlert} from '../components/alert/ErrorAlert';
 import {Button} from '../components/Button';
 import {useNavigate} from 'react-router-dom';
 
-export default function library(props) {
+export default function library() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
 

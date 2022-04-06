@@ -6,8 +6,7 @@ const httpLink = new HttpLink({
   uri: `${frontEndConfig.url}/graphql/`,
 });
 
-function handleUnauthenticatedUser(error: String): void {
-  console.log(error);
+function handleUnauthenticatedUser(): void {
   window.location.href = `${frontEndConfig.url}/unauthenticated`;
 }
 
@@ -17,7 +16,7 @@ const errorLink = onError(({graphQLErrors, networkError}) => {
     graphQLErrors.forEach(({message, locations, path, extensions}) => {
       switch (extensions.code) {
         case 'UNAUTHENTICATED':
-          handleUnauthenticatedUser('woo');
+          handleUnauthenticatedUser();
           break;
         default:
           console.log(
