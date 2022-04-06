@@ -66,7 +66,7 @@ export const schema = gql`
     This is only visible to the owner
     TODO: think about this more?
     """
-    renderOptions: String
+    renderOptions: RenderOptions
 
     """
     Status of video
@@ -87,6 +87,35 @@ export const schema = gql`
     TODO: How do we want to do dates. unix time style or string timestamps?
     """
     updatedAt: String!
+  }
+
+  """
+  start - percent of log duration to start at, 0<= start <= stop
+  stop - percent of log duration to stop at, stop <= 1
+  key - flag to display the legend
+  elasticity - elsaticity physics of file nodes moving 0.5 <= elasticity <= 3
+  bloomMultiplier - float, 0.5 <= bloomMultiplier <= 1.5
+  bloomIntensity - float, 0.5 <= bloomIntensity <= 1.5
+  title - string
+  """
+  type RenderOptions {
+    start: Float
+    stop: Float
+    key: Boolean
+    elasticity: Float
+    bloomMultiplier: Float
+    bloomIntensity: Float
+    title: String
+  }
+
+  input RenderOptionsInput {
+    start: Float
+    stop: Float
+    key: Boolean
+    elasticity: Float
+    bloomMultiplier: Float
+    bloomIntensity: Float
+    title: String
   }
 
   enum VideoStatus {
@@ -158,7 +187,7 @@ export const schema = gql`
     renderVideo(
       renderType: RenderType!
       repoURL: String!
-      renderOptions: String!
+      renderOptions: RenderOptionsInput!
       title: String!
       description: String!
       hasWebhook: Boolean!
@@ -237,8 +266,6 @@ export const schema = gql`
 //   "--key": true, // bool, -- USER
 //   "--time-scale": 1.0, // float -- ???
 //   "--elasticity": 1.0, // float -- USER
-//   "--output-framerate": 25, // Required Int Enum (25, 30, 60) -- SYSTEM
-//   "--output-ppm-stream": "-", // Should always be STDIN? -- SYSTEM,
 //   "--bloom-multiplier": 2.0, // float -- USER
 //   "--bloom-intensity": 1.5, // float -- USER
 //   "--title": "Title Here" // String -- USER

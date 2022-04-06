@@ -1,12 +1,14 @@
 import * as amqp from 'amqplib';
 import logger from '../logger';
+import {RenderOptions} from './video_service';
 
 export interface IWorkerService {
   enqueue(
     renderType: string,
     repoURL: string,
     videoId: string,
-    token: string
+    token: string,
+    renderOptions: RenderOptions
   ): any; // TODO: Define the return value
 }
 
@@ -56,7 +58,13 @@ export class WorkerService implements IWorkerService {
    * @param videoId Video ID
    * @param token User Token
    */
-  enqueue(renderType: string, repoURL: string, videoId: string, token: string) {
+  enqueue(
+    renderType: string,
+    repoURL: string,
+    videoId: string,
+    token: string,
+    renderOptions: RenderOptions
+  ) {
     if (!this.channel && !this.connection) {
       throw Error('Worker Service is not initalized.');
     }
@@ -66,6 +74,7 @@ export class WorkerService implements IWorkerService {
       repoURL: repoURL,
       videoId: videoId,
       token: token,
+      renderOptions: renderOptions,
     };
 
     logger.info('Queued render job', message);

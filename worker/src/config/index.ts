@@ -6,7 +6,7 @@ interface AWSConfig {
    * AWS Access Key
    */
   accessKey: string;
-  
+
   /**
    * AWS Secret Access Key
    */
@@ -24,7 +24,6 @@ interface AWSConfig {
 }
 
 interface QueueConfig {
-  
   /**
    * AMQP url to access message queue.
    */
@@ -34,16 +33,16 @@ interface QueueConfig {
    * Queue to consume messages.
    */
   queueName: string;
-  
+
   /**
    * Prefetch Limit, basically how many concurrent render jobs this instance of a worker
    * can handle.
-   * 
+   *
    * Setting this value too high and hitting the worker with a burst (e.g. a few thousand) jobs at once
    * will spawn the gource worker that many times. This value should be set where
    * the worker can handle cloning and render all those jobs at once
    * while, avoiding thundering herd style issues.
-   * 
+   *
    * Setting this value to 1 means that the worker can only do one job at a time.
    * School VMs and EC2 t2.mediums are comparable in throughput.
    */
@@ -54,10 +53,10 @@ interface WorkerConfig {
   awsConfig: AWSConfig;
   queueConfig: QueueConfig;
   cdnConfig: CDNConfig;
-  
+
   /**
    * URL to Gource-Wizard GraphQL API
-   * 
+   *
    * E.g. https://gource.wizard/graphql
    */
   backendURL: string;

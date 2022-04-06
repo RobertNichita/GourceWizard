@@ -10,7 +10,9 @@ export default function Unauthenticated() {
       <div className="flex h-screen items-center justify-center flex-col mx-10">
         <div className="flex items-center justify-center flex-col m-10 p-10 rounded-lg shadow-lg">
           <p className="my-2 text-4xl">😔 Unauthenticated.</p>
-          <p className="p-5">Please try logging in again.</p>
+          <p className="p-5">
+            Please try logging in again. Make sure you have installed our app!.
+          </p>
           <div className="w-full flex justify-center items-center">
             <Button
               className="-mx-0"

@@ -8,6 +8,25 @@ export enum RenderStatus {
   queued = 'ENQUEUED',
 }
 
+export interface RenderOptions {
+  start?: Number;
+  stop?: Number;
+  key?: boolean;
+  elasticity?: Number;
+  bloomMultiplier?: Number;
+  bloomIntensity?: Number;
+  title?: String;
+}
+const renderOptionsSchema = {
+  start: {type: Number},
+  stop: {type: Number},
+  key: {type: Boolean},
+  elasticity: {type: Number},
+  bloomMultiplier: {type: Number},
+  bloomIntensity: {type: Number},
+  title: {type: String},
+};
+
 export interface Video {
   _id: string;
   ownerId: string;
@@ -17,7 +36,7 @@ export interface Video {
   url?: string;
   visibility: string;
   repositoryURL: string;
-  renderOptions?: string; //TODO: make this a separate interface probs
+  renderOptions: RenderOptions; //TODO: make this a separate interface probs
   status?: RenderStatus;
   hasWebhook: boolean;
 }
@@ -29,7 +48,8 @@ export interface IVideoService {
     status: string,
     title: string,
     description: string,
-    hasWebhook: boolean
+    hasWebhook: boolean,
+    renderOptions: RenderOptions
   ): Promise<Video>;
 
   /**
@@ -99,7 +119,7 @@ const videoSchema = new mongoose.Schema<Video>(
       required: true,
     },
     renderOptions: {
-      type: String,
+      type: renderOptionsSchema,
     },
     status: {
       type: String,
@@ -180,7 +200,8 @@ export class VideoService implements IVideoService {
     status: string,
     title: string,
     description: string,
-    hasWebhook: boolean
+    hasWebhook: boolean,
+    renderOptions: RenderOptions
   ): Promise<Video> {
     const video = await Video.create({
       ownerId: ownerId,
@@ -189,9 +210,9 @@ export class VideoService implements IVideoService {
       description: description,
       thumbnail: 'https://http.cat/102',
       repositoryURL: gitRepoURL,
-      renderOptions: 'todo',
       status: status,
       hasWebhook: hasWebhook,
+      renderOptions: renderOptions,
     });
     const videoId = video._id.toString();
     logger.info(`Created video ${videoId}`, video);

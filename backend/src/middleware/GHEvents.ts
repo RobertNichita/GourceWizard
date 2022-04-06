@@ -76,7 +76,8 @@ function addPushHandler(
                   RenderStatus.queued,
                   video.title ? video.title : '',
                   video.description ? video.description : '',
-                  false
+                  false,
+                  video.renderOptions
                 );
               }
               return undefined;
@@ -87,7 +88,8 @@ function addPushHandler(
                   'GOURCE',
                   repoUrl,
                   createdVideo._id,
-                  auth.token
+                  auth.token,
+                  createdVideo.renderOptions
                 );
               }
             });
