@@ -44,6 +44,7 @@
 		"express-session": "^1.17.2",
 		"express-validator": "^6.14.0",
 		"graphql": "^15.8.0",
+		"graphql-constraint-directive": "^3.0.0",
 		"helmet": "^5.0.2",
 		"html": "^1.0.0",
 		"jsonschema": "^1.4.0",

@@ -83,7 +83,10 @@ export interface IVideoService {
    * // TODO: return type
    * @param ownerId Owner Id
    */
-  getVideos(ownerId: string): Promise<Video[]>;
+  getVideos(
+    ownerId: string,
+    offset: number
+  ): Promise<{videos: Video[]; next: boolean}>;
 
   /**
    * delete a video
@@ -170,10 +173,24 @@ export class VideoService implements IVideoService {
     return videos[0];
   }
 
-  async getVideos(ownerId: string): Promise<Video[]> {
-    const videos = await Video.find({ownerId: ownerId});
+  async getVideos(
+    ownerId: string,
+    offset: number
+  ): Promise<{videos: Video[]; next: boolean}> {
+    const videos = await Video.find({ownerId: ownerId})
+      .sort({
+        createdAt: 'desc',
+      })
+      .skip(offset * 6)
+      .limit((offset + 1) * 6);
+    const next = await Video.exists({ownerId: ownerId})
+      .sort({
+        createdAt: 'desc',
+      })
+      .skip((offset + 1) * 6)
+      .limit((offset + 2) * 6);
     logger.info(`Returning videos for owner ${ownerId}`, videos);
-    return videos;
+    return {videos, next: next !== null};
   }
 
   async setStatus(

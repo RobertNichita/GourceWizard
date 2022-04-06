@@ -43,12 +43,12 @@ export class VideoResolver {
       },
       videos: async (
         parent: any,
-        args: any,
+        args: {offset: number},
         context: ExpressContext,
         info: any
       ) => {
         const ownerId = context.req.userId!;
-        return this.videoService.getVideos(ownerId);
+        return this.videoService.getVideos(ownerId, args.offset);
       },
     },
     Mutation: {
