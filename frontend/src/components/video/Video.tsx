@@ -2,11 +2,12 @@ import {Button} from '../Button';
 import {useNavigate} from 'react-router-dom';
 import {useLayoutEffect} from 'react';
 import {IVideoService, VideoService} from '../../services/video_service';
-
+import {useEffect, useState} from 'react';
 export function Video(props) {
   const videoService: IVideoService = new VideoService();
+
   const navigate = useNavigate();
-  const {data} = props;
+  const {data, deleteThis} = props;
   const {title, description, createdAt, thumbnail, status, _id} = data;
   useLayoutEffect(() => {
     window.scrollTo(0, 0);
@@ -44,14 +45,18 @@ export function Video(props) {
               {new Date(parseInt(createdAt)).toLocaleString()}
             </p>
           </div>
-          <p className="text-base mb-4`">{description}</p>
+          <p className="text-base mb-4`">
+            {description.length > 50
+              ? `${description.substring(0, 50)}...`
+              : description}
+          </p>
           <div>
             <Button
               className="absolute top-1 right-1 m-0 p-0 text-lg bg-transparent hover:bg-transparent"
               title="❌"
               onClick={e => {
                 videoService.deleteVideo(_id);
-                navigate('/library');
+                deleteThis();
                 e.stopPropagation();
               }}
             ></Button>

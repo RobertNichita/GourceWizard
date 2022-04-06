@@ -17,6 +17,14 @@ export default function library() {
 
   const videoService: IVideoService = new VideoService();
 
+  const deleteVideo = itemIdx => {
+    setVideos(() => {
+      const newVideos = [...videos];
+      newVideos.splice(itemIdx, 1);
+      return newVideos;
+    });
+  };
+
   // Load videos
   useEffect(() => {
     console.log('Loading library videos');
@@ -49,7 +57,11 @@ export default function library() {
       <div className="flex items-center justify-center flex-col mx-10">
         <p className="margin text-center text-5xl">Library.</p>
 
-        <Videos className="text-center bg-g" items={videos}></Videos>
+        <Videos
+          className="text-center bg-g"
+          items={videos}
+          deleteVideo={deleteVideo}
+        ></Videos>
 
         <div className="flex items-center">
           <Button
