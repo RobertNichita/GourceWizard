@@ -49,6 +49,7 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "Visualizing repo $REPO_URL"
+echo "args $GOURCE_ARGS"
 # Currently FFMPEG_ARGS is hard coded to below in the worker:
 # -i - -preset ultrafast -pix_fmt yuv420p -start_number 0 -hls_time 2 -hls_list_size 0 -hls_segment_filename $FILE_NAME-%06d.ts -f hls $FILE_NAME.m3u8
 # Which generates a list of mpeg transport streams called ${videoId}-0000XXX.ts in order of time.

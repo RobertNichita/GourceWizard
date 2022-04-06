@@ -32,9 +32,8 @@ const payload = {
 
 // https://github.com/linux-kernel-mirror/linux-stable.git
 // for (let index = 0; index < 50; index++) {
-  produce(JSON.stringify(payload));
+produce(JSON.stringify(payload));
 // }
-
 
 // Send invalid message
 // produce(`Producer ${Date().toString()}`);

@@ -1,6 +1,16 @@
 import {ApolloQueryResult, FetchResult, gql} from '@apollo/client';
 import gqlClient from '.';
 
+export interface RenderOptions {
+  start?: number;
+  stop?: number;
+  key?: boolean;
+  elasticity?: number;
+  bloomMultiplier?: number;
+  bloomIntensity?: number;
+  title?: string;
+}
+
 export interface IVideoService {
   getVideos(page: number): Promise<Video[]>;
 
@@ -11,7 +21,8 @@ export interface IVideoService {
     repoURL: string,
     title: string,
     description: string,
-    hasWebhook: boolean
+    hasWebhook: boolean,
+    renderOptions?: RenderOptions
   ): Promise<Video>;
 
   deleteVideo(videoId: string): Promise<Video>;
@@ -92,7 +103,16 @@ export class VideoService implements IVideoService {
     repoURL: string,
     title: string,
     description: string,
-    hasWebhook: boolean
+    hasWebhook: boolean,
+    renderOptions = {
+      bloomIntensity: 1.5,
+      bloomMultiplier: 1.5,
+      elasticity: 1,
+      key: true,
+      start: 0.1,
+      stop: 0.7,
+      title: 'kekw',
+    }
   ): Promise<Video> {
     return gqlClient
       .mutate({
@@ -103,20 +123,28 @@ export class VideoService implements IVideoService {
             $title: String!
             $description: String!
             $hasWebhook: Boolean!
+            $renderOptions: RenderOptionsInput!
           ) {
             renderVideo(
               renderType: $renderType
               repoURL: $repoURL
               title: $title
               description: $description
-              renderOptions: "xd"
+              renderOptions: $renderOptions
               hasWebhook: $hasWebhook
             ) {
               _id
             }
           }
         `,
-        variables: {renderType, repoURL, title, description, hasWebhook},
+        variables: {
+          renderType,
+          repoURL,
+          title,
+          description,
+          hasWebhook,
+          renderOptions,
+        },
       })
       .then(
         (

@@ -3,7 +3,7 @@ import logger from './logger';
 import config from './config';
 import {GourceVideoRenderer, RenderStatus, VideoRenderer} from './render';
 import {APIClient, GraphQLAPIClient} from './client';
-import {validateGourceSchema} from './schema/gource-schema';
+import {RenderOptions, validateGourceSchema} from './schema/gource-schema';
 
 async function consume(): Promise<void> {
   const apiClient: APIClient = new GraphQLAPIClient(config.backendURL);
@@ -19,6 +19,31 @@ async function consume(): Promise<void> {
   channel.assertQueue(queue, {
     durable: true,
   });
+
+  function insertRenderOptions(base: string, opts: RenderOptions): string {
+    if (opts.key) {
+      base = '--key '.concat(base);
+    }
+    if (opts.start) {
+      base = `--start-position ${opts.start} `.concat(base);
+    }
+    if (opts.stop) {
+      base = `--stop-position ${opts.stop} `.concat(base);
+    }
+    if (opts.title) {
+      base = `--title "${opts.title}" `.concat(base);
+    }
+    if (opts.elasticity) {
+      base = `--elasticity ${opts.elasticity} `.concat(base);
+    }
+    if (opts.bloomIntensity) {
+      base = `--bloom-multiplier ${opts.bloomIntensity} `.concat(base);
+    }
+    if (opts.bloomMultiplier) {
+      base = `--bloom-intensity ${opts.bloomMultiplier} `.concat(base);
+    }
+    return base;
+  }
 
   channel.prefetch(prefetchLimit);
 
@@ -53,9 +78,13 @@ async function consume(): Promise<void> {
       const repoURL = jsonMessage.repoURL;
       const videoId = jsonMessage.videoId;
       const token = jsonMessage.token;
+      const renderOptions = jsonMessage.renderOptions;
 
       // TODO: generate the string from the arguments.a
-      const gourceArgs = '-r 25 -c 4 -s 0.1 -1280x720 --key -o -';
+      const gourceArgs = insertRenderOptions(
+        '-r 25 -c 4 -s 0.1 -1280x720 -o -',
+        renderOptions
+      );
 
       // Create HLS stream using ultrafast present to save time
       // and yuv420p pixel format (See "Encoding for dumb players" https://trac.ffmpeg.org/wiki/Encode/H.264)
