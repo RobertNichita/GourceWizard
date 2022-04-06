@@ -27,7 +27,7 @@ export default function library() {
     });
   };
 
-  const deleteVideo = itemIdx => {
+  const updateLibraryPage = () => {
     updatePage(page, next);
   };
 
@@ -79,7 +79,7 @@ export default function library() {
             <Videos
               className="text-center bg-g"
               items={videos}
-              deleteVideo={deleteVideo}
+              update={updateLibraryPage}
             ></Videos>
 
             <div className="flex items-center justify-center">

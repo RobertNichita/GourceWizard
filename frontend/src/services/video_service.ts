@@ -90,6 +90,7 @@ export class VideoService implements IVideoService {
               status
               _id
               url
+              hasWebhook
             }
           }
         `,

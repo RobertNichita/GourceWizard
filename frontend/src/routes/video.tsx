@@ -23,6 +23,7 @@ export default function library(props) {
     createdAt: '1',
     thumbnail: 'https://http.cat/404',
     url: testVideo,
+    hasWebhook: false,
   });
   const [errorMessage, setErrorMessage] = useState<String>();
 
@@ -74,25 +75,34 @@ export default function library(props) {
                 url={video.url}
               />
             </a>
-            <div className="mt-5 max-w-fit">
-              <p className="text-base mb-4 ">{video.description}</p>
-            </div>
+            {video.hasWebhook && (
+              <div className="mt-1 mr-1 mb-1 max-w-fit">
+                <p className="text-sm">
+                  🔁 This video is set to be re-rendered on every commit.
+                </p>
+              </div>
+            )}
+            {video.description && (
+              <div className="mt-5 max-w-fit">
+                <label className="form-label" htmlFor="grid-title">
+                  Description
+                </label>
+                <p className="text-base mb-4 ">{video.description}</p>
+              </div>
+            )}
 
             <div className="flex flex-row">
               <Button
-                className=""
+                className="ml-0 pl-2"
                 title="📖 Back"
                 onClick={() => {
                   navigate('/library');
                 }}
               ></Button>
               <Button
-                className=""
+                className="pl-2"
                 title="🔗 Share with Friends"
                 onClick={e => {
-                  // videoService.deleteVideo(_id);
-                  // deleteThis();
-                  // console.log(this.state.textToCopy);
                   navigator.clipboard.writeText(window.location.href);
                   e.stopPropagation();
                 }}

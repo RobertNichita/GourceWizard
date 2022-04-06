@@ -1,7 +1,7 @@
 import {Video} from './Video';
 
 export function Videos(props) {
-  const {items, deleteVideo} = props;
+  const {items, update} = props;
   if (items.length === 0) {
     return (
       <div className="py-20 m-5">
@@ -14,11 +14,7 @@ export function Videos(props) {
     return (
       <div className="grid grid-cols-3">
         {items.map((item, idx) => (
-          <Video
-            key={`item-idx-${idx}`}
-            data={item}
-            deleteThis={() => deleteVideo(idx)}
-          />
+          <Video key={`item-idx-${idx}`} data={item} update={() => update()} />
         ))}
       </div>
     );

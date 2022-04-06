@@ -7,7 +7,7 @@ export function Video(props) {
   const videoService: IVideoService = new VideoService();
 
   const navigate = useNavigate();
-  const {data, deleteThis} = props;
+  const {data, update} = props;
   const {title, description, createdAt, thumbnail, status, _id, hasWebhook} =
     data;
   useLayoutEffect(() => {
@@ -58,7 +58,7 @@ export function Video(props) {
               title="❌"
               onClick={e => {
                 videoService.deleteVideo(_id);
-                deleteThis();
+                update();
                 e.stopPropagation();
               }}
             ></Button>
