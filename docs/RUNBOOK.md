@@ -49,7 +49,9 @@ chmod +x sops
 
 ```bash
 # SSH into VM
+GPG_TTY=$(tty)
+export GPG_TTY
 git pull
-sops --decrypt docker-compose-prod.yml > docker-compose-prod.yml
-docker-compose up -d
+sops --decrypt docker-compose-prod.yml > docker-compose.yml
+docker-compose up --build -d
 ```
