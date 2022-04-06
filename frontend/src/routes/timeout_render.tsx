@@ -1,7 +1,7 @@
 import {AppBanner} from '../components/navigation/AppBanner';
 import {Back} from '../components/navigation/Back';
 
-export default function TimeoutRender(props) {
+export default function TimeoutRender() {
   return (
     <div>
       <div className="relative">

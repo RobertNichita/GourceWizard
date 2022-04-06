@@ -30,7 +30,7 @@ Talk about front end. React, tailwind and stuff.
 
 Talk about back end. GraphQL and stuff.
 
-#### Authentication with GitHub
+#### Authentication/Webhook with GitHub
 
 Talk about GitHub.
 
@@ -80,6 +80,10 @@ Security Group/Firewall
 - Sentry
 - UptimeRobot for basic uptime of the service.
 
+- https://uptimerobot.com/
+- RabbitMQ
+- Logs are saved, we can look at nginx logs and our application logs at any time.
+
 ## Challenges
 
 **Task:** What is the top 3 most challenging things that you have learned/developed for you app? Please restrict your answer to only three items. 
@@ -95,3 +99,9 @@ Security Group/Firewall
 # One more thing? 
 
 **Task:** Any additional comment you want to share with the course staff? 
+
+We committed some secrets while developing, but we burned all of them ;)
+
+Production secrets are encrypted using [Mozilla SOPS](https://github.com/mozilla/sops).
+
+If we had access to better servers (better specs, GPUs, ect.) then we could make the workers render videos faster.

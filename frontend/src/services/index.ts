@@ -6,7 +6,7 @@ const httpLink = new HttpLink({
   uri: `${frontEndConfig.url}/graphql/`,
 });
 
-function handleUnauthenticatedUser(error: any): void {
+function handleUnauthenticatedUser(error: String): void {
   console.log(error);
   window.location.href = `${frontEndConfig.url}/unauthenticated`;
 }

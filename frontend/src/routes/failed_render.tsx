@@ -1,7 +1,7 @@
 import {AppBanner} from '../components/navigation/AppBanner';
 import {Back} from '../components/navigation/Back';
 
-export default function FailedRender(props) {
+export default function FailedRender() {
   return (
     <div>
       <div className="relative">

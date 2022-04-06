@@ -24,7 +24,7 @@ See https://github.com/acaudwell/Gource/wiki/Controls
     "gource": {
         // All fields are optional.
         // "-f": true, // -f // Not necessary
-        "resolution": "-1280x720", // -1280x720 -- USER
+        "resolution": "-1280x720", // -1280x720 -- HARD CODE (pass into args: -1280x720)
         "--start-date": "'YYYY-MM-DD hh:mm:ss +tz", // --start-date 'YYYY-MM-DD hh:mm:ss +tz' --- USER
         "--stop-date":  "'YYYY-MM-DD hh:mm:ss +tz",  // Stop at a date and optional time -- USER
         "--stop-at-time": 1, // seconds... stop after 30 seconds? -- SYSTEM
@@ -32,8 +32,8 @@ See https://github.com/acaudwell/Gource/wiki/Controls
         "--key": true, // bool, -- USER
         "--time-scale": 1.0, // float -- ???
         "--elasticity": 1.0, // float -- USER
-        "--output-framerate": 25, // Required Int Enum (25, 30, 60) -- SYSTEM
-        "--output-ppm-stream": "-", // Should always be STDIN? -- SYSTEM,
+        "--output-framerate": 25, // Required Int Enum (25, 30, 60) -- SYSTEM -- HARD CODE (pass into args:  -r 25)
+        "--output-ppm-stream": "-", // Should always be STDIN? -- SYSTEM, -- HARD CODE (pass into args: -o -)
         "--bloom-multiplier": 2.0, // float -- USER
         "--bloom-intensity": 1.5, // float -- USER
         "--title": "Title Here" // String -- USER

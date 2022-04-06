@@ -1,6 +1,6 @@
 import {useNavigate} from 'react-router-dom';
 
-export function AppBanner(props) {
+export function AppBanner() {
   const navigate = useNavigate();
   return (
     <div>

@@ -92,7 +92,6 @@ app.use((req, res, next) => {
 });
 
 const {user, password, host, db_name, options} = config.dbConfig;
-const dbname = db_name + '_' + process.env.NODE_ENV;
 const uri = `mongodb://${user}:${password}@${host}/`;
 
 declare module 'express-session' {
@@ -188,11 +187,11 @@ async function handleConnect(value: typeof mongoose) {
     })
   );
   await afterConnect();
-  log(`successfully connected to DB ${dbname}`);
+  log(`successfully connected to DB ${db_name}`);
 }
 
 async function handleConnectErr(err: any) {
-  log(`failed to connect to Db ${dbname}`, err);
+  log(`failed to connect to Db ${db_name}`, err);
   log(`db props ${uri} ${JSON.stringify(options)}`);
 }
 
