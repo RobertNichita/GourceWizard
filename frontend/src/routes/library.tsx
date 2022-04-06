@@ -80,7 +80,7 @@ export default function library() {
               deleteVideo={deleteVideo}
             ></Videos>
 
-            <div className="flex items-center">
+            <div className="flex items-center justify-center">
               <Button
                 title="Previous"
                 className="px-4 py-2 font-bold text-gray-700 bg-gray-200 rounded-md hover:bg-gray-400 hover:text-white"
