@@ -66,7 +66,7 @@ export interface IVideoService {
   getVideos(ownerId: string): Promise<Video[]>;
 }
 
-const videoSchema = new mongoose.Schema(
+const videoSchema = new mongoose.Schema<Video>(
   {
     ownerId: {
       type: String,
@@ -112,12 +112,20 @@ export const Video = mongoose.model('Video', videoSchema);
 export class VideoService implements IVideoService {
   async getVideo(videoId: string): Promise<Video> {
     const video = await Video.findById(videoId);
+    if (video === null) {
+      throw Error('Video not found');
+    }
     logger.info('Returning video', video);
     return video;
   }
 
+  /**
+   *
+   * @param repoURL the URL of the repo being queried
+   * @returns the latest video from this repo which has webhook enabled
+   */
   async getLatestRepoVideo(repoURL: string): Promise<Video> {
-    const videos = await Video.find({repositoryURL: repoURL})
+    const videos = await Video.find({repositoryURL: repoURL, hasWebhook: true})
       .sort({
         createdAt: 'desc',
       })

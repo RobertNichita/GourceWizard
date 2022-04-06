@@ -26,5 +26,8 @@ function getCSP(cspList: string[], env: string) {
 function removeHttp(url: string) {
   return url.replace(/^https?:\/\//, '');
 }
+function getRepo(repoUrl: string) {
+  return repoUrl.split('/')[4].split('.')[0];
+}
 
-export {getCaller, getCSP, removeHttp};
+export {getCaller, getCSP, removeHttp, getRepo};
