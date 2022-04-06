@@ -8,11 +8,13 @@ export function Video(props) {
 
   const navigate = useNavigate();
   const {data, deleteThis} = props;
-  const {title, description, createdAt, thumbnail, status, _id} = data;
+  const {title, description, createdAt, thumbnail, status, _id, hasWebhook} =
+    data;
   useLayoutEffect(() => {
     window.scrollTo(0, 0);
   });
 
+  console.log(data);
   return (
     <div className="flex justify-center m-2 hover:opacity-75">
       <div
@@ -57,6 +59,24 @@ export function Video(props) {
               onClick={e => {
                 videoService.deleteVideo(_id);
                 deleteThis();
+                e.stopPropagation();
+              }}
+            ></Button>
+            <Button
+              className="absolute top-1 left-1 m-0 p-0 text-lg bg-transparent hover:bg-transparent"
+              title="🔒"
+              onClick={e => {
+                // videoService.deleteVideo(_id);
+                // deleteThis();
+                e.stopPropagation();
+              }}
+            ></Button>
+            <Button
+              className="absolute top-8 left-1 m-0 p-0 text-lg bg-transparent hover:bg-transparent"
+              title="🔁"
+              onClick={e => {
+                // videoService.deleteVideo(_id);
+                // deleteThis();
                 e.stopPropagation();
               }}
             ></Button>

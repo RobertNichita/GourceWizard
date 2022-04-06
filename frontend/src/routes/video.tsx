@@ -59,16 +59,7 @@ export default function library(props) {
     } else {
       content = (
         <div>
-          <div className="relative flex items-start justify-center flex-col m-10 p-10 rounded-lg shadow-lg">
-            <div className="">
-              <Button
-                className="absolute left-3 -bottom-20 pl-3"
-                title="Back 📖"
-                onClick={() => {
-                  navigate('/library');
-                }}
-              ></Button>
-            </div>
+          <div className="flex items-start justify-center flex-col m-10 p-10 rounded-lg shadow-lg">
             <div className="mb-4 flex justify-start items-end">
               <p className="mr-2 text-5xl">{video.title}</p>
               <p className="mx-2 text-gray-500 text-2xl">
@@ -85,6 +76,27 @@ export default function library(props) {
             </a>
             <div className="mt-5 max-w-fit">
               <p className="text-base mb-4 ">{video.description}</p>
+            </div>
+
+            <div className="flex flex-row">
+              <Button
+                className=""
+                title="📖 Back"
+                onClick={() => {
+                  navigate('/library');
+                }}
+              ></Button>
+              <Button
+                className=""
+                title="🔗 Share with Friends"
+                onClick={e => {
+                  // videoService.deleteVideo(_id);
+                  // deleteThis();
+                  // console.log(this.state.textToCopy);
+                  navigator.clipboard.writeText(window.location.href);
+                  e.stopPropagation();
+                }}
+              ></Button>
             </div>
           </div>
         </div>
