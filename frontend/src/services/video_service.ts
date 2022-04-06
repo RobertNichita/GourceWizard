@@ -1,8 +1,18 @@
 import {ApolloQueryResult, FetchResult, gql} from '@apollo/client';
 import gqlClient from '.';
 
+export interface RenderOptions {
+  start?: number;
+  stop?: number;
+  key?: boolean;
+  elasticity?: number;
+  bloomMultiplier?: number;
+  bloomIntensity?: number;
+  title?: string;
+}
+
 export interface IVideoService {
-  getVideos(page: number): Promise<Video[]>;
+  getVideos(page: number): Promise<{videos: Video[]; next: boolean}>;
 
   getVideo(videoId: string): Promise<Video>;
 
@@ -11,7 +21,8 @@ export interface IVideoService {
     repoURL: string,
     title: string,
     description: string,
-    hasWebhook: boolean
+    hasWebhook: boolean,
+    renderOptions?: RenderOptions
   ): Promise<Video>;
 
   deleteVideo(videoId: string): Promise<Video>;
@@ -38,26 +49,32 @@ export class VideoService implements IVideoService {
     return video.data.video;
   }
 
-  async getVideos(page: number): Promise<Video[]> {
+  async getVideos(page: number): Promise<{videos: Video[]; next: boolean}> {
     const videos = await gqlClient.query({
       query: gql`
-        query {
-          videos {
-            title
-            description
-            createdAt
-            thumbnail
-            status
-            _id
-            url
+        query ($page: Int!) {
+          videos(offset: $page) {
+            videos {
+              title
+              description
+              createdAt
+              thumbnail
+              status
+              _id
+              url
+              hasWebhook
+              visibility
+            }
+            next
           }
         }
       `,
+      variables: {page},
       fetchPolicy: 'network-only',
       partialRefetch: true,
     });
     console.log(videos.data.videos);
-    return videos.data.videos;
+    return {videos: videos.data.videos.videos, next: videos.data.videos.next};
   }
 
   getVideo(videoId: string): Promise<Video> {
@@ -96,8 +113,11 @@ export class VideoService implements IVideoService {
     repoURL: string,
     title: string,
     description: string,
-    hasWebhook: boolean
+    hasWebhook: boolean,
+    renderOptions: RenderOptions
   ): Promise<Video> {
+    console.log('SERVER');
+    console.log(renderOptions);
     return gqlClient
       .mutate({
         mutation: gql`
@@ -107,20 +127,28 @@ export class VideoService implements IVideoService {
             $title: String!
             $description: String!
             $hasWebhook: Boolean!
+            $renderOptions: RenderOptionsInput!
           ) {
             renderVideo(
               renderType: $renderType
               repoURL: $repoURL
               title: $title
               description: $description
-              renderOptions: "xd"
+              renderOptions: $renderOptions
               hasWebhook: $hasWebhook
             ) {
               _id
             }
           }
         `,
-        variables: {renderType, repoURL, title, description, hasWebhook},
+        variables: {
+          renderType,
+          repoURL,
+          title,
+          description,
+          hasWebhook,
+          renderOptions,
+        },
       })
       .then(
         (
@@ -215,8 +243,8 @@ export class MockVideoService implements IVideoService {
     return this.mockData[0];
   }
 
-  async getVideos(page: number): Promise<Video[]> {
-    return this.mockData;
+  async getVideos(page: number): Promise<{videos: Video[]; next: boolean}> {
+    return {videos: this.mockData, next: false};
   }
 
   async createVideo(
@@ -243,4 +271,5 @@ export interface Video {
   _id: string;
   url: string | null;
   hasWebhook: boolean;
+  visibility?: string;
 }

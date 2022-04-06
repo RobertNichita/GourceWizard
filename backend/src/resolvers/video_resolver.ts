@@ -3,7 +3,11 @@ import logger, {log} from '../logger';
 import {IWorkerService} from '../service/worker-service';
 import {createPushHook} from '../controllers/webhooks';
 import {VideoNotFound} from '../error/video_not_found_error';
-import {IVideoService, RenderStatus} from '../service/video_service';
+import {
+  IVideoService,
+  RenderOptions,
+  RenderStatus,
+} from '../service/video_service';
 import {getRepo} from '../common/util';
 
 export class VideoResolver {
@@ -39,12 +43,12 @@ export class VideoResolver {
       },
       videos: async (
         parent: any,
-        args: any,
+        args: {offset: number},
         context: ExpressContext,
         info: any
       ) => {
         const ownerId = context.req.userId!;
-        return this.videoService.getVideos(ownerId);
+        return this.videoService.getVideos(ownerId, args.offset);
       },
     },
     Mutation: {
@@ -64,6 +68,7 @@ export class VideoResolver {
           renderType: string;
           repoURL: string;
           title: string;
+          renderOptions: RenderOptions;
           description: string;
           hasWebhook: boolean;
         },
@@ -78,14 +83,16 @@ export class VideoResolver {
           RenderStatus.queued,
           args.title,
           args.description,
-          args.hasWebhook
+          args.hasWebhook,
+          args.renderOptions
         );
         const videoId = video._id;
         this.workerService.enqueue(
           args.renderType,
           args.repoURL,
           videoId,
-          context.req.session.passport!.user.auth.access_token
+          context.req.session.passport!.user.auth.access_token,
+          args.renderOptions
         );
         return this.videoService.getVideo(videoId);
       },

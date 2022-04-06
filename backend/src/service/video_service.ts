@@ -8,6 +8,25 @@ export enum RenderStatus {
   queued = 'ENQUEUED',
 }
 
+export interface RenderOptions {
+  start?: Number;
+  stop?: Number;
+  key?: boolean;
+  elasticity?: Number;
+  bloomMultiplier?: Number;
+  bloomIntensity?: Number;
+  title?: String;
+}
+const renderOptionsSchema = {
+  start: {type: Number},
+  stop: {type: Number},
+  key: {type: Boolean},
+  elasticity: {type: Number},
+  bloomMultiplier: {type: Number},
+  bloomIntensity: {type: Number},
+  title: {type: String},
+};
+
 export interface Video {
   _id: string;
   ownerId: string;
@@ -17,7 +36,7 @@ export interface Video {
   url?: string;
   visibility: string;
   repositoryURL: string;
-  renderOptions?: string; //TODO: make this a separate interface probs
+  renderOptions: RenderOptions; //TODO: make this a separate interface probs
   status?: RenderStatus;
   hasWebhook: boolean;
 }
@@ -29,7 +48,8 @@ export interface IVideoService {
     status: string,
     title: string,
     description: string,
-    hasWebhook: boolean
+    hasWebhook: boolean,
+    renderOptions: RenderOptions
   ): Promise<Video>;
 
   /**
@@ -63,7 +83,10 @@ export interface IVideoService {
    * // TODO: return type
    * @param ownerId Owner Id
    */
-  getVideos(ownerId: string): Promise<Video[]>;
+  getVideos(
+    ownerId: string,
+    offset: number
+  ): Promise<{videos: Video[]; next: boolean}>;
 
   /**
    * delete a video
@@ -99,7 +122,7 @@ const videoSchema = new mongoose.Schema<Video>(
       required: true,
     },
     renderOptions: {
-      type: String,
+      type: renderOptionsSchema,
     },
     status: {
       type: String,
@@ -150,10 +173,24 @@ export class VideoService implements IVideoService {
     return videos[0];
   }
 
-  async getVideos(ownerId: string): Promise<Video[]> {
-    const videos = await Video.find({ownerId: ownerId});
+  async getVideos(
+    ownerId: string,
+    offset: number
+  ): Promise<{videos: Video[]; next: boolean}> {
+    const videos = await Video.find({ownerId: ownerId})
+      .sort({
+        createdAt: 'desc',
+      })
+      .skip(offset * 6)
+      .limit((offset + 1) * 6);
+    const next = await Video.exists({ownerId: ownerId})
+      .sort({
+        createdAt: 'desc',
+      })
+      .skip((offset + 1) * 6)
+      .limit((offset + 2) * 6);
     logger.info(`Returning videos for owner ${ownerId}`, videos);
-    return videos;
+    return {videos, next: next !== null};
   }
 
   async setStatus(
@@ -180,7 +217,8 @@ export class VideoService implements IVideoService {
     status: string,
     title: string,
     description: string,
-    hasWebhook: boolean
+    hasWebhook: boolean,
+    renderOptions: RenderOptions
   ): Promise<Video> {
     const video = await Video.create({
       ownerId: ownerId,
@@ -189,9 +227,9 @@ export class VideoService implements IVideoService {
       description: description,
       thumbnail: 'https://http.cat/102',
       repositoryURL: gitRepoURL,
-      renderOptions: 'todo',
       status: status,
       hasWebhook: hasWebhook,
+      renderOptions: renderOptions,
     });
     const videoId = video._id.toString();
     logger.info(`Created video ${videoId}`, video);

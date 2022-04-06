@@ -8,11 +8,22 @@
 import Ajv, {JSONSchemaType} from 'ajv';
 const ajv = new Ajv();
 
+export interface RenderOptions {
+  start?: number;
+  stop?: number;
+  key?: boolean;
+  elasticity?: number;
+  bloomMultiplier?: number;
+  bloomIntensity?: number;
+  title?: string;
+}
+
 export interface RenderRequest {
   renderType: string;
   repoURL: string;
   videoId: string;
   token: string;
+  renderOptions: RenderOptions;
 }
 
 const gourceSchema: JSONSchemaType<RenderRequest> = {
@@ -22,13 +33,18 @@ const gourceSchema: JSONSchemaType<RenderRequest> = {
     repoURL: {type: 'string'},
     videoId: {type: 'string'},
     token: {type: 'string'},
-    // gource: {
-    //     type: "object",
-    //     properties: {
-    //         resolution: {type: "string"},
-    //         "x": {type: "string"} // TODO: finish this
-    //     }
-    // }
+    renderOptions: {
+      type: 'object',
+      properties: {
+        start: {type: 'number', nullable: true},
+        stop: {type: 'number', nullable: true},
+        key: {type: 'boolean', nullable: true},
+        elasticity: {type: 'number', nullable: true},
+        bloomMultiplier: {type: 'number', nullable: true},
+        bloomIntensity: {type: 'number', nullable: true},
+        title: {type: 'string', nullable: true},
+      },
+    },
   },
   required: ['renderType', 'repoURL', 'videoId'],
   additionalProperties: false,
