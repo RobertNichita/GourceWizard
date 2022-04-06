@@ -41,6 +41,7 @@ export default function library() {
           className="fixed bottom-5 right-5 p-5 text-xl z-50"
           title="Visualize 🧪"
           onClick={() => {
+            // Pass State
             navigate('/create', {
               state: {
                 repoURL: '',
@@ -48,6 +49,12 @@ export default function library() {
                 title: '',
                 description: '',
                 hasWebhook: false,
+                displayLegend: false,
+                elasticity: 1.0,
+                bloomMult: 1.0,
+                bloomInt: 1.0,
+                start: 0,
+                stop: 1.0,
               },
             });
           }}

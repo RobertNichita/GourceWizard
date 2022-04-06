@@ -10,6 +10,12 @@ export interface FormState {
   title: string;
   description: string;
   hasWebhook: boolean;
+  displayLegend: boolean;
+  elasticity: number;
+  bloomMult: number;
+  bloomInt: number;
+  start: number;
+  stop: number;
 }
 
 export default function create() {
@@ -20,22 +26,32 @@ export default function create() {
   const [repoURL, setRepoURL] = previousState.repoURL
     ? useState(previousState.repoURL)
     : useState('');
-
   const [title, setTitle] = previousState.title
     ? useState(previousState.title)
     : useState('');
-
   const [visibility, setVisibility] = previousState.visibility
     ? useState(previousState.visibility)
     : useState('Public');
-
   const [description, setDescription] = previousState.description
     ? useState(previousState.description)
     : useState('');
-
-  const [hasWebhook] = previousState.hasWebhook
-    ? useState(previousState.hasWebhook)
-    : useState(false);
+  const [hasWebhook] = useState(previousState.hasWebhook);
+  const [displayLegend] = useState(previousState.displayLegend);
+  const [elasticity] = previousState.elasticity
+    ? useState(previousState.elasticity)
+    : useState(1.0);
+  const [bloomMult] = previousState.bloomMult
+    ? useState(previousState.bloomMult)
+    : useState(1.0);
+  const [bloomInt] = previousState.bloomInt
+    ? useState(previousState.bloomInt)
+    : useState(1.0);
+  const [start] = previousState.start
+    ? useState(previousState.start)
+    : useState(0);
+  const [stop] = previousState.stop
+    ? useState(previousState.stop)
+    : useState(1.0);
 
   const [error, setError] = useState(null);
 
@@ -60,12 +76,19 @@ export default function create() {
     } else {
       setError(null);
       navigate('/customize', {
+        // Pass State
         state: {
           repoURL: repoURL,
           visibility: visibility,
           title: title,
           description: description,
           hasWebhook: hasWebhook,
+          displayLegend: displayLegend,
+          elasticity: elasticity,
+          bloomMult: bloomMult,
+          bloomInt: bloomInt,
+          start: start,
+          stop: stop,
         },
       });
     }

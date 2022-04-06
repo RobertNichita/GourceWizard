@@ -4,6 +4,7 @@ import {AppBanner} from '../components/navigation/AppBanner';
 import {useState} from 'react';
 import {IVideoService, VideoService} from '../services/video_service';
 import {ErrorAlert} from '../components/alert/ErrorAlert';
+import {NumberInput} from '../components/NumberInput';
 
 export interface FormState {
   repoURL: string;
@@ -11,10 +12,12 @@ export interface FormState {
   title: string;
   description: string;
   hasWebhook: boolean;
-}
-
-export interface CustomizeState {
-  hasWebhook: boolean;
+  displayLegend: boolean;
+  elasticity: number;
+  bloomMult: number;
+  bloomInt: number;
+  start: number;
+  stop: number;
 }
 
 export default function customize() {
@@ -27,20 +30,34 @@ export default function customize() {
   const [repoURL] = previousState.repoURL
     ? useState(previousState.repoURL)
     : useState('');
-
   const [title] = previousState.title
     ? useState(previousState.title)
     : useState('');
-
   const [visibility] = previousState.visibility
     ? useState(previousState.visibility)
     : useState('Public');
-
   const [description] = previousState.description
     ? useState(previousState.description)
     : useState('');
-
   const [hasWebhook, setHasWebhook] = useState(previousState.hasWebhook);
+  const [displayLegend, setDisplayLegend] = useState(
+    previousState.displayLegend
+  );
+  const [elasticity, setElasticity] = previousState.elasticity
+    ? useState(previousState.elasticity)
+    : useState(1.0);
+  const [bloomMult, setBloomMult] = previousState.bloomMult
+    ? useState(previousState.bloomMult)
+    : useState(1.0);
+  const [bloomInt, setBloomInt] = previousState.bloomInt
+    ? useState(previousState.bloomInt)
+    : useState(1.0);
+  const [start, setStart] = previousState.start
+    ? useState(previousState.start)
+    : useState(0);
+  const [stop, setStop] = previousState.stop
+    ? useState(previousState.stop)
+    : useState(1.0);
 
   const [error, setError] = useState(null);
 
@@ -61,6 +78,11 @@ export default function customize() {
         title: 'Missing Video Visibility',
         description:
           'You must declare the visibility of the repository is required before continuing.',
+      });
+    } else if (start >= stop) {
+      setError({
+        title: 'Invalid Time Range',
+        description: 'Start Time cannot be equal or past Stop Time.',
       });
     } else {
       setError(null);
@@ -101,7 +123,10 @@ export default function customize() {
           {/* Form Design from: https://v1.tailwindcss.com/components/forms# */}
           <form className="w-full max-w-lg">
             <div className="flex flex-wrap">
-              <div className="w-full">
+              <label className="form-label text-xl m-2" htmlFor="grid-url">
+                TOGGLES
+              </label>
+              <div className="flex w-full">
                 <div className="flex justify-start items-center">
                   <input
                     type="checkbox"
@@ -115,20 +140,86 @@ export default function customize() {
                     Render on commit
                   </label>
                 </div>
+                <div className="flex justify-start items-center">
+                  <input
+                    type="checkbox"
+                    checked={displayLegend}
+                    className="form-checkbox m-2"
+                    onChange={e => {
+                      setDisplayLegend(e.target.checked);
+                    }}
+                  />
+                  <label className="form-label text-center m-2">
+                    Display Legend
+                  </label>
+                </div>
               </div>
+            </div>
+
+            <div className="flex flex-wrap">
+              <div className="w-full"></div>
             </div>
 
             <div className="flex flex-wrap m-2">
               <div className="w-full">
-                <label className="form-label" htmlFor="grid-url">
-                  Parameters
+                <label className="form-label text-xl" htmlFor="grid-url">
+                  Values
                 </label>
-                <p>Video customization is post-beta feature.</p>
-                <textarea
-                  className="form-input w-96 h-36 invisible"
-                  id="grid-url"
-                  placeholder="Enter a JSON object."
-                ></textarea>
+                <div className="flex flex-row items-end">
+                  <div className="mr-2 mt-2 mb-2 flex-1">
+                    <NumberInput
+                      value={elasticity}
+                      step="0.1"
+                      min="0.5"
+                      max="3.0"
+                      title="Elasticity"
+                      setValue={setElasticity}
+                    ></NumberInput>
+                  </div>
+                  <div className="m-2 flex-1">
+                    <NumberInput
+                      value={bloomMult}
+                      step="0.1"
+                      min="0.5"
+                      max="1.5"
+                      title="Bloom Multiplier"
+                      setValue={setBloomMult}
+                    ></NumberInput>
+                  </div>
+                  <div className="m-2 flex-1">
+                    <NumberInput
+                      value={bloomInt}
+                      step="0.1"
+                      min="0.5"
+                      max="1.5"
+                      title="Bloom Intensity"
+                      setValue={setBloomInt}
+                    ></NumberInput>
+                  </div>
+                </div>
+
+                <div className="flex flex-row items-end">
+                  <div className="mr-2 mt-2 mb-2 flex-1">
+                    <NumberInput
+                      value={start}
+                      step="0.1"
+                      min="0"
+                      max="1.0"
+                      title="Start"
+                      setValue={setStart}
+                    ></NumberInput>
+                  </div>
+                  <div className="m-2 flex-1">
+                    <NumberInput
+                      value={stop}
+                      step="0.1"
+                      min="0"
+                      max="1.0"
+                      title="Stop"
+                      setValue={setStop}
+                    ></NumberInput>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -138,6 +229,7 @@ export default function customize() {
                 title="Back ⬅️"
                 type="button"
                 onClick={() => {
+                  // Pass State
                   navigate('/create', {
                     state: {
                       repoURL: repoURL,
@@ -145,6 +237,12 @@ export default function customize() {
                       title: title,
                       description: description,
                       hasWebhook: hasWebhook,
+                      displayLegend: displayLegend,
+                      elasticity: elasticity,
+                      bloomMult: bloomMult,
+                      bloomInt: bloomInt,
+                      start: start,
+                      stop: stop,
                     },
                   });
                 }}
