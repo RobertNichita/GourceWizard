@@ -14,4 +14,4 @@ ENV NODE_ENV "production"
 WORKDIR /usr/src/frontend/build
 RUN npm install serve pm2 -g
 EXPOSE 3000
-CMD ["sh", "-c", "pm2 serve --spa . 3000"]
+CMD ["sh", "-c", "pm2 serve --spa . 3000 --no-daemon"]
