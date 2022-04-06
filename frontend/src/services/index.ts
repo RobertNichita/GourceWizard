@@ -8,7 +8,7 @@ const httpLink = new HttpLink({
 
 function handleUnauthenticatedUser(error: any): void {
   console.log(error);
-  window.location.href = frontEndConfig.url;
+  window.location.href = `${frontEndConfig.url}/unauthenticated`;
 }
 
 // Log any GraphQL errors or network error that occurred
