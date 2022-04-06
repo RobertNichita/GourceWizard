@@ -86,7 +86,7 @@ export default function create() {
               ></ErrorAlert>
             )}
           </div>
-          <p className="my-2 text-5xl">Potion Room</p>
+          <p className="my-2 text-5xl">Visualize.</p>
 
           {/* Form Design from: https://v1.tailwindcss.com/components/forms# */}
           <form className="w-full max-w-lg">

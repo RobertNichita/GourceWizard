@@ -47,7 +47,7 @@ export default function library() {
       </div>
 
       <div className="flex items-center justify-center flex-col mx-10">
-        <p className="margin text-center text-5xl">The Hidden Library.</p>
+        <p className="margin text-center text-5xl">Library.</p>
 
         <Videos className="text-center bg-g" items={videos}></Videos>
 
