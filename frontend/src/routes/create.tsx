@@ -3,10 +3,11 @@ import {AppBanner} from '../components/navigation/AppBanner';
 import {ErrorAlert} from '../components/alert/ErrorAlert';
 import {useLocation, useNavigate} from 'react-router-dom';
 import {useState} from 'react';
+import {VideoVisibility} from '../services/video_service';
 
 export interface FormState {
   repoURL: string;
-  visibility: string;
+  visibility: VideoVisibility;
   title: string;
   description: string;
   hasWebhook: boolean;
@@ -31,7 +32,7 @@ export default function create() {
     : useState('');
   const [visibility, setVisibility] = previousState.visibility
     ? useState(previousState.visibility)
-    : useState('Public');
+    : useState(VideoVisibility.public);
   const [description, setDescription] = previousState.description
     ? useState(previousState.description)
     : useState('');
@@ -158,12 +159,16 @@ export default function create() {
                     className="form-input"
                     id="grid-state"
                     onChange={e => {
-                      e.preventDefault();
-                      setVisibility(e.target.value);
+                      console.log(visibility);
+                      if (e.target.value === VideoVisibility.public) {
+                        setVisibility(VideoVisibility.public);
+                      } else {
+                        setVisibility(VideoVisibility.private);
+                      }
                     }}
                   >
-                    <option>Public</option>
-                    <option>Private</option>
+                    <option>{VideoVisibility.public}</option>
+                    <option>{VideoVisibility.private}</option>
                   </select>
                   <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
                     <svg

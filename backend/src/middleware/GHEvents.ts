@@ -77,6 +77,7 @@ function addPushHandler(
                   video.title ? video.title : '',
                   video.description ? video.description : '',
                   false,
+                  video.visibility,
                   video.renderOptions
                 );
               }

@@ -1,7 +1,11 @@
 import {Button} from '../Button';
 import {useNavigate} from 'react-router-dom';
 import {useLayoutEffect} from 'react';
-import {IVideoService, VideoService} from '../../services/video_service';
+import {
+  IVideoService,
+  VideoService,
+  VideoVisibility,
+} from '../../services/video_service';
 import {useEffect, useState} from 'react';
 export function Video(props) {
   const videoService: IVideoService = new VideoService();
@@ -70,7 +74,7 @@ export function Video(props) {
                 e.stopPropagation();
               }}
             ></Button>
-            {visibility === 'Private' && (
+            {visibility === VideoVisibility.private && (
               <Button
                 className="absolute top-1 left-1 m-0 p-0 text-lg bg-transparent hover:bg-transparent"
                 title="🔒"

@@ -11,6 +11,11 @@ export interface RenderOptions {
   title?: string;
 }
 
+export enum VideoVisibility {
+  public = 'PUBLIC',
+  private = 'PRIVATE',
+}
+
 export interface IVideoService {
   getVideos(page: number): Promise<{videos: Video[]; next: boolean}>;
 
@@ -22,6 +27,7 @@ export interface IVideoService {
     title: string,
     description: string,
     hasWebhook: boolean,
+    visibility: VideoVisibility,
     renderOptions?: RenderOptions
   ): Promise<Video>;
 
@@ -73,7 +79,6 @@ export class VideoService implements IVideoService {
       fetchPolicy: 'network-only',
       partialRefetch: true,
     });
-    console.log(videos.data.videos);
     return {videos: videos.data.videos.videos, next: videos.data.videos.next};
   }
 
@@ -91,6 +96,7 @@ export class VideoService implements IVideoService {
               _id
               url
               hasWebhook
+              visibility
             }
           }
         `,
@@ -111,10 +117,9 @@ export class VideoService implements IVideoService {
     title: string,
     description: string,
     hasWebhook: boolean,
+    visibility: VideoVisibility,
     renderOptions: RenderOptions
   ): Promise<Video> {
-    console.log('SERVER');
-    console.log(renderOptions);
     return gqlClient
       .mutate({
         mutation: gql`
@@ -124,6 +129,7 @@ export class VideoService implements IVideoService {
             $title: String!
             $description: String!
             $hasWebhook: Boolean!
+            $visibility: VideoVisibility!
             $renderOptions: RenderOptionsInput!
           ) {
             renderVideo(
@@ -132,6 +138,7 @@ export class VideoService implements IVideoService {
               title: $title
               description: $description
               renderOptions: $renderOptions
+              visibility: $visibility
               hasWebhook: $hasWebhook
             ) {
               _id
@@ -144,6 +151,7 @@ export class VideoService implements IVideoService {
           title,
           description,
           hasWebhook,
+          visibility,
           renderOptions,
         },
       })
@@ -268,5 +276,5 @@ export interface Video {
   _id: string;
   url: string | null;
   hasWebhook: boolean;
-  visibility?: string;
+  visibility?: VideoVisibility;
 }

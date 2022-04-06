@@ -1,7 +1,11 @@
 import {Button} from '../components/Button';
 import {Videos} from '../components/video/Videos';
 import {AppBanner} from '../components/navigation/AppBanner';
-import {IVideoService, VideoService} from '../services/video_service';
+import {
+  IVideoService,
+  VideoService,
+  VideoVisibility,
+} from '../services/video_service';
 import {useNavigate} from 'react-router-dom';
 import {useEffect, useState} from 'react';
 import DotLoader from 'react-spinners/DotLoader';
@@ -49,7 +53,7 @@ export default function library() {
             navigate('/create', {
               state: {
                 repoURL: '',
-                visibility: 'Public',
+                visibility: VideoVisibility.public,
                 title: '',
                 description: '',
                 hasWebhook: false,
