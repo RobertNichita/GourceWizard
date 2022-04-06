@@ -20,7 +20,7 @@ export function ErrorAlert(props) {
         ></path>
       </svg>
       <div>
-        <span className="font-medium">{title || "Oh no!"}</span> {description}
+        <span className="font-medium">{title || 'Oh no!'}</span> {description}
       </div>
     </div>
   );

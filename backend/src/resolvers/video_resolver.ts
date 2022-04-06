@@ -48,6 +48,16 @@ export class VideoResolver {
       },
     },
     Mutation: {
+      deleteVideo: async (
+        parent: any,
+        args: {
+          videoId: string;
+        },
+        context: ExpressContext,
+        info: any
+      ) => {
+        return await this.videoService.deleteVideo(args.videoId);
+      },
       renderVideo: async (
         parent: any,
         args: {
@@ -61,7 +71,6 @@ export class VideoResolver {
         info: any
       ) => {
         logger.info('args', args);
-        log(`ffffff${JSON.stringify(context.req.session.passport)}`);
         const ownerId = context.req.userId!;
         const video = await this.videoService.createVideo(
           ownerId,

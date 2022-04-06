@@ -146,6 +146,11 @@ export const schema = gql`
   """
   type Mutation {
     """
+    Deletes the video with the given ID
+    """
+    deleteVideo(videoId: ID!): Video
+
+    """
     Create and enqueue a render job for the given repository
     and visualization type.
     TODO: What is renderOptions going to look like?

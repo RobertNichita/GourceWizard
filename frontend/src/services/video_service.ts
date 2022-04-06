@@ -19,7 +19,23 @@ export interface IVideoService {
 
 export class VideoService implements IVideoService {
   async deleteVideo(videoId: string): Promise<Video> {
-    throw new Error('Method not implemented.');
+    const video = await gqlClient.mutate({
+      mutation: gql`
+        mutation deleteVideo($videoId: ID!) {
+          deleteVideo(videoId: $videoId) {
+            title
+            description
+            createdAt
+            thumbnail
+            status
+            _id
+            url
+          }
+        }
+      `,
+      variables: {videoId},
+    });
+    return video.data.video;
   }
 
   async getVideos(page: number): Promise<Video[]> {

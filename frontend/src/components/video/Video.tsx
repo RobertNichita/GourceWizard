@@ -1,7 +1,10 @@
 import {Button} from '../Button';
 import {useNavigate} from 'react-router-dom';
 import {useLayoutEffect} from 'react';
+import {IVideoService, VideoService} from '../../services/video_service';
+
 export function Video(props) {
+  const videoService: IVideoService = new VideoService();
   const navigate = useNavigate();
   const {data} = props;
   const {title, description, createdAt, thumbnail, status, _id} = data;
@@ -47,7 +50,8 @@ export function Video(props) {
               className="absolute top-1 right-1 m-0 p-0 text-lg bg-transparent hover:bg-transparent"
               title="❌"
               onClick={e => {
-                console.log('TODO');
+                videoService.deleteVideo(_id);
+                navigate('/library');
                 e.stopPropagation();
               }}
             ></Button>
