@@ -58,7 +58,6 @@ export default function customize() {
   const [stop, setStop] = previousState.stop
     ? useState(previousState.stop)
     : useState(1.0);
-
   const [error, setError] = useState(null);
 
   const handleSubmit = event => {
@@ -79,6 +78,33 @@ export default function customize() {
         description:
           'You must declare the visibility of the repository is required before continuing.',
       });
+    } else if (elasticity > 3 || elasticity < 0.5) {
+      setError({
+        title: 'Invalid Elasticity',
+        description: 'Elasticity must be greater than 0.5, and less than 3.0.',
+      });
+    } else if (bloomMult > 1.5 || bloomMult < 0.5) {
+      setError({
+        title: 'Invalid Bloom Multiplier',
+        description:
+          'Bloom Multiplier must be greater than 0.5, and less than 1.5.',
+      });
+    } else if (bloomInt > 1.5 || bloomInt < 0.5) {
+      setError({
+        title: 'Invalid Bloom Intensity',
+        description:
+          'Bloom Intensity must be greater than 0.5, and less than 1.5.',
+      });
+    } else if (start > 1.0 || start < 0) {
+      setError({
+        title: 'Invalid Start Time',
+        description: 'Start Time must be greater than 0.0, and less than 1.0.',
+      });
+    } else if (stop > 1.0 || stop < 0) {
+      setError({
+        title: 'Invalid Stop Time',
+        description: 'Stop Time must be greater than 0.0, and less than 1.0.',
+      });
     } else if (start >= stop) {
       setError({
         title: 'Invalid Time Range',
@@ -86,8 +112,26 @@ export default function customize() {
       });
     } else {
       setError(null);
+      const renderOptions = {
+        bloomIntensity: bloomInt,
+        bloomMultiplier: bloomMult,
+        elasticity: elasticity,
+        key: displayLegend,
+        start: start,
+        stop: stop,
+        title: title,
+      };
+      console.log('CLIENT');
+      console.log(renderOptions);
       videoService
-        .createVideo('GOURCE', repoURL, title, description, hasWebhook)
+        .createVideo(
+          'GOURCE',
+          repoURL,
+          title,
+          description,
+          hasWebhook,
+          renderOptions
+        )
         .then(video => {
           console.log(JSON.stringify(video));
           // Assume enqueued successfully
@@ -205,7 +249,7 @@ export default function customize() {
                       step="0.1"
                       min="0"
                       max="1.0"
-                      title="Start"
+                      title="Start (min 0.0)"
                       setValue={setStart}
                     ></NumberInput>
                   </div>
@@ -215,7 +259,7 @@ export default function customize() {
                       step="0.1"
                       min="0"
                       max="1.0"
-                      title="Stop"
+                      title="Stop (max 1.0)"
                       setValue={setStop}
                     ></NumberInput>
                   </div>
@@ -230,20 +274,26 @@ export default function customize() {
                 type="button"
                 onClick={() => {
                   // Pass State
+                  const args = {
+                    repoURL: repoURL,
+                    visibility: visibility,
+                    title: title,
+                    description: description,
+                    hasWebhook: hasWebhook,
+                    displayLegend: displayLegend,
+                    elasticity: elasticity,
+                    bloomMult: bloomMult,
+                    bloomInt: bloomInt,
+                    start: start,
+                    stop: stop,
+                  };
+                  console.log(args);
                   navigate('/create', {
-                    state: {
-                      repoURL: repoURL,
-                      visibility: visibility,
-                      title: title,
-                      description: description,
-                      hasWebhook: hasWebhook,
-                      displayLegend: displayLegend,
-                      elasticity: elasticity,
-                      bloomMult: bloomMult,
-                      bloomInt: bloomInt,
-                      start: start,
-                      stop: stop,
-                    },
+                    state: args,
+                    // bloomMult: bloomMult.toFixed(2),
+                    // bloomInt: bloomInt.toFixed(2),
+                    // start: start.toFixed(2),
+                    // stop: stop.toFixed(2),
                   });
                 }}
               ></Button>

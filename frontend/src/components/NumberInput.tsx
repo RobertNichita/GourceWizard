@@ -17,8 +17,7 @@ export function NumberInput(props) {
         max={max}
         placeholder="https://github.com/acaudwell/Gource.git"
         onChange={e => {
-          console.log(e.target.value);
-          setValue(e.target.value);
+          setValue(parseFloat(e.target.value));
           e.preventDefault();
         }}
       ></input>

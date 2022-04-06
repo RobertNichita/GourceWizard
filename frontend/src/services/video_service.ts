@@ -104,16 +104,10 @@ export class VideoService implements IVideoService {
     title: string,
     description: string,
     hasWebhook: boolean,
-    renderOptions = {
-      bloomIntensity: 1.5,
-      bloomMultiplier: 1.5,
-      elasticity: 1,
-      key: true,
-      start: 0.1,
-      stop: 0.7,
-      title: 'kekw',
-    }
+    renderOptions: RenderOptions
   ): Promise<Video> {
+    console.log('SERVER');
+    console.log(renderOptions);
     return gqlClient
       .mutate({
         mutation: gql`
