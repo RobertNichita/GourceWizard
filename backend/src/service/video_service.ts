@@ -64,6 +64,12 @@ export interface IVideoService {
    * @param ownerId Owner Id
    */
   getVideos(ownerId: string): Promise<Video[]>;
+
+  /**
+   * delete a video
+   * @param videoId Object Id of the video being deleted
+   */
+  deleteVideo(videoId: string): Promise<Video>;
 }
 
 const videoSchema = new mongoose.Schema<Video>(
@@ -110,6 +116,16 @@ const videoSchema = new mongoose.Schema<Video>(
 export const Video = mongoose.model('Video', videoSchema);
 
 export class VideoService implements IVideoService {
+  async deleteVideo(videoId: string): Promise<Video> {
+    log(videoId);
+    const video = await Video.findByIdAndDelete(videoId);
+    if (video === null) {
+      throw Error('Video not found for deletion');
+    }
+    log(`Deleting video ${video}`);
+    return video;
+  }
+
   async getVideo(videoId: string): Promise<Video> {
     const video = await Video.findById(videoId);
     if (video === null) {

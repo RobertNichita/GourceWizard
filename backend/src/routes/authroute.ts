@@ -13,16 +13,13 @@ router.post('/signup/', (req: Request, res: Response, next: NextFunction) => {
   return res.status(200).end('kek');
 });
 
-router.get(
-  '/signout/',
-  isAuthenticated,
-  (req: Request, res: Response, next: NextFunction) => {
-    console.log(req.session);
-    return res
-      .status(200)
-      .end(`${req.session ? JSON.stringify(req.session) : 'undefined'}`);
-  }
-);
+router.post('/signout/', (req: Request, res: Response, next: NextFunction) => {
+  log(`signing out user: ${req.session.passport!.user.user.github_id}`);
+  req.session.destroy(err => {
+    res.clearCookie('connect.sid');
+    res.redirect('/');
+  });
+});
 
 router.get(
   '/github/',
