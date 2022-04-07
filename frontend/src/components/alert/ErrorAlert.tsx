@@ -1,4 +1,7 @@
-export function ErrorAlert(props) {
+export function ErrorAlert(props: {
+  title: string | undefined;
+  description: string | undefined;
+}) {
   const {title, description} = props;
 
   // Alert from https://flowbite.com/docs/components/alerts/

@@ -78,35 +78,31 @@ export class VideoService implements IVideoService {
   }
 
   getVideo(videoId: string): Promise<Video> {
-    return (
-      gqlClient
-        .query({
-          query: gql`
-            query getVideo($id: ID!) {
-              video(id: $id) {
-                title
-                description
-                createdAt
-                thumbnail
-                status
-                _id
-                url
-              }
+    return gqlClient
+      .query({
+        query: gql`
+          query getVideo($id: ID!) {
+            video(id: $id) {
+              title
+              description
+              createdAt
+              thumbnail
+              status
+              _id
+              url
             }
-          `,
-          fetchPolicy: 'network-only',
-          partialRefetch: true,
-          variables: {id: videoId},
-        })
-        .then((result: ApolloQueryResult<any>) => {
-          if (result.error) {
-            console.log(
-              `could not get user videos due to error ${result.error}`
-            );
           }
-          return result.data!.video;
-        })
-    );
+        `,
+        fetchPolicy: 'network-only',
+        partialRefetch: true,
+        variables: {id: videoId},
+      })
+      .then((result: ApolloQueryResult<any>) => {
+        if (result.error) {
+          console.log(`could not get user videos due to error ${result.error}`);
+        }
+        return result.data!.video;
+      });
   }
   createVideo(
     renderType: string,

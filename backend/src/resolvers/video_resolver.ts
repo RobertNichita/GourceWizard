@@ -1,4 +1,4 @@
-import {ExpressContext} from 'apollo-server-express';
+import {ExpressContext, UserInputError} from 'apollo-server-express';
 import logger, {log} from '../logger';
 import {IWorkerService} from '../service/worker-service';
 import {createPushHook} from '../controllers/webhooks';
@@ -8,7 +8,8 @@ import {
   RenderOptions,
   RenderStatus,
 } from '../service/video_service';
-import {getRepo} from '../common/util';
+import {validateArgs} from './validation';
+import {renderOptionsRules, renderRules} from './validation';
 
 export class VideoResolver {
   workerService: IWorkerService;
@@ -75,6 +76,19 @@ export class VideoResolver {
         context: ExpressContext,
         info: any
       ) => {
+        const validation = validateArgs(args, renderRules);
+        if (validation && Object.keys(validation).length > 0) {
+          throw new UserInputError(`${JSON.stringify(validation)}`);
+        }
+
+        const optionsValidation = validateArgs(
+          args.renderOptions,
+          renderOptionsRules(args.renderOptions.stop)
+        );
+        if (optionsValidation && Object.keys(optionsValidation).length > 0) {
+          throw new UserInputError(`${JSON.stringify(optionsValidation)}`);
+        }
+
         logger.info('args', args);
         const ownerId = context.req.userId!;
         const video = await this.videoService.createVideo(

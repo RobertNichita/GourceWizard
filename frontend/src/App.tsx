@@ -3,7 +3,8 @@ import {Button} from './components/Button';
 import {useNavigate} from 'react-router-dom';
 import {AppBanner} from './components/navigation/AppBanner';
 
-function App() {
+function App(props) {
+  const {error} = props;
   const navigate = useNavigate();
 
   return (

@@ -24,7 +24,8 @@ import {ENVIRONMENT} from './common/enum';
 import {testRouter} from './routes/testroute';
 import {ComposedResolvers} from './resolvers';
 import {VideoService} from './service/video_service';
-import { sys } from 'typescript';
+// eslint-disable-next-line node/no-unpublished-import
+import {sys} from 'typescript';
 
 const PORT = config.port;
 const app = express();
@@ -195,7 +196,7 @@ async function handleConnect(value: typeof mongoose) {
 async function handleConnectErr(err: any) {
   log(`failed to connect to Db ${db_name}`, err);
   log(`db props ${uri} ${JSON.stringify(options)}`);
-  sys.exit(1)
+  sys.exit(1);
 }
 
 mongoose.connect(uri, options).then(handleConnect).catch(handleConnectErr);
