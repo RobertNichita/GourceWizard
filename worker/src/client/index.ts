@@ -18,7 +18,9 @@ export class MockAPIClient implements APIClient {
     uploadedURL?: string,
     thumbnail?: string
   ) {
-    logger.info(`Mock API Call with ${videoId} ${status} ${uploadedURL} ${thumbnail}`);
+    logger.info(
+      `Mock API Call with ${videoId} ${status} ${uploadedURL} ${thumbnail}`
+    );
   }
 }
 

@@ -14,6 +14,9 @@ router.post('/signup/', (req: Request, res: Response, next: NextFunction) => {
 });
 
 router.post('/signout/', (req: Request, res: Response, next: NextFunction) => {
+  if (!req.session.passport) {
+    res.redirect('/');
+  }
   log(`signing out user: ${req.session.passport!.user.user.github_id}`);
   req.session.destroy(err => {
     res.clearCookie('connect.sid');

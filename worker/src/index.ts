@@ -20,6 +20,10 @@ async function consume(): Promise<void> {
     durable: true,
   });
 
+  function sanitizeRenderOptions(input: string): string {
+    return input.replace(/[^a-zA-Z0-9]/, '');
+  }
+
   function insertRenderOptions(base: string, opts: RenderOptions): string {
     if (opts.key) {
       base = '--key '.concat(base);
@@ -31,7 +35,7 @@ async function consume(): Promise<void> {
       base = `--stop-position ${opts.stop} `.concat(base);
     }
     if (opts.title) {
-      base = `--title "${opts.title}" `.concat(base);
+      base = `--title ${opts.title} `.concat(base);
     }
     if (opts.elasticity) {
       base = `--elasticity ${opts.elasticity} `.concat(base);
@@ -80,13 +84,16 @@ async function consume(): Promise<void> {
       const token = jsonMessage.token;
       const renderOptions = jsonMessage.renderOptions;
 
-      // TODO: generate the string from the arguments.a
+      renderOptions.title = renderOptions.title
+        ? sanitizeRenderOptions(renderOptions.title.toString())
+        : undefined;
+
       const gourceArgs = insertRenderOptions(
         '-r 25 -c 4 -s 0.1 -1280x720 -o -',
         renderOptions
       );
 
-      // Create HLS stream using ultrafast present to save time
+      // Create HLS stream using ultrafast present to save timea
       // and yuv420p pixel format (See "Encoding for dumb players" https://trac.ffmpeg.org/wiki/Encode/H.264)
       // The average segment is 2 seconds long.
       // See gource.sh for details.
