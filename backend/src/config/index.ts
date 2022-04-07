@@ -56,6 +56,12 @@ interface BackEndConfig {
    * Use the backend in mock mode, where all GraphQL responses are mocks.
    */
   returnMocks: boolean;
+
+  /**
+   * Shared Secret between worker and backend to authenticate worker->backend
+   * requests.
+   */
+  workerAuthSecret: string;
 }
 
 const env = config();
@@ -90,6 +96,7 @@ const backEndConfig: BackEndConfig = {
   },
   apolloCORS: process.env.APOLLO_CORS! === 'true',
   returnMocks: process.env.RETURN_MOCKS! === 'true',
+  workerAuthSecret: process.env.WORKER_AUTH_SECRET!,
 };
 
 export default backEndConfig;

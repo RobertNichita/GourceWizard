@@ -16,16 +16,23 @@ export interface IComposedResolvers {
 export class ComposedResolvers implements IComposedResolvers {
   workerService: IWorkerService;
   videoService: IVideoService;
+  workerAuthSecret: String;
 
-  constructor(workerService: IWorkerService, videoService: IVideoService) {
+  constructor(
+    workerService: IWorkerService,
+    videoService: IVideoService,
+    workerAuthSecret: String
+  ) {
     this.workerService = workerService;
     this.videoService = videoService;
+    this.workerAuthSecret = workerAuthSecret;
   }
 
   compose() {
     const videoResolver = new VideoResolver(
       this.workerService,
-      this.videoService
+      this.videoService,
+      this.workerAuthSecret
     );
 
     // Merge all resolvers into single resolver object

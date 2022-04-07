@@ -123,7 +123,11 @@ async function afterConnect() {
 
   const server = await app.listen(PORT);
 
-  const composedResolvers = new ComposedResolvers(workerService, videoService);
+  const composedResolvers = new ComposedResolvers(
+    workerService,
+    videoService,
+    config.workerAuthSecret
+  );
 
   const apolloServer = new ApolloServer({
     typeDefs: schema,

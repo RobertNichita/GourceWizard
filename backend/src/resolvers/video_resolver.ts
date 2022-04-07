@@ -1,4 +1,4 @@
-import {ExpressContext, UserInputError} from 'apollo-server-express';
+import {ExpressContext, AuthenticationError} from 'apollo-server-express';
 import logger from '../logger';
 import {IWorkerService} from '../service/worker-service';
 import {VideoNotFound} from '../error/video_not_found_error';
@@ -20,10 +20,16 @@ import sanitize from 'mongo-sanitize';
 export class VideoResolver {
   workerService: IWorkerService;
   videoService: IVideoService;
+  workerAuthSecret: String;
 
-  constructor(workerService: IWorkerService, videoService: IVideoService) {
+  constructor(
+    workerService: IWorkerService,
+    videoService: IVideoService,
+    workerAuthSecret: String
+  ) {
     this.workerService = workerService;
     this.videoService = videoService;
+    this.workerAuthSecret = workerAuthSecret;
   }
 
   resolvers = {
@@ -142,6 +148,13 @@ export class VideoResolver {
         context: ExpressContext,
         info: any
       ) => {
+        // Check the request is actually coming from the worker.
+
+        if (context.req.headers['X-Worker-Auth'] !== this.workerAuthSecret) {
+          logger.info('worker header mismatch');
+          throw new AuthenticationError('Forbidden');
+        }
+
         return await this.videoService.setStatus(
           args.id,
           args.status,

@@ -2,8 +2,6 @@ export function NumberInput(props) {
   const {title, value, min, max, step, setValue} = props;
   return (
     <div>
-      {/* <div className="flex flex-wrap -mx-3">
-        <div className="w-full px-3"> */}
       <label className="form-label" htmlFor="grid-url">
         {title}
       </label>
@@ -22,7 +20,5 @@ export function NumberInput(props) {
         }}
       ></input>
     </div>
-    //   </div>
-    // </div>
   );
 }

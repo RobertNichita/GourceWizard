@@ -165,7 +165,7 @@ export const schema = gql`
     ): Video
 
     """
-    Update the video status.
+    Update the video status. This is an internal mutation that requires internal authorization.
     """
     updateStatus(
       id: ID!

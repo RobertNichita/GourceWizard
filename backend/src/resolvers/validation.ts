@@ -27,6 +27,9 @@ export class RangeRule implements ValidationRule<number> {
   }
 
   validate(data: number): string | undefined {
+    if (data !== 0 && !data) {
+      return 'data must be a valid number';
+    }
     return this.begin <= data && data <= this.end
       ? undefined
       : `${data} is not between defined limits [${this.begin}-${this.end}]`;
@@ -37,7 +40,6 @@ export function validateArgs(
   args: any,
   rules: {[arg: string]: {rule: ValidationRule<any>}}
 ): void {
-  log(JSON.stringify(args));
   const errors: {[arg: string]: {error: string}} = {};
 
   for (const [name, arg] of Object.entries(args)) {
