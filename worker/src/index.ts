@@ -6,7 +6,7 @@ import {APIClient, GraphQLAPIClient} from './client';
 import {RenderOptions, validateGourceSchema} from './schema/gource-schema';
 
 async function consume(): Promise<void> {
-  const apiClient: APIClient = new GraphQLAPIClient(config.backendURL);
+  const apiClient: APIClient = new GraphQLAPIClient(config.backendURL, config.workerAuthSecret);
 
   const url = config.queueConfig.AMQPUrl;
   const queue = config.queueConfig.queueName;
