@@ -5,10 +5,11 @@ import {useState} from 'react';
 import {IVideoService, VideoService} from '../services/video_service';
 import {ErrorAlert} from '../components/alert/ErrorAlert';
 import {NumberInput} from '../components/NumberInput';
+import {VideoVisibility} from '../services/video_service';
 
 export interface FormState {
   repoURL: string;
-  visibility: string;
+  visibility: VideoVisibility;
   title: string;
   description: string;
   hasWebhook: boolean;
@@ -35,7 +36,7 @@ export default function customize() {
     : useState('');
   const [visibility] = previousState.visibility
     ? useState(previousState.visibility)
-    : useState('Public');
+    : useState(VideoVisibility.public);
   const [description] = previousState.description
     ? useState(previousState.description)
     : useState('');
@@ -130,6 +131,7 @@ export default function customize() {
           title,
           description,
           hasWebhook,
+          visibility,
           renderOptions
         )
         .then(video => {

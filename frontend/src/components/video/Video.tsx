@@ -1,18 +1,32 @@
 import {Button} from '../Button';
 import {useNavigate} from 'react-router-dom';
 import {useLayoutEffect} from 'react';
-import {IVideoService, VideoService} from '../../services/video_service';
+import {
+  IVideoService,
+  VideoService,
+  VideoVisibility,
+} from '../../services/video_service';
 import {useEffect, useState} from 'react';
 export function Video(props) {
   const videoService: IVideoService = new VideoService();
 
   const navigate = useNavigate();
-  const {data, deleteThis} = props;
-  const {title, description, createdAt, thumbnail, status, _id} = data;
+  const {data, update} = props;
+  const {
+    title,
+    description,
+    createdAt,
+    thumbnail,
+    status,
+    _id,
+    hasWebhook,
+    visibility,
+  } = data;
   useLayoutEffect(() => {
     window.scrollTo(0, 0);
   });
 
+  console.log(data);
   return (
     <div className="flex justify-center m-2 hover:opacity-75">
       <div
@@ -56,10 +70,32 @@ export function Video(props) {
               title="❌"
               onClick={e => {
                 videoService.deleteVideo(_id);
-                deleteThis();
+                update();
                 e.stopPropagation();
               }}
             ></Button>
+            {visibility === VideoVisibility.private && (
+              <Button
+                className="absolute top-1 left-1 m-0 p-0 text-lg bg-transparent hover:bg-transparent"
+                title="🔒"
+                onClick={e => {
+                  // videoService.deleteVideo(_id);
+                  // deleteThis();
+                  e.stopPropagation();
+                }}
+              ></Button>
+            )}
+            {hasWebhook && (
+              <Button
+                className="absolute top-8 left-1 m-0 p-0 text-lg bg-transparent hover:bg-transparent"
+                title="🔁"
+                onClick={e => {
+                  // videoService.deleteVideo(_id);
+                  // deleteThis();
+                  e.stopPropagation();
+                }}
+              ></Button>
+            )}
           </div>
         </div>
       </div>

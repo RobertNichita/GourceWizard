@@ -1,0 +1,123 @@
+# No secrets here for Malicious Mallory, only potatoes :)
+#
+# docker-compose used for production is docker-compose-prod.yml
+# Secrets are encrypted and managed using SOPS https://github.com/mozilla/sops
+# All secrets that were committed during development have been deleted/invalidated.
+version: "3"
+services:
+    nginx-certbot:
+        image: jonasal/nginx-certbot
+        volumes:
+            - ./nginx/nginx-prod.conf:/etc/nginx/user_conf.d/nginx-prod.conf
+            - nginx_secrets:/etc/letsencrypt
+        ports:
+            - 80:80
+            - 443:443
+        depends_on:
+            - backend
+            - frontend
+        restart: always
+        environment:
+            - CERTBOT_EMAIL=potato
+    frontend:
+        container_name: frontend
+        restart: always
+        build:
+            dockerfile: Dockerfile.prod
+            context: ./frontend
+        expose:
+            - 3000
+    #
+    # Backend
+    #
+    backend:
+        build:
+            dockerfile: Dockerfile.prod
+            context: ./backend/
+        environment:
+            - GH_CLIENT_ID=potato
+            - GH_CLIENT_SECRET=potato
+            - GH_APP_ID=potato
+            - GH_APP_KEY=potato
+            - GH_APP_NAME=potato
+            - GH_WEBHOOK_SECRET=potato
+            - DB_USER=potato
+            - DB_PASS=potato
+            - DB_HOST=potato
+            - DB_NAME=potato
+            - URL=https://gource-wizard.ryan.software
+            - FRONTEND_URL=https://gource-wizard.ryan.software
+            - SESSION_SECRET=potato
+            - NODE_ENV=production
+            - PORT=4000
+            - QUEUE_URL=amqp://potato:potato@potato:5672
+            - QUEUE_NAME=render
+        depends_on:
+            - mongo
+            - rabbitmq
+        expose:
+            - 4000
+        restart: always
+    worker:
+        build:
+            dockerfile: Dockerfile.prod
+            context: ./worker/
+        environment:
+            - QUEUE_AMQP_URL=amqp://potato:potato@potato:5672
+            - QUEUE_NAME=render
+            - AWS_ACCESS_KEY_ID=potato
+            - AWS_SECRET_ACCESS_KEY=potato
+            - AWS_REGION=potato
+            - AWS_S3_BUCKET=potato
+            - CDN_ROOT=https://potato.cloudfront.net/
+            - BACKEND_URL=http://backend:4000/graphql
+            - QUEUE_PREFETCH_LIMIT=5
+        volumes:
+            - ./worker/:/worker
+        depends_on:
+            - rabbitmq
+            - mongo
+        restart: always
+    #
+    # Infrastructure
+    #
+    rabbitmq:
+        container_name: rabbitmq
+        # Needed, see docs: https://hub.docker.com/_/rabbitmq
+        hostname: rabbitmq
+        image: rabbitmq:3-management-alpine
+        restart: always
+        environment:
+            - RABBITMQ_DEFAULT_USER=potato
+            - RABBITMQ_DEFAULT_PASS=potato
+        expose:
+            # AMQP
+            - 5672
+        ports:
+            # Management UI
+            - 15672:15672
+    mongo:
+        image: mongo:5.0
+        expose:
+            - 27017
+        environment:
+            MONGO_INITDB_ROOT_USERNAME: potato
+            MONGO_INITDB_ROOT_PASSWORD: potato
+            MONGO_INITDB_DATABASE: potato
+        volumes:
+            - mongo_data:/data/db
+        restart: always
+    mongo-express:
+        image: mongo-express:0.54
+        restart: always
+        ports:
+            - 8081:8081
+        environment:
+            ME_CONFIG_MONGODB_AUTH_DATABASE: potato
+            ME_CONFIG_MONGODB_ADMINUSERNAME: potato
+            ME_CONFIG_MONGODB_ADMINPASSWORD: potato
+        depends_on:
+            - mongo
+volumes:
+    mongo_data: null
+    nginx_secrets: null

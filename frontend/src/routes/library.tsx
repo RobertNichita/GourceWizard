@@ -1,42 +1,49 @@
 import {Button} from '../components/Button';
 import {Videos} from '../components/video/Videos';
 import {AppBanner} from '../components/navigation/AppBanner';
-import {IVideoService, VideoService} from '../services/video_service';
+import {
+  IVideoService,
+  VideoService,
+  VideoVisibility,
+} from '../services/video_service';
 import {useNavigate} from 'react-router-dom';
 import {useEffect, useState} from 'react';
 import DotLoader from 'react-spinners/DotLoader';
 
 export default function library() {
   const navigate = useNavigate();
-
   const [videos, setVideos] = useState([]);
-
-  /**
-   * Pagination
-   */
-  // TODO: this
-  // eslint-disable-next-line no-unused-var
   const [page, setPage] = useState(0);
-  const [next, setNext] = useState(false);
+  const [nextButton, setNextButton] = useState(false);
+  const [backButton, setBackButton] = useState(false);
   const [busy, setBusy] = useState(true);
   const videoService: IVideoService = new VideoService();
 
-  const updatePage = (page, next) => {
+  const updatePage = page => {
     videoService.getVideos(page).then(videoPage => {
       setBusy(false);
       setVideos(videoPage.videos);
-      //TODO: update visibility of next button based on videoPage.next
+      if (page === 0) {
+        setBackButton(true);
+      } else {
+        setBackButton(false);
+      }
+      if (videoPage.next) {
+        setNextButton(false);
+      } else {
+        setNextButton(true);
+      }
     });
   };
 
-  const deleteVideo = itemIdx => {
-    updatePage(page, next);
+  const updateLibraryPage = () => {
+    updatePage(page);
   };
 
   // Load videos
   useEffect(() => {
     console.log('Loading library videos');
-    updatePage(page, next);
+    updatePage(page);
   }, [page]);
 
   return (
@@ -51,7 +58,7 @@ export default function library() {
             navigate('/create', {
               state: {
                 repoURL: '',
-                visibility: 'Public',
+                visibility: VideoVisibility.public,
                 title: '',
                 description: '',
                 hasWebhook: false,
@@ -81,12 +88,13 @@ export default function library() {
             <Videos
               className="text-center bg-g"
               items={videos}
-              deleteVideo={deleteVideo}
+              update={updateLibraryPage}
             ></Videos>
 
-            <div className="flex items-center">
+            <div className="flex items-center justify-center">
               <Button
                 title="Previous"
+                disabled={backButton}
                 className="px-4 py-2 font-bold text-gray-700 bg-gray-200 rounded-md hover:bg-gray-400 hover:text-white"
                 onClick={() => {
                   setPage(page => {
@@ -99,6 +107,7 @@ export default function library() {
               </p>
               <Button
                 title="Next"
+                disabled={nextButton}
                 className="px-4 py-2 font-bold text-gray-700 bg-gray-200 rounded-md hover:bg-gray-400 hover:text-white"
                 onClick={() => {
                   setPage(page => {

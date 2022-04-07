@@ -1,6 +1,12 @@
 import {useLocation} from 'react-router-dom';
 import {AppBanner} from '../components/navigation/AppBanner';
-import {IVideoService, Video, VideoService} from '../services/video_service';
+import {Back} from '../components/navigation/Back';
+import {
+  IVideoService,
+  Video,
+  VideoService,
+  VideoVisibility,
+} from '../services/video_service';
 import {useParams} from 'react-router-dom';
 import {useEffect, useState} from 'react';
 import DotLoader from 'react-spinners/DotLoader';
@@ -16,12 +22,16 @@ export default function library() {
   // Test video from Akamai Stream Validation and Player Test Page (https://players.akamai.com/players/hlsjs)
   const testVideo =
     'https://multiplatform-f.akamaihd.net/i/multi/will/bunny/big_buck_bunny_,640x360_400,640x360_700,640x360_1000,950x540_1500,.f4v.csmil/master.m3u8';
-  const [video, setVideo] = useState({
+  const [video, setVideo] = useState<Video>({
     title: 'Title',
     description: 'Description',
     createdAt: '1',
     thumbnail: 'https://http.cat/404',
     url: testVideo,
+    status: 'UPLOADED',
+    _id: '1',
+    hasWebhook: false,
+    visibility: VideoVisibility.public,
   });
   const [errorMessage, setErrorMessage] = useState<String>();
 
@@ -58,16 +68,7 @@ export default function library() {
     } else {
       content = (
         <div>
-          <div className="relative flex items-start justify-center flex-col m-10 p-10 rounded-lg shadow-lg">
-            <div className="">
-              <Button
-                className="absolute left-3 -bottom-20 pl-3"
-                title="Back 📖"
-                onClick={() => {
-                  navigate('/library');
-                }}
-              ></Button>
-            </div>
+          <div className="flex items-start justify-center flex-col m-10 p-10 rounded-lg shadow-lg">
             <div className="mb-4 flex justify-start items-end">
               <p className="mr-2 text-5xl">{video.title}</p>
               <p className="mx-2 text-gray-500 text-2xl">
@@ -82,8 +83,40 @@ export default function library() {
                 url={video.url}
               />
             </a>
-            <div className="mt-5 max-w-fit">
-              <p className="text-base mb-4 ">{video.description}</p>
+            {video.hasWebhook && (
+              <div className="mt-1 mr-1 mb-1 max-w-fit">
+                <p className="text-sm">
+                  🔁 This video is set to be re-rendered on every commit.
+                </p>
+              </div>
+            )}
+            {video.description && (
+              <div className="mt-5 max-w-fit">
+                <label className="form-label" htmlFor="grid-title">
+                  Description
+                </label>
+                <p className="text-base mb-4 ">{video.description}</p>
+              </div>
+            )}
+
+            <div className="flex flex-row">
+              <Button
+                className="ml-0 pl-2"
+                title="📖 Back"
+                onClick={() => {
+                  navigate('/library');
+                }}
+              ></Button>
+              {video.visibility === VideoVisibility.public && (
+                <Button
+                  className="pl-2"
+                  title="🔗 Share with Friends"
+                  onClick={e => {
+                    navigator.clipboard.writeText(window.location.href);
+                    e.stopPropagation();
+                  }}
+                ></Button>
+              )}
             </div>
           </div>
         </div>

@@ -196,6 +196,7 @@ export const schema = gql`
       title: String!
       description: String!
       hasWebhook: Boolean!
+      visibility: VideoVisibility!
     ): Video
 
     """

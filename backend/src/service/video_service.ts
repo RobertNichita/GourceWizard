@@ -8,6 +8,11 @@ export enum RenderStatus {
   queued = 'ENQUEUED',
 }
 
+export enum VideoVisibility {
+  public = 'PUBLIC',
+  private = 'PRIVATE',
+}
+
 export interface RenderOptions {
   start?: Number;
   stop?: Number;
@@ -34,7 +39,7 @@ export interface Video {
   description?: string;
   thumbnail?: string;
   url?: string;
-  visibility: string;
+  visibility: VideoVisibility;
   repositoryURL: string;
   renderOptions: RenderOptions; //TODO: make this a separate interface probs
   status?: RenderStatus;
@@ -49,6 +54,7 @@ export interface IVideoService {
     title: string,
     description: string,
     hasWebhook: boolean,
+    visibility: VideoVisibility,
     renderOptions: RenderOptions
   ): Promise<Video>;
 
@@ -218,11 +224,12 @@ export class VideoService implements IVideoService {
     title: string,
     description: string,
     hasWebhook: boolean,
+    visibility: string,
     renderOptions: RenderOptions
   ): Promise<Video> {
     const video = await Video.create({
       ownerId: ownerId,
-      visibility: 'PUBLIC',
+      visibility: visibility,
       title: title,
       description: description,
       thumbnail: 'https://http.cat/102',

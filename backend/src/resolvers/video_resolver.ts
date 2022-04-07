@@ -7,6 +7,7 @@ import {
   IVideoService,
   RenderOptions,
   RenderStatus,
+  VideoVisibility,
 } from '../service/video_service';
 import {validateArgs} from './validation';
 import {renderOptionsRules, renderRules} from './validation';
@@ -32,13 +33,15 @@ export class VideoResolver {
 
         try {
           const video = await this.videoService.getVideo(args.id);
-          console.log(userId);
-          console.log(video.ownerId);
-          if (video.visibility !== 'PUBLIC' && video.ownerId !== userId) {
-            throw new VideoNotFound('Video not found!');
+          if (
+            video.visibility !== VideoVisibility.public &&
+            video.ownerId !== userId
+          ) {
+            throw new VideoNotFound('Forbidden');
           }
           return video;
         } catch (error) {
+          console.log(error);
           throw new VideoNotFound('Video not found!');
         }
       },
@@ -72,6 +75,7 @@ export class VideoResolver {
           renderOptions: RenderOptions;
           description: string;
           hasWebhook: boolean;
+          visibility: VideoVisibility;
         },
         context: ExpressContext,
         info: any
@@ -98,6 +102,7 @@ export class VideoResolver {
           args.title,
           args.description,
           args.hasWebhook,
+          args.visibility,
           args.renderOptions
         );
         const videoId = video._id;

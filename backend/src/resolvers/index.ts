@@ -40,7 +40,7 @@ export class ComposedResolvers implements IComposedResolvers {
     const resolversComposition = {
       'Query.helloAuth': [isAuthenticatedResolver()],
       'Query.me': [isAuthenticatedResolver()],
-      'Query.video': [isAuthenticatedResolver(), userIdResolver()],
+      'Query.video': [userIdResolver()],
       'Query.videos': [isAuthenticatedResolver(), userIdResolver()],
       'Mutation.renderVideo': [
         isAuthenticatedResolver(),
