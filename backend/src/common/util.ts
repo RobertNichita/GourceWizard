@@ -22,12 +22,8 @@ function getCSP(cspList: string[], env: string) {
   });
   return res;
 }
-// https://bobbyhadz.com/blog/javascript-remove-http-https-from-url#:~:text=To%20remove%20http%3A%2F%2F%20or,http%3A%2F%2F%20part%20is%20removed.&text=Copied!,(url)%20%7B%20return%20url.
-function removeHttp(url: string) {
-  return url.replace(/^https?:\/\//, '');
-}
 function getRepo(repoUrl: string) {
   return repoUrl.split('/')[4].split('.')[0];
 }
 
-export {getCaller, getCSP, removeHttp, getRepo};
+export {getCaller, getCSP, getRepo};

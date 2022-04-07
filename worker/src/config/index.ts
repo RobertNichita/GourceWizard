@@ -60,6 +60,12 @@ interface WorkerConfig {
    * E.g. https://gource.wizard/graphql
    */
   backendURL: string;
+
+  /**
+   * Shared Secret between worker and backend to authenticate worker->backend
+   * requests.
+   */
+  workerAuthSecret: string;
 }
 
 interface CDNConfig {
@@ -93,6 +99,7 @@ const workerConfig: WorkerConfig = {
     cdnRoot: process.env.CDN_ROOT!,
   },
   backendURL: process.env.BACKEND_URL!,
+  workerAuthSecret: process.env.WORKER_AUTH_SECRET!,
 };
 
 export default workerConfig;

@@ -86,6 +86,8 @@ export class GourceVideoRenderer implements VideoRenderer {
           `${this.cdnRoot}${this.videoId}/${this.videoId}.m3u8`,
           `${this.cdnRoot}${this.videoId}/${this.videoId}-thumbnail.jpg`
         );
+      } else if (code == 124) {
+        callback(RenderStatus.timeout);
       } else {
         callback(RenderStatus.failure);
       }

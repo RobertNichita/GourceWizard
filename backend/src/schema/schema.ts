@@ -200,11 +200,7 @@ export const schema = gql`
     ): Video
 
     """
-    Update the video status.
-
-    TODO: This mutation should only be called by the render workers,
-    so we need a way to restrict this. For now it is left open.
-    This is an internal mutation.
+    Update the video status. This is an internal mutation that requires internal authorization.
     """
     updateStatus(
       id: ID!
