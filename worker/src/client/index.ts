@@ -24,8 +24,11 @@ export class MockAPIClient implements APIClient {
 
 export class GraphQLAPIClient implements APIClient {
   backendURL: string;
-  constructor(backendURL: string) {
+  workerAuthSecret: string;
+
+  constructor(backendURL: string, workerAuthSecret: string) {
     this.backendURL = backendURL;
+    this.workerAuthSecret = workerAuthSecret;
   }
 
   async setStatus(
@@ -46,7 +49,7 @@ export class GraphQLAPIClient implements APIClient {
     };
 
     logger.info('body', body);
-    const response = await axios.post(this.backendURL, body);
+    const response = await axios.post(this.backendURL, body, {headers: {"X-Worker-Auth": this.workerAuthSecret}});
     logger.info(`Successfully updated status of video ${videoId}`);
 
     if (response.status !== 200) {

@@ -1,4 +1,4 @@
-import {ExpressContext} from 'apollo-server-express';
+import {AuthenticationError, ExpressContext, ForbiddenError} from 'apollo-server-express';
 import logger, {log} from '../logger';
 import {IWorkerService} from '../service/worker-service';
 import {createPushHook} from '../controllers/webhooks';
@@ -14,10 +14,12 @@ import {getRepo} from '../common/util';
 export class VideoResolver {
   workerService: IWorkerService;
   videoService: IVideoService;
+  workerAuthSecret: String;
 
-  constructor(workerService: IWorkerService, videoService: IVideoService) {
+  constructor(workerService: IWorkerService, videoService: IVideoService, workerAuthSecret: String) {
     this.workerService = workerService;
     this.videoService = videoService;
+    this.workerAuthSecret = workerAuthSecret;
   }
 
   resolvers = {
@@ -112,6 +114,11 @@ export class VideoResolver {
         context: ExpressContext,
         info: any
       ) => {
+        // Check the request is actually coming from the worker.
+        if (context.req.headers["X-Worker-Auth"] !== this.workerAuthSecret) {
+          throw new AuthenticationError("Forbidden");
+        }
+
         return await this.videoService.setStatus(
           args.id,
           args.status,

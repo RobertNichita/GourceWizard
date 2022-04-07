@@ -12,22 +12,25 @@ import {IVideoService} from '../service/video_service';
 import {userIdResolver} from './middleware/user_id_resolver';
 
 export interface IComposedResolvers {
-  compose(): any; // TODO: type
+  compose(): any;
 }
 
 export class ComposedResolvers implements IComposedResolvers {
   workerService: IWorkerService;
   videoService: IVideoService;
+  workerAuthSecret: String
 
-  constructor(workerService: IWorkerService, videoService: IVideoService) {
+  constructor(workerService: IWorkerService, videoService: IVideoService, workerAuthSecret: String) {
     this.workerService = workerService;
     this.videoService = videoService;
+    this.workerAuthSecret = workerAuthSecret;
   }
 
   compose() {
     const videoResolver = new VideoResolver(
       this.workerService,
-      this.videoService
+      this.videoService,
+      this.workerAuthSecret
     );
 
     // Merge all resolvers into single resolver object
