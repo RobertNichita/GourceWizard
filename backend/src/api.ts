@@ -24,8 +24,7 @@ import {ENVIRONMENT} from './common/enum';
 import {testRouter} from './routes/testroute';
 import {ComposedResolvers} from './resolvers';
 import {VideoService} from './service/video_service';
-// eslint-disable-next-line node/no-unpublished-import
-import {sys} from 'typescript';
+import { sys } from 'typescript';
 
 const PORT = config.port;
 const app = express();
@@ -133,7 +132,7 @@ async function afterConnect() {
 
   const server = await app.listen(PORT);
 
-  const composedResolvers = new ComposedResolvers(workerService, videoService);
+  const composedResolvers = new ComposedResolvers(workerService, videoService, config.workerAuthSecret);
 
   const apolloServer = new ApolloServer({
     typeDefs: schema,
