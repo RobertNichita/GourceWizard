@@ -170,7 +170,6 @@ export class VideoService implements IVideoService {
               )}`
             );
           }
-          console.log(JSON.stringify(result));
           return result.data!.renderVideo;
         }
       );
@@ -272,7 +271,7 @@ export interface Video {
   description: string;
   createdAt: string;
   thumbnail: string;
-  status: string; // TODO: enum
+  status: string;
   _id: string;
   url: string | null;
   hasWebhook: boolean;

@@ -9,7 +9,7 @@ export interface IWorkerService {
     videoId: string,
     token: string,
     renderOptions: RenderOptions
-  ): any; // TODO: Define the return value
+  ): void;
 }
 
 /**
@@ -83,7 +83,6 @@ export class WorkerService implements IWorkerService {
       Buffer.from(JSON.stringify(message)),
       {persistent: true}
     );
-    // TODO: set videoId in database to status ENQUEUED
   }
 }
 

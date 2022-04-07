@@ -41,7 +41,7 @@ export interface Video {
   url?: string;
   visibility: VideoVisibility;
   repositoryURL: string;
-  renderOptions: RenderOptions; //TODO: make this a separate interface probs
+  renderOptions: RenderOptions;
   status?: RenderStatus;
   hasWebhook: boolean;
 }
@@ -61,7 +61,7 @@ export interface IVideoService {
   /**
    *
    * @param videoId Video Id
-   * @param status Status // TODO: enum
+   * @param status Status
    */
   setStatus(
     videoId: string,
@@ -80,13 +80,11 @@ export interface IVideoService {
   /**
    * Return video with the specified video id
    * @param videoId Video Id
-   * // TODO: return type
    */
   getVideo(videoId: string): Promise<Video>;
 
   /**
    * Return all videos owned by the user with the specified ownerId.
-   * // TODO: return type
    * @param ownerId Owner Id
    */
   getVideos(
@@ -214,9 +212,6 @@ export class VideoService implements IVideoService {
     return this.getVideo(videoId);
   }
 
-  // TODO: @Robert how to mongoose and get the types working properly?
-  // This returns the id of the new video right now, without error checking.
-  // We probably want to return the inserted result.
   async createVideo(
     ownerId: string,
     gitRepoURL: string,
@@ -243,51 +238,3 @@ export class VideoService implements IVideoService {
     return video;
   }
 }
-
-// resolvers = {
-//   Mutation: {
-//       renderVideo: (parent: any, args: { renderType: string, repoURL: string }, context: ExpressContext, info: any) => {
-//           logger.info('args', args)
-//           const ownerId = 123; // TODO: hard code until Robert merge, should get from context.
-//           const videoId = uuid();
-//           // TODO: Create a database entry
-//           /**
-//            *
-//            * Video
-//            * {
-//            *  owner: ownerId,
-//            *  createdAt: now()
-//            *  updatedAt: now()
-//            *  title: repoUrl???
-//            *  description: ???
-//            *  thumbnail: none -- to be generated later?
-//            *  url: none
-//            *  visibility: PUBLIC -- for now, hard coded.
-//            *  gitRepoURL: $repoURL
-//            *  renderOptions: hard code to something for now.
-//            *  renderType: $repoType
-//            * }
-//            *
-//            *
-//       *  owner: User
-//       *  createdAt: Timestamp
-//       *  updatedAt: Timestamp
-//       *  title: String
-//       *  description: String
-//       *  thumbnail: String
-//       *  url: String
-//       *  visibility: VideoVisibility
-//       *  gitRepoURL: String (Only visible to owner)
-//       *  renderOptions: String(JSON representation of [1]), Only visible to owner)
-//            *
-//            * }
-//            *
-//            *
-//            *
-//            *
-//            *
-//            *
-//            */
-
-//           this.workerService.enqueue(args.renderType, args.repoURL, videoId);
-//       }

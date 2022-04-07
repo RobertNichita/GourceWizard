@@ -2,7 +2,6 @@ import {useNavigate} from 'react-router-dom';
 import axios from 'axios';
 import frontEndConfig from '../../config';
 import {ErrorAlert} from '../alert/ErrorAlert';
-import {useEffect, useState} from 'react';
 import {createGlobalState} from 'react-hooks-global-state';
 
 const error: {title: string | undefined; description: string | undefined} = {

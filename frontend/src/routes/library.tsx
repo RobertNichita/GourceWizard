@@ -42,7 +42,6 @@ export default function library() {
 
   // Load videos
   useEffect(() => {
-    console.log('Loading library videos');
     updatePage(page);
   }, [page]);
 

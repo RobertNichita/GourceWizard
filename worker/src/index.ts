@@ -6,7 +6,10 @@ import {APIClient, GraphQLAPIClient} from './client';
 import {RenderOptions, validateGourceSchema} from './schema/gource-schema';
 
 async function consume(): Promise<void> {
-  const apiClient: APIClient = new GraphQLAPIClient(config.backendURL, config.workerAuthSecret);
+  const apiClient: APIClient = new GraphQLAPIClient(
+    config.backendURL,
+    config.workerAuthSecret
+  );
 
   const url = config.queueConfig.AMQPUrl;
   const queue = config.queueConfig.queueName;
@@ -70,14 +73,12 @@ async function consume(): Promise<void> {
           throw validateGourceSchema.errors;
         }
       } catch (e) {
-        // TODO: Malformed message, we should reject it. Need to look up how to reject.
         logger.error('Rejecting malformed message', e);
         channel.reject(msg, false);
         return;
       }
 
       let videoRenderer: VideoRenderer;
-      // TODO: sanitize inputs?
       const renderType = jsonMessage.renderType;
       const repoURL = jsonMessage.repoURL;
       const videoId = jsonMessage.videoId;
@@ -93,7 +94,7 @@ async function consume(): Promise<void> {
         renderOptions
       );
 
-      // Create HLS stream using ultrafast present to save timea
+      // Create HLS stream using ultrafast present to save time
       // and yuv420p pixel format (See "Encoding for dumb players" https://trac.ffmpeg.org/wiki/Encode/H.264)
       // The average segment is 2 seconds long.
       // See gource.sh for details.

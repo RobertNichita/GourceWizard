@@ -1,4 +1,4 @@
-import express, {NextFunction, Request, Response} from 'express';
+import express from 'express';
 import session from 'express-session';
 import config from './config';
 import {schema} from './schema/schema';
@@ -21,10 +21,11 @@ import ghEventsMiddleware from './middleware/GHEvents';
 import backEndConfig from './config';
 import {getCSP} from './common/util';
 import {ENVIRONMENT} from './common/enum';
-import {testRouter} from './routes/testroute';
 import {ComposedResolvers} from './resolvers';
 import {VideoService} from './service/video_service';
-import { sys } from 'typescript';
+// eslint-disable-next-line node/no-unpublished-import
+import {sys} from 'typescript';
+import {logRequests} from './middleware/authentication';
 
 const PORT = config.port;
 const app = express();
@@ -84,8 +85,7 @@ const corsOptions = {
 app.use(cookieParser());
 app.use(express.urlencoded({extended: false}));
 app.use(express.json());
-app.use(cors(corsOptions)); // TODO: disabling this for apollo, but should probably ask Roberta
-app.use(passport.initialize());
+app.use(cors(corsOptions));
 
 app.use((req, res, next) => {
   req.nonsense = 'nonsense';
@@ -111,20 +111,11 @@ declare module 'express-serve-static-core' {
   }
 }
 
-//ADD ROUTES AND MIDDLEWARE WHICH REQUIRES DB OR SESSION HEREa
+//ADD ROUTES AND MIDDLEWARE WHICH REQUIRES DB OR SESSION HERE
 async function afterConnect() {
   app.use(passport.initialize());
   app.use(passport.session());
-  // memecachexd
-
-  app.use((req: Request, res: Response, next: NextFunction) => {
-    //TODO: create a type declaration to add user.id
-    // req.user = {id: req.session.id ? req.session.id : null};
-    // console.log('HTTP request', req.method, req.url, req.body);
-    next();
-  });
-
-  // TODO: initialize database connection
+  app.use(logRequests);
 
   await (workerService as WorkerService).initialize();
   const videoService = new VideoService();
@@ -132,7 +123,11 @@ async function afterConnect() {
 
   const server = await app.listen(PORT);
 
-  const composedResolvers = new ComposedResolvers(workerService, videoService, config.workerAuthSecret);
+  const composedResolvers = new ComposedResolvers(
+    workerService,
+    videoService,
+    config.workerAuthSecret
+  );
 
   const apolloServer = new ApolloServer({
     typeDefs: schema,
@@ -156,9 +151,6 @@ async function afterConnect() {
   const router = express.Router();
 
   router.use('/auth/', authRouter);
-  if (backEndConfig.environment !== ENVIRONMENT.PROD) {
-    router.use('/test/', testRouter);
-  }
   app.use('/api/', router);
 
   app.use('/', express.static(dirname + '/src/static'));
@@ -172,14 +164,14 @@ async function handleConnect(value: typeof mongoose) {
       saveUninitialized: false,
       cookie: {
         sameSite: 'lax',
-        secure: backEndConfig.environment === 'production',
+        secure: true,
         httpOnly: true,
         maxAge: 8 * 60 * 60 * 1000,
       },
       store: MongoStore.create({
         client: mongoose.connection.getClient(),
         collectionName: 'sessions',
-        stringify: false, //change to true if using datatypes unsupported by mongodb in the sessiona
+        stringify: false, //change to true if using datatypes unsupported by mongodb in the session
         autoRemove: 'native',
         crypto: {
           secret: config.session_secret,
@@ -200,7 +192,6 @@ async function handleConnectErr(err: any) {
 
 mongoose.connect(uri, options).then(handleConnect).catch(handleConnectErr);
 
-// TODO: move this into a better place
 const workerService: IWorkerService = new WorkerService(
   config.queueConfig.url,
   config.queueConfig.queue

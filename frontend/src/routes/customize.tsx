@@ -79,29 +79,29 @@ export default function customize() {
         description:
           'You must declare the visibility of the repository is required before continuing.',
       });
-    } else if (elasticity > 3 || elasticity < 0.5) {
+    } else if (isNaN(elasticity) || elasticity > 3 || elasticity < 0.5) {
       setError({
         title: 'Invalid Elasticity',
         description: 'Elasticity must be greater than 0.5, and less than 3.0.',
       });
-    } else if (bloomMult > 1.5 || bloomMult < 0.5) {
+    } else if (isNaN(bloomMult) || bloomMult > 1.5 || bloomMult < 0.5) {
       setError({
         title: 'Invalid Bloom Multiplier',
         description:
           'Bloom Multiplier must be greater than 0.5, and less than 1.5.',
       });
-    } else if (bloomInt > 1.5 || bloomInt < 0.5) {
+    } else if (isNaN(bloomInt) || bloomInt > 1.5 || bloomInt < 0.5) {
       setError({
         title: 'Invalid Bloom Intensity',
         description:
           'Bloom Intensity must be greater than 0.5, and less than 1.5.',
       });
-    } else if (start > 1.0 || start < 0) {
+    } else if (isNaN(start) || start > 1.0 || start < 0) {
       setError({
         title: 'Invalid Start Time',
         description: 'Start Time must be greater than 0.0, and less than 1.0.',
       });
-    } else if (stop > 1.0 || stop < 0) {
+    } else if (isNaN(stop) || stop > 1.0 || stop < 0) {
       setError({
         title: 'Invalid Stop Time',
         description: 'Stop Time must be greater than 0.0, and less than 1.0.',
@@ -122,8 +122,7 @@ export default function customize() {
         stop: stop,
         title: title,
       };
-      console.log('CLIENT');
-      console.log(renderOptions);
+
       videoService
         .createVideo(
           'GOURCE',
@@ -135,7 +134,6 @@ export default function customize() {
           renderOptions
         )
         .then(video => {
-          console.log(JSON.stringify(video));
           // Assume enqueued successfully
           navigate('/loading', {
             state: {
@@ -289,13 +287,9 @@ export default function customize() {
                     start: start,
                     stop: stop,
                   };
-                  console.log(args);
+
                   navigate('/create', {
                     state: args,
-                    // bloomMult: bloomMult.toFixed(2),
-                    // bloomInt: bloomInt.toFixed(2),
-                    // start: start.toFixed(2),
-                    // stop: stop.toFixed(2),
                   });
                 }}
               ></Button>

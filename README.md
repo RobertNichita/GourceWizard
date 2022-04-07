@@ -35,6 +35,8 @@ Draw a quick system diagram with all the players then talk about them at a low l
 
 ### Front End - Darren
 
+![](docs/frontend.png)
+
 For the Front End we decided on using the Javascript library React due to our teams preference for React's component-based structure and past experience working with the library (including past projects, courses and assignments for this course). Instead of using vanilla CSS, we decided to use the CSS Library Tailwind due to it's excellent synergy with React. Tailwind offers thousands of built-in classes that allows you to create great layouts by styling elements directly. This synergizes well with React as it allows us to style our reusable components faster and not have to worry about creating various utility classes. 
 
 ### Back End - Robert

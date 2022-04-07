@@ -1,7 +1,7 @@
 import {Octokit} from '@octokit/rest';
 import {NextFunction, Request, Response} from 'express';
 import backEndConfig from '../config';
-import {authKit, RetryThrottleKit} from '../controllers/octokit';
+import {authKit} from '../controllers/octokit';
 import {log} from '../logger';
 import fs from 'fs';
 import path from 'path';
@@ -12,19 +12,6 @@ import {
 import {InstallationLite} from '@octokit/webhooks-types';
 
 const dirname = path.resolve();
-
-function isAuthenticated(req: Request, res: Response, next: NextFunction) {
-  if (req.isAuthenticated()) {
-    getUserInstallation(authKit(req.passport!.session.user.auth.access_token)!)
-      .then(installation => {
-        return next();
-      })
-      .catch(err => {
-        throw `User has not installed app ${err}`;
-      });
-  }
-  throw 'Unauthenticated user';
-}
 
 async function getUserInstallation(
   kit: Octokit
@@ -51,6 +38,14 @@ async function getUserInstallation(
     });
 }
 
+export function logRequests(req: Request, res: Response, next: NextFunction) {
+  const username = req.session.passport
+    ? req.session.passport.user.user.login
+    : null;
+  log(`${username}, ${req.method}, ${req.url}, ${JSON.stringify(req.body)}`);
+  next();
+}
+
 async function getInstallationKit(userToken: string): Promise<Octokit> {
   return getUserInstallation(authKit(userToken)!)
     .catch(err => {
@@ -70,20 +65,6 @@ async function getInstallationKit(userToken: string): Promise<Octokit> {
     .catch(err => {
       return err;
     });
-}
-
-/**
- * prereq, isAuthenticated must be infront of this middleware
- * postreq, req.kit is an Octokit Instance authenticated as the logged in user
- **/
-function addAuthKit(req: Request, res: Response, next: NextFunction) {
-  try {
-    req.kit = authKit(req.session.passport!.user.auth.access_token);
-  } catch (err) {
-    log('failed to add kit middleware', err);
-    res.status(500).end('autkit failed');
-  }
-  return next();
 }
 
 function readKeyFile() {
@@ -118,10 +99,4 @@ async function installationAuth(
   return installationAuthentication;
 }
 
-export {
-  isAuthenticated,
-  addAuthKit,
-  getInstallationKit,
-  installationAuth,
-  getUserInstallation,
-};
+export {getInstallationKit, installationAuth, getUserInstallation};

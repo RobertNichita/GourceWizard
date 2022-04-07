@@ -159,7 +159,6 @@ export default function create() {
                     className="form-input"
                     id="grid-state"
                     onChange={e => {
-                      console.log(visibility);
                       if (e.target.value === VideoVisibility.public) {
                         setVisibility(VideoVisibility.public);
                       } else {
