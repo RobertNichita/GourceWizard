@@ -1,34 +1,11 @@
 import {gql} from 'apollo-server';
 
-// TODO: Look into modularizing this soon.
 export const schema = gql`
-  type User {
-    """
-    Unique user id
-    """
-    id: ID!
-
-    """
-    Username
-    """
-    username: String!
-
-    """
-    List of videos created by the user
-    """
-    videos: [Video!]
-  }
-
   type Video {
     """
     Unique video id
     """
     _id: ID!
-
-    """
-    User who generated this video
-    """
-    owner: User!
 
     """
     Video Title
@@ -41,9 +18,9 @@ export const schema = gql`
     description: String
 
     """
-    Video Thumbnail TODO: Are we doing this?
+    Video Thumbnail
     """
-    thumbnail: String @deprecated
+    thumbnail: String
 
     """
     Video Playback URL
@@ -64,7 +41,6 @@ export const schema = gql`
     """
     JSON representation of render options used.
     This is only visible to the owner
-    TODO: think about this more?
     """
     renderOptions: RenderOptions
 
@@ -79,12 +55,12 @@ export const schema = gql`
     hasWebhook: Boolean!
 
     """
-    TODO: How do we want to do dates. unix time style or string timestamps?
+    mongoose timestamp
     """
     createdAt: String!
 
     """
-    TODO: How do we want to do dates. unix time style or string timestamps?
+    mongoose timestamp
     """
     updatedAt: String!
   }
@@ -150,16 +126,6 @@ export const schema = gql`
     helloAuth: String
 
     """
-    Return the current user
-    """
-    me: User
-
-    """
-    Return user with the specified id
-    """
-    user(id: ID!): User
-
-    """
     Return the page of 6 videos offset by 6 * offset videos, created by the current user
     """
     videos(offset: Int!): videoPage
@@ -187,7 +153,6 @@ export const schema = gql`
     """
     Create and enqueue a render job for the given repository
     and visualization type.
-    TODO: What is renderOptions going to look like?
     """
     renderVideo(
       renderType: RenderType!
@@ -201,10 +166,6 @@ export const schema = gql`
 
     """
     Update the video status.
-
-    TODO: This mutation should only be called by the render workers,
-    so we need a way to restrict this. For now it is left open.
-    This is an internal mutation.
     """
     updateStatus(
       id: ID!
@@ -215,7 +176,6 @@ export const schema = gql`
 
     """
     Update video title. Must be video owner.
-    TODO: what are the naming conventions in graphql land?
     """
     updateVideoTitle(id: ID!, title: String!): Video!
 
@@ -225,54 +185,3 @@ export const schema = gql`
     updateVideoDescription(id: ID!, title: String!): Video!
   }
 `;
-
-/**
- * GraphQL Schema
- *
- * type Video
- *  owner: User
- *  createdAt: Timestamp
- *  updatedAt: Timestamp
- *  title: String
- *  description: String
- *  thumbnail: String
- *  url: String
- *  visibility: VideoVisibility
- *  gitRepoURL: String (Only visible to owner)
- *  renderOptions: String(JSON representation of [1]), Only visible to owner)
- *
- * enum VideoVisibility: PUBLIC, PRIVATE
- *
- * type User
- *  name: String
- *  username: String
- *  avatarURL: String
- *
- * type Library
- *  owner: User
- *  videos: [Video]
- *
- * type WebhookVideoSubscription -- what do we call this?
- *  repository: {
- *    full_name : string,
- *    ??private : boolean
- * }
- *  whatever-we-need-for-webhook-stuff
- */
-
-// [1]
-//  "gource": {
-//   // All fields are optional.
-//   // "-f": true, // -f // Not necessary
-//   "resolution": "-1280x720", // -1280x720 -- USER
-//   "--start-date": "'YYYY-MM-DD hh:mm:ss +tz", // --start-date 'YYYY-MM-DD hh:mm:ss +tz' --- USER
-//   "--stop-date":  "'YYYY-MM-DD hh:mm:ss +tz",  // Stop at a date and optional time -- USER
-//   "--stop-at-time": 1, // seconds... stop after 30 seconds? -- SYSTEM
-//   "--seconds-per-day": 1, //seconds -- SYSTEM
-//   "--key": true, // bool, -- USER
-//   "--time-scale": 1.0, // float -- ???
-//   "--elasticity": 1.0, // float -- USER
-//   "--bloom-multiplier": 2.0, // float -- USER
-//   "--bloom-intensity": 1.5, // float -- USER
-//   "--title": "Title Here" // String -- USER
-// },

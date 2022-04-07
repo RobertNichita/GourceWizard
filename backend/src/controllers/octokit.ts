@@ -2,9 +2,6 @@ import {retry} from '@octokit/plugin-retry';
 import {throttling} from '@octokit/plugin-throttling';
 import {Octokit} from '@octokit/rest';
 import logger, {log} from '../logger';
-import {createAppAuth} from '@octokit/auth-app';
-import backEndConfig from '../config';
-import fs from 'fs';
 
 const RetryThrottleKit = Octokit.plugin(retry).plugin(throttling);
 
@@ -38,27 +35,5 @@ function authKit(accessToken: string, tokentype = 'token') {
   }
   return kit;
 }
-
-// async function installationKit(installationId: number) {
-//   let kit;
-//   try {
-//     kit = new RetryThrottleKit({
-//       authStrategy: createAppAuth,
-//       auth: {
-//         appId: backEndConfig.ghClientConfig.appID,
-//         privateKey: readKeyFile(
-//           `../${backEndConfig.ghClientConfig.appKeyFile}`
-//         ),
-//         installationId: installationId,
-//       },
-//       throttle: {onRateLimit: onRateLimit, onAbuseLimit: onAbuseLimit},
-//       log: logger,
-//     });
-//   } catch (err) {
-//     log('failed to create app installation octokit', err);
-//   }
-
-//   return kit;
-// }
 
 export {authKit, /*installationKit, */ RetryThrottleKit};

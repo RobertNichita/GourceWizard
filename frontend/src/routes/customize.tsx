@@ -122,8 +122,7 @@ export default function customize() {
         stop: stop,
         title: title,
       };
-      console.log('CLIENT');
-      console.log(renderOptions);
+
       videoService
         .createVideo(
           'GOURCE',
@@ -135,7 +134,6 @@ export default function customize() {
           renderOptions
         )
         .then(video => {
-          console.log(JSON.stringify(video));
           // Assume enqueued successfully
           navigate('/loading', {
             state: {
@@ -289,13 +287,9 @@ export default function customize() {
                     start: start,
                     stop: stop,
                   };
-                  console.log(args);
+
                   navigate('/create', {
                     state: args,
-                    // bloomMult: bloomMult.toFixed(2),
-                    // bloomInt: bloomInt.toFixed(2),
-                    // start: start.toFixed(2),
-                    // stop: stop.toFixed(2),
                   });
                 }}
               ></Button>

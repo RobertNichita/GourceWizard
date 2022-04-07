@@ -14,8 +14,6 @@ COPY . /worker
 RUN chmod +x /worker/src/render/gource.sh
 RUN npm run compile
 
-# TODO: Remove this out from Dockerfile.prod
 RUN npm install -g nodemon ts-node
 
-# CMD [ "node", "/worker/build/src/index.js" ]
 CMD [ "npx", "nodemon", "/worker/src/index.ts" ]

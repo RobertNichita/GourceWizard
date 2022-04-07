@@ -20,7 +20,6 @@ export default function library() {
     const interval = setInterval(() => {
       const videoId = (location.state as LoadingState).videoId;
       videoService.getVideo(videoId).then(video => {
-        console.log(`Got video ${JSON.stringify(video)}`);
         if (video.status === 'UPLOADED') {
           navigate(`/video/${video._id}`, {
             state: video,
@@ -35,7 +34,7 @@ export default function library() {
           });
         }
       });
-    }, 1000); // TODO: Do we want to poll every second?
+    }, 1000);
 
     return () => clearInterval(interval); // Th
   }, []);

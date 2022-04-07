@@ -70,14 +70,12 @@ async function consume(): Promise<void> {
           throw validateGourceSchema.errors;
         }
       } catch (e) {
-        // TODO: Malformed message, we should reject it. Need to look up how to reject.
         logger.error('Rejecting malformed message', e);
         channel.reject(msg, false);
         return;
       }
 
       let videoRenderer: VideoRenderer;
-      // TODO: sanitize inputs?
       const renderType = jsonMessage.renderType;
       const repoURL = jsonMessage.repoURL;
       const videoId = jsonMessage.videoId;

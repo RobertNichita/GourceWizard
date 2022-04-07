@@ -50,7 +50,6 @@ function addPushHandler(
   videoService: IVideoService
 ) {
   hooks.on('push', (event: EmitterWebhookEvent<'push'>) => {
-    console.log('push');
     const payload: PushEvent = event.payload;
     const installation = payload.installation;
     installationAuth(installation!.id).then(

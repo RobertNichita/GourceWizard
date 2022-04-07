@@ -1,3 +1,4 @@
+import {UserInputError} from 'apollo-server-core';
 import {log} from '../logger';
 
 export interface ValidationRule<T> {
@@ -20,7 +21,7 @@ export class MatcherRule implements ValidationRule<string> {
 export class RangeRule implements ValidationRule<number> {
   begin: number;
   end: number;
-  constructor(begin: number, end: number) {
+  constructor(begin = -Infinity, end = Infinity) {
     this.begin = begin;
     this.end = end;
   }
@@ -35,7 +36,7 @@ export class RangeRule implements ValidationRule<number> {
 export function validateArgs(
   args: any,
   rules: {[arg: string]: {rule: ValidationRule<any>}}
-): {[arg: string]: {error: string}} {
+): void {
   log(JSON.stringify(args));
   const errors: {[arg: string]: {error: string}} = {};
 
@@ -55,11 +56,17 @@ export function validateArgs(
       errors[name] = {error: error};
     }
   }
-  return errors;
+
+  if (errors && Object.keys(errors).length > 0) {
+    throw new UserInputError(`${JSON.stringify(errors)}`);
+  }
 }
 
-const githubUrlPattern =
+export const githubUrlPattern =
   /^https:\/\/github\.com\/[a-zA-Z0-9]+\/[a-zA-Z0-9]+\.git$/;
+
+//https://stackoverflow.com/questions/20988446/regex-for-mongodb-objectid
+export const mongoObjectIdPattern = /^[a-f\d]{24}$/i;
 
 export const renderOptionsRules = (stop: Number | undefined) => {
   return {

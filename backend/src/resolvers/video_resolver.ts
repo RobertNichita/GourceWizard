@@ -1,7 +1,6 @@
 import {ExpressContext, UserInputError} from 'apollo-server-express';
-import logger, {log} from '../logger';
+import logger from '../logger';
 import {IWorkerService} from '../service/worker-service';
-import {createPushHook} from '../controllers/webhooks';
 import {VideoNotFound} from '../error/video_not_found_error';
 import {
   IVideoService,
@@ -9,8 +8,14 @@ import {
   RenderStatus,
   VideoVisibility,
 } from '../service/video_service';
-import {validateArgs} from './validation';
+import {
+  MatcherRule,
+  mongoObjectIdPattern,
+  RangeRule,
+  validateArgs,
+} from './validation';
 import {renderOptionsRules, renderRules} from './validation';
+import sanitize from 'mongo-sanitize';
 
 export class VideoResolver {
   workerService: IWorkerService;
@@ -30,7 +35,10 @@ export class VideoResolver {
         info: any
       ) => {
         const userId = context.req.userId;
-
+        validateArgs(args, {
+          offset: {rule: new MatcherRule(mongoObjectIdPattern)},
+        });
+        args.id = sanitize(args.id);
         try {
           const video = await this.videoService.getVideo(args.id);
           if (
@@ -41,7 +49,6 @@ export class VideoResolver {
           }
           return video;
         } catch (error) {
-          console.log(error);
           throw new VideoNotFound('Video not found!');
         }
       },
@@ -52,6 +59,11 @@ export class VideoResolver {
         info: any
       ) => {
         const ownerId = context.req.userId!;
+        validateArgs(args, {
+          offset: {rule: new RangeRule(0)},
+        });
+
+        args.offset = sanitize(args.offset);
         return this.videoService.getVideos(ownerId, args.offset);
       },
     },
@@ -64,6 +76,10 @@ export class VideoResolver {
         context: ExpressContext,
         info: any
       ) => {
+        validateArgs(args, {
+          videoId: {rule: new MatcherRule(mongoObjectIdPattern)},
+        });
+        args.videoId = sanitize(args.videoId);
         return await this.videoService.deleteVideo(args.videoId);
       },
       renderVideo: async (
@@ -80,18 +96,18 @@ export class VideoResolver {
         context: ExpressContext,
         info: any
       ) => {
-        const validation = validateArgs(args, renderRules);
-        if (validation && Object.keys(validation).length > 0) {
-          throw new UserInputError(`${JSON.stringify(validation)}`);
-        }
+        validateArgs(args, renderRules);
 
-        const optionsValidation = validateArgs(
+        validateArgs(
           args.renderOptions,
           renderOptionsRules(args.renderOptions.stop)
         );
-        if (optionsValidation && Object.keys(optionsValidation).length > 0) {
-          throw new UserInputError(`${JSON.stringify(optionsValidation)}`);
-        }
+
+        args.renderType = sanitize(args.renderType);
+        args.repoURL = sanitize(args.repoURL);
+        args.title = sanitize(args.title);
+        args.description = sanitize(args.description);
+        args.renderOptions.title = sanitize(args.renderOptions.title);
 
         logger.info('args', args);
         const ownerId = context.req.userId!;

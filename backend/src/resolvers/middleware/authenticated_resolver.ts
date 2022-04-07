@@ -4,7 +4,6 @@ import {
   getInstallationKit,
   getUserInstallation,
 } from '../../middleware/authentication';
-import {log} from '../../logger';
 
 export const isAuthenticatedResolver =
   () =>

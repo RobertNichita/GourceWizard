@@ -6,7 +6,7 @@ import {
   VideoService,
   VideoVisibility,
 } from '../../services/video_service';
-import {useEffect, useState} from 'react';
+
 export function Video(props) {
   const videoService: IVideoService = new VideoService();
 
@@ -26,7 +26,6 @@ export function Video(props) {
     window.scrollTo(0, 0);
   });
 
-  console.log(data);
   return (
     <div className="flex justify-center m-2 hover:opacity-75">
       <div
