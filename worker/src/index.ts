@@ -24,7 +24,7 @@ async function consume(): Promise<void> {
   });
 
   function sanitizeRenderOptions(input: string): string {
-    return input.replace(/[^a-zA-Z0-9]/, '');
+    return input.replace(/[^a-zA-Z0-9]/g, '');
   }
 
   function insertRenderOptions(base: string, opts: RenderOptions): string {
@@ -86,7 +86,7 @@ async function consume(): Promise<void> {
       const renderOptions = jsonMessage.renderOptions;
 
       renderOptions.title = renderOptions.title
-        ? sanitizeRenderOptions(renderOptions.title.toString())
+        ? sanitizeRenderOptions(renderOptions.title)
         : undefined;
 
       const gourceArgs = insertRenderOptions(
