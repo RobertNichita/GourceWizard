@@ -69,7 +69,7 @@ A producer (the backend) will send a message to RabbitMQ which contains paramete
 2. Create a thumbnail, which is the last frame of the stream. We assume this is an interesting frame to use because at the end of the visualization, we should have a large colourful graph.
 3. Upload the HLS stream and the thumbnail to S3 (file storage).
 
-To avoid a "thundering herd"-like issue, the worker has a configured limit of jobs it will accept at a given time. If there was a situation where we had a large number of render jobs suddenly, each worker would pick up their limit of render jobs while the remainder of the render jobs wait in the queue.
+To avoid a "thundering herd"-like issue, the worker has a configured limit of jobs it will accept at a given time. If there was a situation where we had a large number of render jobs suddenly, each worker would pick up their limit of render jobs while the remainder of the render jobs wait in the queue. Additionally, we have implemented a timeout where each repository can only be rendered for up to 10 minutes. After 10 minutes have passed, rendering stops and what was generated is uploaded to S3.
 
 We're using a CDN to cache the content in our S3 bucket. This is better for the end user because they can get their image/video faster and it is better for us as we save money on bandwidth, since less requests are going to our S3 bucket. Furthermore, it would be much more complicated for us to create a comparable video serving system than a CDN and S3.
 
@@ -109,8 +109,9 @@ When the status of a monitored service goes down, we are notified in a shared Di
 
 ### Challenge 2 - Worker
 
-We initially outputted an MP4 video using FFmpeg to be uploaded to S3 and displayed to the end user using a regular `<video>` tag in the front end. This worked well for repositories that generated short videos but for large videos, we noticed a lot of buffering and waiting for the video to download. After learning more about how CDNs worked, we realized that the CDN was sending the entire video file in an inefficient way. Instead, we use HLS to create a playlist (.m3u8) file which references 2 second segments (.ts files) of the video. Those short segments are cached better by the CDN, allow for better load times, scrubbing. Now the next few segments are streamed to the user as they watch the video instead of the entire video at load time. That is more efficient in terms of bandwidth (which we need to pay for because AWS) if the user does not watch the entire video and better UX. Streaming the video to the user required using `react-player` to play the HLS video, because not all browsers natively supported that. It was non-trivial to figure out how to get FFmpeg to create a HLS video with Gource and to generate a thumbnail based on a HLS stream. This challenge is discussed below in detail.
+We initially outputted an MP4 video using FFmpeg to be uploaded to S3 and displayed to the end user using a regular `<video>` tag in the front end. This worked well for repositories that generated short videos but for large videos, we noticed a lot of buffering and waiting for the video to download. After learning more about how CDNs worked, we realized that the CDN was sending the entire video file in an inefficient way.
 
+Instead, we use HLS to create a playlist (.m3u8) file which references 2 second segments (.ts files) of the video. Those short segments are cached better by the CDN, allow for better load times, scrubbing. Now the next few segments are streamed to the user as they watch the video instead of the entire video at load time. That is more efficient in terms of bandwidth (which we need to pay for because AWS) if the user does not watch the entire video and better UX. Streaming the video to the user required using `react-player` to play the HLS video, because not all browsers natively supported that. It was non-trivial to figure out how to get FFmpeg to create a HLS video with Gource. We ended up figuring out the correct parameters to pass into FFmpeg to consume a video input stream and output an HLS stream ready to be uploaded to S3. It took a many tries to create a HLS stream which worked properly, we made use of this debugging tool https://players.akamai.com/players/hlsjs because during development, we weren't sure the HLS stream was malformed or if our video player was incorrectly setup. We had one attempt where we used some FFmpeg arguments to create a HLS stream and play in most browsers, but it was unable to play in Firefox. We had some "codec not supported" errors. This was fixed by toggling different things with FFmpeg. Additionally, when uploading our segments to S3, we ran into a funny issue where S3 assumed our mime type was something wrong instead of `video/MP2T` which was a subtle and unexpected issue to debug.
 
 ### Challenge 3 - Frontend
 
@@ -126,7 +127,7 @@ Robert was primarily responsible for most of the backend tasks. This includes se
 
 **Ryan Sue**
 
-Ryan was primarily responsible for creating the worker machine (which renders and generates the videos using Gource) and serving the content from the worker to the backend swiftly. Furthermore he also did some development on the frontend such as creating the landing page for when a video render fails, and writing the services the frontend used to communicate with the server. Ryan was also the lead when deploying the application, having wrote the docker-compose files needed for deployment and a lot of the necessary setup.
+Ryan was primarily responsible for creating the worker service (which renders and generates the videos using Gource) and serving the content from the worker to the backend swiftly. Furthermore he also did some development on the frontend such as creating the landing page for when a video render fails, and writing the services the frontend used to communicate with the server. Ryan was also the lead when deploying the application, having wrote the docker-compose files needed for deployment and a lot of the necessary setup.
 
 **Darren Liu**
 
@@ -136,4 +137,4 @@ Darren's primary responsibility was designing and creating the UI. This includes
 
 **Task:** Any additional comment you want to share with the course staff? 
 
-If we had access to better servers (with better specs, GPUs, etc.) we could make the workers render videos faster and be able to process larger repositories. Oh also, we committed some secrets to GitHub during development, but we made sure to burn all of them ;) 
+If we had access to better servers (with better specs, GPUs, etc.) we could make the workers render videos faster and be able to process larger repositories.
