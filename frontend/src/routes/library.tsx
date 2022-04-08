@@ -62,7 +62,7 @@ export default function library() {
                 description: '',
                 hasWebhook: false,
                 displayLegend: false,
-                elasticity: 1.0,
+                elasticity: 0.5,
                 bloomMult: 1.0,
                 bloomInt: 1.0,
                 start: 0,

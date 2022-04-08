@@ -40,7 +40,7 @@ export default function create() {
   const [displayLegend] = useState(previousState.displayLegend);
   const [elasticity] = previousState.elasticity
     ? useState(previousState.elasticity)
-    : useState(1.0);
+    : useState(0.5);
   const [bloomMult] = previousState.bloomMult
     ? useState(previousState.bloomMult)
     : useState(1.0);
