@@ -86,6 +86,10 @@ export class VideoResolver {
           videoId: {rule: new MatcherRule(mongoObjectIdPattern)},
         });
         args.videoId = sanitize(args.videoId);
+        const video = await this.videoService.getVideo(args.videoId);
+        if (video.ownerId !== context.req.userId) {
+          throw new VideoNotFound('Forbidden');
+        }
         return await this.videoService.deleteVideo(args.videoId);
       },
       renderVideo: async (
@@ -149,8 +153,9 @@ export class VideoResolver {
         info: any
       ) => {
         // Check the request is actually coming from the worker.
-
-        if (context.req.headers['X-Worker-Auth'] !== this.workerAuthSecret) {
+        logger.info(`header: ${context.req.headers['x-worker-auth']}`);
+        logger.info(`secret: ${this.workerAuthSecret}`);
+        if (context.req.headers['x-worker-auth'] !== this.workerAuthSecret) {
           logger.info('worker header mismatch');
           throw new AuthenticationError('Forbidden');
         }
