@@ -74,8 +74,6 @@ services:
             - BACKEND_URL=http://backend:4000/graphql
             - QUEUE_PREFETCH_LIMIT=5
             - WORKER_AUTH_SECRET=potato
-        volumes:
-            - ./worker/:/worker
         depends_on:
             - rabbitmq
             - mongo
