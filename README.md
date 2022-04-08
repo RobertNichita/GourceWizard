@@ -69,7 +69,7 @@ A producer (the backend) will send a message to RabbitMQ which contains paramete
 2. Create a thumbnail, which is the last frame of the stream. We assume this is an interesting frame to use because at the end of the visualization, we should have a large colourful graph.
 3. Upload the HLS stream and the thumbnail to S3 (file storage).
 
-To avoid a "thundering herd"-like issue, the worker has a configured limit of jobs it will accept at a given time. If there was a situation where we had a large number of render jobs suddenly, each worker would pick up their limit of render jobs while the remainder of the render jobs wait in the queue. Additionally, we have implemented a timeout where each repository can only be rendered for up to 10 minutes. After 10 minutes have passed, rendering stops and what was generated is uploaded to S3.
+To avoid a "thundering herd"-like issue, the worker has a configured limit of jobs it will accept at a given time. If there was a situation where we had a large number of render jobs suddenly, each worker would pick up their limit of render jobs while the remainder of the render jobs wait in the queue. Additionally, we have implemented a timeout where each repository can only be rendered for up to 10 minutes. After 10 minutes have passed, rendering stops and what was generated is uploaded to S3. Small repositories should take less than 10 minutes to render.
 
 We're using a CDN to cache the content in our S3 bucket. This is better for the end user because they can get their image/video faster and it is better for us as we save money on bandwidth, since less requests are going to our S3 bucket. Furthermore, it would be much more complicated for us to create a comparable video serving system than a CDN and S3.
 
