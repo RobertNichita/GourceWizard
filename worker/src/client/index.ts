@@ -51,6 +51,7 @@ export class GraphQLAPIClient implements APIClient {
     };
 
     logger.info('body', body);
+    logger.info(`workerauthsecret ${this.workerAuthSecret}`);
     const response = await axios.post(this.backendURL, body, {headers: {"X-Worker-Auth": this.workerAuthSecret}});
     logger.info(`Successfully updated status of video ${videoId}`);
 
