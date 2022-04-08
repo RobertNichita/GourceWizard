@@ -46,7 +46,7 @@ export default function customize() {
   );
   const [elasticity, setElasticity] = previousState.elasticity
     ? useState(previousState.elasticity)
-    : useState(1.0);
+    : useState(0.5);
   const [bloomMult, setBloomMult] = previousState.bloomMult
     ? useState(previousState.bloomMult)
     : useState(1.0);

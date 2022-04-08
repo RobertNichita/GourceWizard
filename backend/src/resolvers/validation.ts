@@ -64,8 +64,7 @@ export function validateArgs(
   }
 }
 
-export const githubUrlPattern =
-  /^https:\/\/github\.com\/[a-zA-Z0-9]+\/[a-zA-Z0-9]+\.git$/;
+export const githubUrlPattern = /^https:\/\/github\.com\/.+\/.+\.git$/;
 
 //https://stackoverflow.com/questions/20988446/regex-for-mongodb-objectid
 export const mongoObjectIdPattern = /^[a-f\d]{24}$/i;
