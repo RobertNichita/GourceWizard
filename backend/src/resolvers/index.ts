@@ -43,6 +43,7 @@ export class ComposedResolvers implements IComposedResolvers {
       'Query.me': [isAuthenticatedResolver()],
       'Query.video': [userIdResolver()],
       'Query.videos': [isAuthenticatedResolver(), userIdResolver()],
+      'Mutation.deleteVideo': [userIdResolver()],
       'Mutation.renderVideo': [
         isAuthenticatedResolver(),
         userIdResolver(),
