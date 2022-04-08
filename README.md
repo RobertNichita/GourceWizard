@@ -46,17 +46,17 @@ We've developed the frontend, backend and the worker services using TypeScript t
 
 For the Front End we decided on using the Javascript library React due to our teams preference for React's component-based structure and past experience working with the library (including past projects, courses and assignments for this course). Instead of using vanilla CSS, we decided to use the CSS Library Tailwind due to it's excellent synergy with React. Tailwind offers thousands of built-in classes that allows you to create great layouts by styling elements directly. This synergizes well with React as it allows us to style our reusable components faster and not have to worry about creating various utility classes. 
 
-### Back End - Robert
+### Back End
 
 ![](docs/backend.png)
 
 We use Apollo GraphQL server to handle requests from the frontend. It has a useful mocking feature which we made use of during development to give the frontend responses before we implemented our resolvers. The backend has a custom input validation solution, as the Apollo validation directives require an unnecessarily complex schema. Our queries are sanitized against noSQL injection attacks on the backend but those inputs which will go to the worker are bash sanitized there. Our business logic is broken up into services which primarily handle a singular task, one being videos and the other being worker communications. Since the backend does not have a grapqhl client, render config is sent as plain JSON to the render queue. The database queries are seperated into models which handle user, video, and authentication data respectively.
 
-#### Authentication/Webhook with GitHub - Robert
+#### Authentication/Webhook with GitHub
 
 Our app is authenticated through Github's OAuth flow. We make use of PassportJS for user authentication through Github and maintaining a session. Users install our app on their repositories and login with their github account, we identify them by their github ID. The temporary user token gives us access to their repositories on their behalf. We then use this token to clone any private repositories being visualized by the user manually. Our app is subscribed to push events on repositories which have installed it, which push notifications to our app. These notifications have the identifier of the installation on them and we use that to authenticate as an installation. This token is used to authenticate API requests to that repository, allowing us to automatically clone repositories when a push is made. We use Octokit to check whether the user has installed the app, if this is not the case the user is not properly authenticated. The Worker status updates are authenticated via a secret it passes with all its requests, and Github is authenticated by the HMAC hex digest it sends with each request that is signed by a secret we input when configuring our github app. 
 
-#### Database - Robert
+#### Database
 
 The purpose of using MongoDB was due to the simple nature of our application data which is not highly related. Using a relational database for very simple CRUD is a waste of developer time writing SQL queries. Another important factor is the lack of a need for database migrations. Since documents in a noSQL database do not conform to a rigid schema, naming changes and addition or removal of fields will have little to no effect in comparison to a SQL database. All of these factors save us time which can be spent on other more important facets of the project.
 
