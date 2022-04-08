@@ -45,7 +45,7 @@ curl -L https://github.com/mozilla/sops/releases/download/v3.7.2/sops-v3.7.2.lin
 chmod +x sops
 ```
 
-# Deploy
+# Deploy on EC2 VM
 
 ```bash
 # SSH into VM
@@ -53,5 +53,6 @@ GPG_TTY=$(tty)
 export GPG_TTY
 git pull
 sops --decrypt docker-compose-prod.yml > docker-compose.yml
+docker-compose down
 docker-compose up --build -d
 ```

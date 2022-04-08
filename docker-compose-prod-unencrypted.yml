@@ -52,6 +52,7 @@ services:
             - PORT=4000
             - QUEUE_URL=amqp://potato:potato@potato:5672
             - QUEUE_NAME=render
+            - WORKER_AUTH_SECRET=potato
         depends_on:
             - mongo
             - rabbitmq
@@ -72,6 +73,7 @@ services:
             - CDN_ROOT=https://potato.cloudfront.net/
             - BACKEND_URL=http://backend:4000/graphql
             - QUEUE_PREFETCH_LIMIT=5
+            - WORKER_AUTH_SECRET=potato
         volumes:
             - ./worker/:/worker
         depends_on:
