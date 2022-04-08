@@ -8,7 +8,7 @@ https://gource-wizard.ryan.software
 
 **Task:** Provide the link to your youtube video. Please make sure the link works. 
 
-## Project Description - Darren
+## Project Description
 
 The Gource Wizard application at it's core allows one to visualize their repositories as an animated tree with the directories as branches, and files as leaves, using the third-party software Gource. But through Gource Wizard this is all done in the cloud without the need to download any software. Simply log in using your Github Account and fill out the form and Gource Wizard servers will get to work on making your repo look the best it can. You can always come back later and look at your rendered videos again in the future, or create a link and share them with your friends.
 
@@ -40,7 +40,7 @@ Each worker node can accept a configurable number of render jobs (configured as 
 
 We've developed the frontend, backend and the worker services using TypeScript to leverage the plentiful third party libraries/packages of JavaScript and have the reliability of typing from TypeScript. Our entire application has been dockerized from the beginning.
 
-### Front End - Darren
+### Front End
 
 ![](docs/frontend.png)
 
@@ -101,7 +101,7 @@ We also uploaded a simple text file to S3, which is publicly accessible through 
 
 When the status of a monitored service goes down, we are notified in a shared Discord group. This will prompt us to check various logs (nginx, service logs, ...).
 
-## Challenges - Darren/Robert
+## Challenges
 
 **Task:** What is the top 3 most challenging things that you have learned/developed for you app? Please restrict your answer to only three items. 
 
@@ -119,7 +119,7 @@ Instead, we use HLS to create a playlist (.m3u8) file which references 2 second 
 
 3. One challenge we faced was using TailwindCSS. Although it has a great amount of utility classes, it sometimes was difficult to work with due to the no errors being raised when a certain class does not exist. For example, classes `w-1`, `w-1.5`, all the way to `w-12` are defined. `w-50` is not, and as a result using `w-50` would be like just not using a width class at all. Furthermore due to the teams inexperience with CSS, it was slow to get used to the utility classes of Tailwind since they often have less descriptive names are intended with people who are already comfortable with vanilla CSS. Often the pipeline would be looking at how to solve a problem in vanilla  CSS, and then looking up the corresponding utility class in Tailwind which is slow. Although once the team was comfortable with Tailwind, it proed to allow for faster development and more customizable styling. 
 
-## Contributions - Darren
+## Contributions
 
 **Task:** Describe the contribution of each team member to the project. Please provide the full name of each team member (but no student number). 
 
@@ -135,7 +135,7 @@ Ryan was primarily responsible for creating the worker service (which renders an
 
 Darren's primary responsibility was designing and creating the UI. This includes creating the various UI components such as a custom class for buttons, validation of inputs in the frontend, and setting up routing for the frontend. Darren also set up protected routes, so any unauthenticated users could not view content they were not authenticated for and would be redirected to the login page. Furthermore he was also responsible for the TailwindCSS setup, which facilitated buiding complex responsive layouts much easier.
 
-# One more thing? - Darren 
+# One more thing?
 
 **Task:** Any additional comment you want to share with the course staff? 
 
