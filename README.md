@@ -51,15 +51,17 @@ For the Front End we decided on using the Javascript library React due to our te
 
 ### Back End - Robert
 
-Talk about back end. GraphQL and stuff.
+![](docs/backend.png)
+
+We use Apollo GraphQL server to handle requests from the frontend. It has a useful mocking feature which we made use of during development to give the frontend responses before we implemented our resolvers. The backend has a custom input validation solution, as the Apollo validation directives require an unnecessarily complex schema. Our queries are sanitized against noSQL injection attacks on the backend but those inputs which will go to the worker are bash sanitized there. Our business logic is broken up into services which primarily handle a singular task, one being videos and the other being worker communications. The database queries are  
 
 #### Authentication/Webhook with GitHub - Robert
 
-Talk about GitHub.
+Our app is authenticated through Github's OAuth flow. We make use of PassportJS for user authentication through Github and maintaining a session. Users install our app on their repositories and login with their github account, we identify them by their github ID. The temporary user token gives us access to their repositories on their behalf. We then use this token to clone any private repositories being visualized by the user manually. Our app is subscribed to push events on repositories which have installed it, which push notifications to our app. These notifications have the identifier of the installation on them and we use that to authenticate as an installation. This token is used to authenticate API requests to that repository, allowing us to automatically clone repositories when a push is made. The Worker status updates are authenticated via a secret it passes with all its requests, and Github is authenticated by the HMAC hex digest it sends with each request that is signed by a secret we generate.
 
 #### Database - Robert
 
-Talk about why we're using Mongo.
+The purpose of using MongoDB was due to the simple nature of our application data which is not highly related. Using a relational database for very simple CRUD is a waste of developer time writing SQL queries. Another important factor is the lack of a need for database migrations. Since documents in a noSQL database do not conform to a rigid schema, naming changes and addition or removal of fields will have little to no effect in comparison to a SQL database. All of these factors save us time which can be spent on other more important facets of the project.
 
 ### Worker
 
@@ -125,7 +127,7 @@ Security Group/Firewall
 
 ### Challenge 1 - Robert
 
-1. Auth Stuff: Robert
+1. Integrating with Github was a great challenge as their documentation is very scattered and finding the instructions for setting up a particular obvious workflow requires combining information from across several different pages. At the beginning of our development process, My preliminary research on authentication and webhooks led me to believe that we could use an OAuth flow to authenticate users. This, however, presented a unique issue: the OAuth authentication flow is unable to persist authentication tokens long enough for authenticated api calls in response to webhooks. This requires the use of a github app to authenticate. Users install our Github App on their repository, which gives us permission to clone the repository, and subscribes our app to push webhooks from that repository. We can then authenticate as an installation, Github will verify that this installation is in fact from our app and provide an installation auth token without the interaction of a user. Another major challenge with github was the limitations of their OAuth systems. Firstly, github does not provide interfaces for auth through their graphql API, so it was necessary to perform these calls through plain REST controllers. Secondly, Github does not support cross-origin authentication. This means that you cannot tell Github which origins can be trusted for auth. A client originating from one domain may not initiate authentication and have it completed through a server in another domain, as Github will respond with a CORS error. This is the reason we have a static login page on the backend to perform the entire authentication flow from the backend and just pass the session cookie to the frontend through a redirect. Figuring out all these details took a lot of effort.
 
 ### Challenge 2 - Worker
 
