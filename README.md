@@ -10,16 +10,13 @@ https://gource-wizard.ryan.software
 
 ## Project Description - Darren
 
-**Task:** Provide a detailed description of your app
-
-The Gource Wizard application at it's core allows one to visualize their repositories as an animated tree with the directories as branches, and files as leaves, all without downloading any software. Simply log in using your Github Account and fill out the form and Gource Wizard servers will get to work on making your repo look the best it can. You can always come back later and look at your rendered videos again in the future, or create a link and share them with your friends.
+The Gource Wizard application at it's core allows one to visualize their repositories as an animated tree with the directories as branches, and files as leaves, using the third-party software Gource. But through Gource Wizard this is all done in the cloud without the need to download any software. Simply log in using your Github Account and fill out the form and Gource Wizard servers will get to work on making your repo look the best it can. You can always come back later and look at your rendered videos again in the future, or create a link and share them with your friends.
 
 There are various ways you can customize our video, such as:
 
 - Changing the elasticity (alter the speed of physics for the file nodes in the tree)
 - Render on every commit (this is accomplished using webhooks)
 - Declare what section of the repository you want rendered
-
 
 ## Development
 
@@ -74,52 +71,35 @@ A producer (the backend) will send a message to RabbitMQ which contains paramete
 2. Create a thumbnail, which is the last frame of the stream. We assume this is an interesting frame to use because at the end of the visualization, we should have a large colourful graph.
 3. Upload the HLS stream and the thumbnail to S3 (file storage).
 
-To avoid a "thundering herd"-like issue, the worker has a configured limit of jobs it will accept at a given time. If there was a situation where we had a large number of render jobs suddenly, each worker would pick up their limit of render jobs while the remainder of the render jobs wait in the queue.
+To avoid a "thundering herd"-like issue, the worker has a configured limit of jobs it will accept at a given time. If there was a situation where we had a large number of render jobs suddenly, each worker would pick up their limit of render jobs while the remainder of the render jobs wait in the queue. Additionally, we have implemented a timeout where each repository can only be rendered for up to 10 minutes. After 10 minutes have passed, rendering stops and what was generated is uploaded to S3. Small repositories should take less than 10 minutes to render.
 
 We're using a CDN to cache the content in our S3 bucket. This is better for the end user because they can get their image/video faster and it is better for us as we save money on bandwidth, since less requests are going to our S3 bucket. Furthermore, it would be much more complicated for us to create a comparable video serving system than a CDN and S3.
 
 ## Deployment
 
-**Task:** Explain how you have deployed your application. 
-
 ![](docs/deployment.png)
 
-Talk about how we can have as many backends/frontends/workers as we want, because they are all stateless.
+We have deployed our application on one AWS VM (`t2.medium`) and setup Cloudfront with our S3 bucket. We have only deployed one instance of everything, so that we can use a `t2.medium` VM. But note that the design of our application opens the door to more complicated deployments since our backend and worker are both stateless. We can have any number of backends and workers. If we had a high number of users, we would need more workers to render videos. We would spin up more worker nodes and connect them to RabbitMQ.
 
-Production secrets are encrypted using [Mozilla SOPS](https://github.com/mozilla/sops).
+We have defined our production docker-compose file, called [docker-compose-prod.yml](docker-compose-prod.yml). Notice that all yaml values look like encrypted nonsense. We have production secrets (AWS Keys, Github App Credentials, ...) which are encrypted when saved in this Git repo. These production secrets are encrypted using [Mozilla SOPS](https://github.com/mozilla/sops). Group members can use sops to edit the encrypted production file in VSCode, which will handle the decryption/encryption. On the AWS VM, we have sops setup to decrypt the file and do a `docker-compose up`.
 
-Deployed on AWS to an t2.medium
+For convince we have provided [docker-compose-prod-unencrypted.yml](docker-compose-prod-unencrypted.yml) which is an unencrypted copy with the secrets set to "potato".
 
-- Database
-- Rabbit
-- Frontend
-- Backend
-- Prom/Grafana
-- Sentry
+Since our entire application is containerized, our deployment is relatively simple. We have that docker-compose file to bring up one instance of the database (Mongo), message queue (RabbitMQ), frontend, backend, worker and administrative tools to view the database/message queue in an UI. Additionally, we setup a security group, only allowing incoming connections to port 22 (SSH) and 80/443 (HTTP/HTTPS). For security reasons, there are no other ports accepting incoming connections. So the administrative tools are not publicly accessible. One needs to use SSH port forwarding in order to access the administrative UIs for Mongo and RabbitMQ.
 
-Deployed on our school VMs
+We have setup certbot with Nginx, using an `nginx-certbot` image to do so. This allows us to serve HTTPS traffic and automatically handle renewing our certs.
 
-- 1 worker per group member = 3 workers total.
+## Maintenance
 
-Security Group/Firewall
+We use UptimeRobot to monitor the uptime of three things:
 
-- Only incoming SSH from a non-standard port, HTTP on 80 for nginx. Frontend/Backend are not directly accessible, must go through nginx.
-- Database not accessible unless you connect through SSH.
-- TCP on a non-standard rabbit port.
-- Rabbit requires authenticated, it is publicly accessible because we want to use our school nodes as
+As mentioned above, our backend actually serves files at `/` and any other url (e.g. `/library`) goes to the frontend from our nginx config. We use this behaviour to monitor the availability of our frontend and backend. UptimeRobot checks every 5 minutes if `https://gource-wizard.com/` (backend) and `https://gource-wizard.com/library` (frontend) are accessible.
 
+We also uploaded a simple text file to S3, which is publicly accessible through our CDN. UptimeRobot checks this as well.
 
-## Maintenance - Ryan
+![](docs/uptimerobot.png)
 
-**Task:** Explain how you monitor your deployed app to make sure that everything is working as expected.
-
-- Grafana
-- Sentry
-- UptimeRobot for basic uptime of the service.
-
-- https://uptimerobot.com/
-- RabbitMQ
-- Logs are saved, we can look at nginx logs and our application logs at any time.
+When the status of a monitored service goes down, we are notified in a shared Discord group. This will prompt us to check various logs (nginx, service logs, ...).
 
 ## Challenges - Darren/Robert
 
@@ -131,8 +111,9 @@ Security Group/Firewall
 
 ### Challenge 2 - Worker
 
-We initially outputted an MP4 video using FFmpeg to be uploaded to S3 and displayed to the end user using a regular `<video>` tag in the front end. This worked well for repositories that generated short videos but for large videos, we noticed a lot of buffering and waiting for the video to download. After learning more about how CDNs worked, we realized that the CDN was sending the entire video file in an inefficient way. Instead, we use HLS to create a playlist (.m3u8) file which references 2 second segments (.ts files) of the video. Those short segments are cached better by the CDN, allow for better load times, scrubbing. Now the next few segments are streamed to the user as they watch the video instead of the entire video at load time. That is more efficient in terms of bandwidth (which we need to pay for because AWS) if the user does not watch the entire video and better UX. Streaming the video to the user required using `react-player` to play the HLS video, because not all browsers natively supported that. It was non-trivial to figure out how to get FFmpeg to create a HLS video with Gource and to generate a thumbnail based on a HLS stream. This challenge is discussed below in detail.
+We initially outputted an MP4 video using FFmpeg to be uploaded to S3 and displayed to the end user using a regular `<video>` tag in the front end. This worked well for repositories that generated short videos but for large videos, we noticed a lot of buffering and waiting for the video to download. After learning more about how CDNs worked, we realized that the CDN was sending the entire video file in an inefficient way.
 
+Instead, we use HLS to create a playlist (.m3u8) file which references 2 second segments (.ts files) of the video. Those short segments are cached better by the CDN, allow for better load times, scrubbing. Now the next few segments are streamed to the user as they watch the video instead of the entire video at load time. That is more efficient in terms of bandwidth (which we need to pay for because AWS) if the user does not watch the entire video and better UX. Streaming the video to the user required using `react-player` to play the HLS video, because not all browsers natively supported that. It was non-trivial to figure out how to get FFmpeg to create a HLS video with Gource. We ended up figuring out the correct parameters to pass into FFmpeg to consume a video input stream and output an HLS stream ready to be uploaded to S3. It took a many tries to create a HLS stream which worked properly, we made use of this debugging tool https://players.akamai.com/players/hlsjs because during development, we weren't sure the HLS stream was malformed or if our video player was incorrectly setup. We had one attempt where we used some FFmpeg arguments to create a HLS stream and play in most browsers, but it was unable to play in Firefox. We had some "codec not supported" errors. This was fixed by toggling different things with FFmpeg. Additionally, when uploading our segments to S3, we ran into a funny issue where S3 assumed our mime type was something wrong instead of `video/MP2T` which was a subtle and unexpected issue to debug.
 
 ### Challenge 3 - Frontend
 
@@ -148,7 +129,7 @@ Robert was primarily responsible for most of the backend tasks. This includes se
 
 **Ryan Sue**
 
-Ryan was primarily responsible for creating the worker machine (which renders and generates the videos using Gource) and serving the content from the worker to the backend swiftly. Furthermore he also did some development on the frontend such as creating the landing page for when a video render fails, and writing the services the frontend used to communicate with the server. Ryan was also the lead when deploying the application, having wrote the docker-compose files needed for deployment and a lot of the necessary setup.
+Ryan was primarily responsible for creating the worker service (which renders and generates the videos using Gource) and serving the content from the worker to the backend swiftly. Furthermore he also did some development on the frontend such as creating the landing page for when a video render fails, and writing the services the frontend used to communicate with the server. Ryan was also the lead when deploying the application, having wrote the docker-compose files needed for deployment and a lot of the necessary setup.
 
 **Darren Liu**
 
@@ -158,4 +139,4 @@ Darren's primary responsibility was designing and creating the UI. This includes
 
 **Task:** Any additional comment you want to share with the course staff? 
 
-If we had access to better servers (with better specs, GPUs, etc.) we could make the workers render videos faster and be able to process larger repositories. Oh also, we committed some secrets to GitHub during development, but we made sure to burn all of them ;) 
+If we had access to better servers (with better specs, GPUs, etc.) we could make the workers render videos faster and be able to process larger repositories.
