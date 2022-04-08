@@ -54,5 +54,6 @@ export GPG_TTY
 git pull
 sops --decrypt docker-compose-prod.yml > docker-compose.yml
 docker-compose down
-docker-compose up --build -d
+docker-compose build --no-cache --pull --force-rm
+docker-compose up -d
 ```

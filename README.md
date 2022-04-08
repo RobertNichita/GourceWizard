@@ -10,8 +10,6 @@ https://gource-wizard.ryan.software
 
 ## Project Description - Darren
 
-**Task:** Provide a detailed description of your app
-
 The Gource Wizard application at it's core allows one to visualize their repositories as an animated tree with the directories as branches, and files as leaves, all without downloading any software. Simply log in using your Github Account and fill out the form and Gource Wizard servers will get to work on making your repo look the best it can. You can always come back later and look at your rendered videos again in the future, or create a link and share them with your friends.
 
 There are various ways you can customize our video, such as:
@@ -19,7 +17,6 @@ There are various ways you can customize our video, such as:
 - Changing the elasticity (alter the speed of physics for the file nodes in the tree)
 - Render on every commit (this is accomplished using webhooks)
 - Declare what section of the repository you want rendered
-
 
 ## Development
 
@@ -78,46 +75,29 @@ We're using a CDN to cache the content in our S3 bucket. This is better for the 
 
 ## Deployment
 
-**Task:** Explain how you have deployed your application. 
-
 ![](docs/deployment.png)
 
-Talk about how we can have as many backends/frontends/workers as we want, because they are all stateless.
+We have deployed our application on one AWS VM (`t2.medium`) and setup Cloudfront with our S3 bucket. We have only deployed one instance of everything, so that we can use a `t2.medium` VM. But note that the design of our application opens the door to more complicated deployments since our backend and worker are both stateless. We can have any number of backends and workers. If we had a high number of users, we would need more workers to render videos. We would spin up more worker nodes and connect them to RabbitMQ.
 
-Production secrets are encrypted using [Mozilla SOPS](https://github.com/mozilla/sops).
+We have defined our production docker-compose file, called [docker-compose-prod.yml](docker-compose-prod.yml). Notice that all yaml values look like encrypted nonsense. We have production secrets (AWS Keys, Github App Credentials, ...) which are encrypted when saved in this Git repo. These production secrets are encrypted using [Mozilla SOPS](https://github.com/mozilla/sops). Group members can use sops to edit the encrypted production file in VSCode, which will handle the decryption/encryption. On the AWS VM, we have sops setup to decrypt the file and do a `docker-compose up`.
 
-Deployed on AWS to an t2.medium
+For convince we have provided [docker-compose-prod-unencrypted.yml](docker-compose-prod-unencrypted.yml) which is an unencrypted copy with the secrets set to "potato".
 
-- Database
-- Rabbit
-- Frontend
-- Backend
-- Prom/Grafana
-- Sentry
+Since our entire application is containerized, our deployment is relatively simple. We have that docker-compose file to bring up one instance of the database (Mongo), message queue (RabbitMQ), frontend, backend, worker and administrative tools to view the database/message queue in an UI. Additionally, we setup a security group, only allowing incoming connections to port 22 (SSH) and 80/443 (HTTP/HTTPS). For security reasons, there are no other ports accepting incoming connections. So the administrative tools are not publicly accessible. One needs to use SSH port forwarding in order to access the administrative UIs for Mongo and RabbitMQ.
 
-Deployed on our school VMs
+We have setup certbot with Nginx, using an `nginx-certbot` image to do so. This allows us to serve HTTPS traffic and automatically handle renewing our certs.
 
-- 1 worker per group member = 3 workers total.
+## Maintenance
 
-Security Group/Firewall
+We use UptimeRobot to monitor the uptime of three things:
 
-- Only incoming SSH from a non-standard port, HTTP on 80 for nginx. Frontend/Backend are not directly accessible, must go through nginx.
-- Database not accessible unless you connect through SSH.
-- TCP on a non-standard rabbit port.
-- Rabbit requires authenticated, it is publicly accessible because we want to use our school nodes as
+As mentioned above, our backend actually serves files at `/` and any other url (e.g. `/library`) goes to the frontend from our nginx config. We use this behaviour to monitor the availability of our frontend and backend. UptimeRobot checks every 5 minutes if `https://gource-wizard.com/` (backend) and `https://gource-wizard.com/library` (frontend) are accessible.
 
+We also uploaded a simple text file to S3, which is publicly accessible through our CDN. UptimeRobot checks this as well.
 
-## Maintenance - Ryan
+![](docs/uptimerobot.png)
 
-**Task:** Explain how you monitor your deployed app to make sure that everything is working as expected.
-
-- Grafana
-- Sentry
-- UptimeRobot for basic uptime of the service.
-
-- https://uptimerobot.com/
-- RabbitMQ
-- Logs are saved, we can look at nginx logs and our application logs at any time.
+When the status of a monitored service goes down, we are notified in a shared Discord group. This will prompt us to check various logs (nginx, service logs, ...).
 
 ## Challenges - Darren/Robert
 
