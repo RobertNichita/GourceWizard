@@ -2,11 +2,7 @@
 
 ## Project URL
 
-https://gource-wizard.ryan.software
-
-## Project Video URL 
-
-https://www.youtube.com/watch?v=aCvkJtZRDpE
+This project is not currently deployed
 
 ## Project Description
 
@@ -30,7 +26,7 @@ The Gource Wizard application has many components as seen above.
 
 The user directly interacts with two parts of our app, the nginx reverse proxy and the Cloudfront CDN.
 
-We use an Nginx reverse proxy (like [Week 8, Slide 21](https://thierrysans.me/CSCC09/lectures/08/slides/C09-Deploying/#21)), forwarding the user's requests to the React frontend or the GraphQL backend. We are using a reverse proxy as a layer of abstraction, so the outside world does not need to know about the implementation details of our app. Additionally, it simplifies our integration with GitHub, which we use for authentication and webhooks by having the frontend and backend on the same origin.
+We use an Nginx reverse proxy, forwarding the user's requests to the React frontend or the GraphQL backend. We are using a reverse proxy as a layer of abstraction, so the outside world does not need to know about the implementation details of our app. Additionally, it simplifies our integration with GitHub, which we use for authentication and webhooks by having the frontend and backend on the same origin.
 
 As stated in the project description, we visualize GitHub repositories. It takes time (minutes) to generate a video visualization of a GitHub repository. So it would not make sense to render the videos on the backend. Instead, we use RabbitMQ, a message queue which will send the render jobs to an available worker node using round-robin scheduling.
 
